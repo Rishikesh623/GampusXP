@@ -1,4 +1,6 @@
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -9,10 +11,13 @@ import Leaderboards from './pages/Leaderboards';
 import RewardsAndChallenges from './pages/RewardsChallenges';
 import Timetable from './pages/Timetable';
 import Settings from './pages/Settings';
-
+import './style.css';
 
 const App = () => {
+  const theme = useSelector((state) => state.theme);
+  console.log(theme);
   return (
+    <div className={`app-container theme-${theme}`}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
@@ -25,6 +30,7 @@ const App = () => {
         <Route path="/timetable" element={<Timetable />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
+    </div>
   );
 }
 

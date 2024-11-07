@@ -1,0 +1,132 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Courier+Prime&family=Press+Start+2P&family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap');
+
+/* Default theme */
+.theme-default {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: 'Roboto', sans-serif;
+}
+
+.theme-default a {
+  color: #1a73e8;
+}
+
+.theme-default .button {
+  background-color: #1a73e8;
+  color: #ffffff;
+  border: none;
+}
+
+.theme-default .button:hover {
+  background-color: #1557b6;
+}
+
+.theme-default .card {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+/* Retro theme */
+.theme-retro {
+  background-color: #f0e68c;
+  color: #2f4f4f;
+  font-family: 'Courier Prime', monospace;
+}
+
+.theme-retro a {
+  color: #8b4513;
+}
+
+.theme-retro .button {
+  background-color: #8b4513;
+  color: #ffffff;
+  border: none;
+}
+
+.theme-retro .button:hover {
+  background-color: #a0522d;
+}
+
+.theme-retro .card {
+  background-color: #ffebcd;
+  border: 2px solid #deb887;
+}
+
+/* Cyberpunk theme */
+.theme-cyberpunk {
+  background-color: #1a1a2e;
+  color: #f72585;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.theme-cyberpunk a {
+  color: #0affef;
+}
+
+.theme-cyberpunk .button {
+  background-color: #f72585;
+  color: #1a1a2e;
+  border: none;
+}
+
+.theme-cyberpunk .button:hover {
+  background-color: #ff00c8;
+}
+
+.theme-cyberpunk .card {
+  background-color: #121212;
+  border: 2px solid #0affef;
+}
+
+/* Valentine theme */
+.theme-valentine {
+  background-color: #ffcccb;
+  color: #e75480;
+  font-family: 'Dancing Script', cursive;
+}
+
+.theme-valentine a {
+  color: #c71585;
+}
+
+.theme-valentine .button {
+  background-color: #e75480;
+  color: #ffffff;
+  border: none;
+}
+
+.theme-valentine .button:hover {
+  background-color: #c71585;
+}
+
+.theme-valentine .card {
+  background-color: #ffe4e1;
+  border: 2px solid #ff69b4;
+}
+
+/* Aqua theme */
+.theme-aqua {
+  background-color: #00ffff;
+  color: #005f6b;
+  font-family: 'Poppins', sans-serif;
+}
+
+.theme-aqua a {
+  color: #007fff;
+}
+
+.theme-aqua .button {
+  background-color: #005f6b;
+  color: #ffffff;
+  border: none;
+}
+
+.theme-aqua .button:hover {
+  background-color: #003f4b;
+}
+
+.theme-aqua .card {
+  background-color: #e0ffff;
+  border: 2px solid #00ced1;
+}
