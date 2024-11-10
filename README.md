@@ -41,6 +41,9 @@ CampusXP is an app designed to gamify the academic journey, offering tools for s
    cd ../client
    npm start
    ```
+### to do 
+challenge anybody (give & take aura points)
+assignment completr after due point decreeas aua point
 
 ### License
 MIT License

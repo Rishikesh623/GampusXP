@@ -3,10 +3,12 @@ const dotenv = require('dotenv').config(); //loads .env contents into process.en
 const mongoose = require('mongoose');
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 const userRoutes = require('./routes/userRoutes.js');
-
-
+const courseRoutes = require('./routes/courseRoutes.js');
+const assignmentRoutes = require('./routes/assignmentRoutes.js');
+const timetableRoutes = require('./routes/timetableRoutes.js');
 
 const app = express();
 
@@ -14,12 +16,23 @@ app.use(cors({
     origin: 'http://localhost:3000', // allow requests only from this origin
     credentials: true,               // allow cookies and credentials
 }));
+app.use(session({
+    secret: 'yourSecretKey',  // A secret key to sign the session cookie (for encryption)
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }  // Use 'true' when using HTTPS
+}));
+
 app.use(express.json());
-app.use("/user",userRoutes);
 app.use(cookieParser());
 
+app.use("/user", userRoutes);
+app.use("/course",courseRoutes);
+app.use("/assignment",assignmentRoutes);
+app.use("/timetable",timetableRoutes);
 
-const PORT = process.env.PORT || 8080 ;
+
+const PORT = process.env.PORT || 8080;
 const MOGO_URI = process.env.MOGO_URI;
 
 app.listen(PORT, (error) => {
