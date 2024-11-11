@@ -1,10 +1,70 @@
+import { useState } from "react";
+
 const SignUp = () => {
+    const [formData, setFormData] = useState({
+        name: "",
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    })
+
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+
+    const onChangeForm = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const onSubmitForm = async (e) => {
+        e.preventDefault();
+
+        // Check if passwords match
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:5000/user/register', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    username: formData.username,
+                    password: formData.password
+                })
+            })
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setSuccess("Registration Successfull");
+                setError(null);
+            }
+            else {
+                setError(data.message || "Registration Failed");
+                setSuccess(null);
+            }
+        }
+        catch (err) {
+            console.log(err);
+            setError("An error occurred");
+        }
+    }
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-base-200">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold text-center">Create a CampusXP Account</h2>
-                <form className="space-y-4">
-                    
+                <form className="space-y-4" onSubmit={onSubmitForm}>
+
                     {/* Email Input */}
                     <div className="form-control">
                         <label className="flex items-center gap-2 input input-bordered">
@@ -18,7 +78,13 @@ const SignUp = () => {
                                 <path
                                     d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                             </svg>
-                            <input type="email" className="grow" placeholder="Email" required />
+                            <input type="email"
+                                name="email"
+                                className="grow"
+                                onChange={onChangeForm}
+                                value={formData.email}
+                                placeholder="Email"
+                                required />
                         </label>
                     </div>
 
@@ -33,7 +99,13 @@ const SignUp = () => {
                                 <path
                                     d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                             </svg>
-                            <input type="text" className="grow" placeholder="Username" required />
+                            <input type="text"
+                                className="grow"
+                                placeholder="Username"
+                                name="username"
+                                value={formData.username}
+                                onChange={onChangeForm}
+                                required />
                         </label>
                     </div>
 
@@ -50,7 +122,13 @@ const SignUp = () => {
                                     d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                                     clipRule="evenodd" />
                             </svg>
-                            <input type="password" className="grow" placeholder="Password" required />
+                            <input type="password"
+                                className="grow"
+                                placeholder="Password"
+                                name="password"
+                                value={formData.password}
+                                onChange={onChangeForm}
+                                required />
                         </label>
                     </div>
 
@@ -67,10 +145,17 @@ const SignUp = () => {
                                     d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                                     clipRule="evenodd" />
                             </svg>
-                            <input type="password" className="grow" placeholder="Confirm Password" required />
+                            <input type="password"
+                                className="grow"
+                                placeholder="Confirm Password"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={onChangeForm}
+                                required />
                         </label>
                     </div>
-
+                    {error && <p className="text-red-500 text-center">{error}</p>}
+                    {success && <p className="text-green-500 text-center">{success}</p>}
                     {/* Submit Button */}
                     <button type="submit" className="btn btn-primary w-full mt-4">Sign Up</button>
                 </form>
