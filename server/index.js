@@ -6,8 +6,6 @@ const cookieParser = require('cookie-parser');
 
 const userRoutes = require('./routes/userRoutes.js');
 
-
-
 const app = express();
 
 app.use(cors({
