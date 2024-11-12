@@ -6,6 +6,7 @@ import { setTheme } from '../redux/theme/themeSlice';
 const Main = () => {
     const dispatch = useDispatch();
     const currentTheme = useSelector((state) => state.theme);
+    const currentUser = useSelector((state) => state.user);
 
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));
@@ -139,12 +140,12 @@ const Main = () => {
                                     alt="Profile"
                                     className="w-8 h-8 rounded-full"
                                 />
-                                <span className="font-semibold">Username</span>
+                                <span className="font-semibold">{currentUser.username}</span>
                             </button>
 
                             {/* Dropdown Menu */}
                             <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-lg shadow-lg">
-                                <a href="#" className="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
                                 <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
                                 <a href="#" className="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
                             </div>
@@ -156,7 +157,7 @@ const Main = () => {
                 <main className="p-6">
                     {/* Greeting and Aura Points */}
                     <div className="mb-6">
-                        <h2 className="text-2xl font-bold">Welcome back, [Username]!</h2>
+                        <h2 className="text-2xl font-bold">Welcome back, [{currentUser.username}]!</h2>
                         <div className="mt-2 text-gray-600">Current Aura Level: 3</div>
                         <div className="mt-2 bg-blue-100 rounded-lg">
                             <div
@@ -234,8 +235,8 @@ const Main = () => {
                         </div>
                     </div>
                 </main>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

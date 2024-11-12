@@ -89,6 +89,33 @@ const login = async (req, res) => {
 };
 
 
+// coordinator login user API
+const coordinatorLogin = async (req, res) => {
+    const { id,password } = req.body;
+
+    try {
+
+        if(!id || !password){
+            return res.status(400).json({ message: 'Fill the required fields.' });
+        }
+
+        const coordinatorId = process.env.COORDINATOR_ID;
+        const coordinatorPassword = process.env.COORDINATOR_PASSWORD;
+        
+        if(coordinatorId!==id && coordinatorPassword!==id){
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        req.session.isCoordinator = true;  // Store session value
+
+        res.status(200).json({ message:'Login successful' });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+
 // Profile fetch API
 const getProfile = async (req, res) => {
     try {
@@ -181,4 +208,4 @@ const logout = async (req, res) => {
 }
 
 
-module.exports = { login, register, logout, getProfile, editProfile, logout, changePassword };
+module.exports = { login, register, logout, getProfile, editProfile, logout, changePassword,coordinatorLogin };

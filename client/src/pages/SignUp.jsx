@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -11,6 +12,8 @@ const SignUp = () => {
 
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+
+    const dispatch = useDispatch();
 
     const onChangeForm = (e) => {
         setFormData({
@@ -47,6 +50,7 @@ const SignUp = () => {
             if (res.ok) {
                 setSuccess("Registration Successfull");
                 setError(null);
+                dispatch({ name: formData.name, username: formData.username, email: formData.email, password: formData.password })
             }
             else {
                 setError(data.message || "Registration Failed");

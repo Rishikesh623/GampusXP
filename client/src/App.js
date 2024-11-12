@@ -12,6 +12,7 @@ import RewardsAndChallenges from './pages/RewardsChallenges';
 import Timetable from './pages/Timetable';
 import Settings from './pages/Settings';
 import './style.css';
+import Profile from './pages/Profile';
 
 const App = () => {
   const theme = useSelector((state) => state.theme);
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/main" element={<Main />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/course-management" element={<CourseManagement />} />
         <Route path="/assignment-tracking" element={<AssignmentTracking />} />
         <Route path="/leaderboards" element={<Leaderboards />} />

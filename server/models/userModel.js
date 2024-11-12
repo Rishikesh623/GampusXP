@@ -22,7 +22,19 @@ const userSchema = new mongoose.Schema({
     },
     about:{
         type : String
+    },
+    courses: [
+    {
+      semester: String,
+      courses: [
+        {
+          _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
+          course_code: String,
+          professor_name:String
+        }
+      ]
     }
+  ]
 });
 
 // Hash password before saving the user

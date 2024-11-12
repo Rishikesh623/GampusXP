@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
@@ -7,6 +8,8 @@ const SignIn = () => {
         password: "",
         username: "",
     })
+
+    const dispatch = useDispatch();
 
     const navigate = useNavigate();
 
@@ -41,6 +44,7 @@ const SignIn = () => {
             if (res.ok) {
                 setSuccess("Login Successfull");
                 navigate("/main")
+                dispatch({ username: formData.username, email: formData.email, password: formData.password })
             }
             else {
                 setError(data.message || "Login Failed")
