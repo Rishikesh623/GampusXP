@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { setUserProfile } from "../redux/user/userSlice";
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -50,7 +51,11 @@ const SignUp = () => {
             if (res.ok) {
                 setSuccess("Registration Successfull");
                 setError(null);
-                dispatch({ name: formData.name, username: formData.username, email: formData.email, password: formData.password })
+                dispatch(setUserProfile({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password
+                }));
             }
             else {
                 setError(data.message || "Registration Failed");
@@ -58,9 +63,10 @@ const SignUp = () => {
             }
         }
         catch (err) {
-            console.log(err);
-            setError("An error occurred");
+            console.error("Error:", err);
+            setError(err.message || "An error occurred");
         }
+
     }
 
     return (

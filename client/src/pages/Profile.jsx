@@ -1,16 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
+import { updateEmail, updateUsername } from '../redux/user/userSlice';
 
 const Profile = () => {
     const dispatch = useDispatch();
     const currentTheme = useSelector((state) => state.theme);
     const currentUser = useSelector((state) => state.user);
 
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        bio: ""
+    });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));
-    }
+    };
+
+    const onChangeEditForm = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const onSubmitEditForm = (e) => {
+        e.preventDefault();
+        dispatch(updateUsername(formData.username));
+        dispatch(updateEmail(formData.email));
+        setIsModalOpen(false); // Close the modal after submission
+    };
+
+    const onClickEditButton = () => {
+        setIsModalOpen(true); // Open the modal when "Edit Profile" is clicked
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false); // Close the modal
+    };
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -108,7 +139,6 @@ const Profile = () => {
 
                 {/* Profile Details */}
                 <main className="p-6">
-                    {/* Profile Information */}
                     <div className="mb-6 p-4 bg-white border rounded-lg shadow-sm">
                         <h2 className="text-2xl font-bold">Profile</h2>
                         <div className="mt-4">
@@ -123,6 +153,7 @@ const Profile = () => {
                             <label className="block text-gray-600 font-semibold">Bio</label>
                             <p>Passionate learner at CampusXP</p>
                         </div>
+                        <button onClick={onClickEditButton} className="mt-3 text-blue-600 hover:underline">Edit Profile</button>
                     </div>
 
                     {/* Aura Points and Level */}
@@ -164,6 +195,66 @@ const Profile = () => {
                         </ul>
                     </div>
                 </main>
+
+                {/* Modal for editing profile */}
+                {isModalOpen && (
+                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h3 className="text-xl font-semibold mb-4">Edit Profile</h3>
+
+                            <form onSubmit={onSubmitEditForm}>
+                                <div className="mb-4">
+                                    <label className="block text-gray-600 font-semibold">Username</label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={onChangeEditForm}
+                                        className="w-full p-2 border border-gray-300 rounded"
+                                        placeholder={currentUser.username}
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-gray-600 font-semibold">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={onChangeEditForm}
+                                        className="w-full p-2 border border-gray-300 rounded"
+                                        placeholder={currentUser.email}
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-gray-600 font-semibold">Bio</label>
+                                    <input
+                                        type="text"
+                                        name="bio"
+                                        value={formData.bio}
+                                        onChange={onChangeEditForm}
+                                        placeholder="Enter Bio"
+                                        className="w-full p-2 border border-gray-300 rounded"
+                                    />
+                                </div>
+                                <div className="flex justify-end space-x-4">
+                                    <button
+                                        type="button"
+                                        className="px-4 py-2 bg-gray-200 text-gray-600 rounded"
+                                        onClick={closeModal}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
