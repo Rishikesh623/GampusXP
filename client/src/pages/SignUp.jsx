@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 const SignUp = () => {
     const [formData, setFormData] = useState({
         name: "",
-        username: "",
+        reg_no: "",
         email: "",
         password: "",
         confirmPassword: ""
@@ -19,7 +19,7 @@ const SignUp = () => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
-        })
+        });
     }
 
     const onSubmitForm = async (e) => {
@@ -39,20 +39,21 @@ const SignUp = () => {
                 },
                 body: JSON.stringify({
                     name: formData.name,
+                    reg_no: formData.reg_no,
                     email: formData.email,
                     username: formData.username,
                     password: formData.password
                 })
-            })
+            });
 
             const data = await res.json();
 
             if (res.ok) {
                 setSuccess("Registration Successfull");
                 setError(null);
-                dispatch({ name: formData.name, username: formData.username, email: formData.email, password: formData.password })
+                dispatch({ name: formData.name, reg_no: formData.reg_no, email: formData.email, password: formData.password })
             }
-            else {
+            else{
                 setError(data.message || "Registration Failed");
                 setSuccess(null);
             }
@@ -106,8 +107,28 @@ const SignUp = () => {
                             <input type="text"
                                 className="grow"
                                 placeholder="Username"
-                                name="username"
-                                value={formData.username}
+                                name="name"
+                                value={formData.name}
+                                onChange={onChangeForm}
+                                required />
+                        </label>
+                    </div>
+                    {/* reg no. Input */}
+                    <div className="form-control">
+                        <label className="flex items-center gap-2 input input-bordered">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 16 16"
+                                fill="currentColor"
+                                className="h-4 w-4 opacity-70">
+                                <path
+                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                            </svg>
+                            <input type="text"
+                                className="grow"
+                                placeholder="Registration number"
+                                name="reg_no"
+                                value={formData.reg_no}
                                 onChange={onChangeForm}
                                 required />
                         </label>

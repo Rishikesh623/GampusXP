@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setUserProfile } from "../redux/user/userSlice";
 
 const SignIn = () => {
     const [formData, setFormData] = useState({
-        email: "",
+        id: "",//id can be email or reg_no
         password: "",
-        username: "",
-    })
+    });
 
     const dispatch = useDispatch();
 
@@ -27,14 +27,13 @@ const SignIn = () => {
         e.preventDefault();
 
         try {
-            const res = await fetch('/login', {
+            const res = await fetch('http://localhost:5000/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: formData.email,
-                    username: formData.username,
+                    id: formData.id,
                     password: formData.password
                 })
             })
@@ -43,11 +42,15 @@ const SignIn = () => {
 
             if (res.ok) {
                 setSuccess("Login Successfull");
-                navigate("/main")
-                dispatch({ username: formData.username, email: formData.email, password: formData.password })
+                
+                dispatch(setUserProfile({
+                    username: data.name,
+                    email: data.email,
+                }));
+                navigate("/main");
             }
             else {
-                setError(data.message || "Login Failed")
+                setError(data.message || "Login Failed");
             }
         }
         catch (err) {
@@ -61,7 +64,7 @@ const SignIn = () => {
                 <h2 className="text-2xl font-bold text-center">Login to CampusXP</h2>
                 <form className="space-y-4" onSubmit={onSubmitForm}>
 
-                    {/* Email Input */}
+                    {/* ID Input */}
                     <div className="form-control">
                         <label className="flex items-center gap-2 input input-bordered">
                             <svg
@@ -74,32 +77,12 @@ const SignIn = () => {
                                 <path
                                     d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                             </svg>
-                            <input type="email"
-                                className="grow"
-                                name="email"
-                                onChange={onChangeForm}
-                                value={formData.email}
-                                placeholder="Email" />
-                        </label>
-                    </div>
-
-                    {/* Username Input */}
-                    <div className="form-control">
-                        <label className="flex items-center gap-2 input input-bordered">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 16 16"
-                                fill="currentColor"
-                                className="h-4 w-4 opacity-70">
-                                <path
-                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                            </svg>
                             <input type="text"
                                 className="grow"
-                                name="username"
+                                name="id"
                                 onChange={onChangeForm}
-                                value={formData.username}
-                                placeholder="Username" />
+                                value={formData.id}
+                                placeholder="Email or Registration no." />
                         </label>
                     </div>
 

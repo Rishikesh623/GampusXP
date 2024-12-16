@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
 
 const Main = () => {
     const dispatch = useDispatch();
+
     const currentTheme = useSelector((state) => state.theme);
     const currentUser = useSelector((state) => state.user);
-
+    
+    useEffect(() =>{
+        console.log(currentUser);
+    });
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));
     }

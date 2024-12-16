@@ -12,6 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET_KEY;
 const register = async (req, res) => {
     try {
         const { name, reg_no, email, password } = req.body;
+        
 
         //check if the user already exists
         let user = await userModel.findOne({ reg_no });
@@ -44,29 +45,32 @@ const register = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
-};
+};  
 
 // login user API
 const login = async (req, res) => {
-    const { email, reg_no, password, rememberMe } = req.body;
+    const { id, password, rememberMe } = req.body;
+    
 
     try {
 
         let user = null;
-        if (email)
-            user = await userModel.findOne({ email });
-        else if (reg_no)
-            user = await userModel.findOne({ reg_no });
+
+        user = await userModel.findOne({ email:id });
+
+        if (!user)
+            user = await userModel.findOne({ reg_no:id });
 
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
+        
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credendtials' });
         }
-
+        
         // set the token expiration based on "Remember Me"
         const tokenExpiry = rememberMe ? '7d' : '1h'; // 7 days if "Remember Me" is checked, 1 hour if not
 
