@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUserProfile } from "../redux/user/userSlice";
+// import { setUserProfile } from "../redux/user/userSlice";
+import axios from "axios"
+import Cookies from "js-cookie";
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
         name: "",
-        username: "",
+        reg_no: "",
         email: "",
         password: "",
         confirmPassword: ""
@@ -20,7 +22,7 @@ const SignUp = () => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
-        })
+        });
     }
 
     const onSubmitForm = async (e) => {
@@ -33,29 +35,23 @@ const SignUp = () => {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/user/register', {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    username: formData.username,
-                    password: formData.password
-                })
-            })
+            const res = await axios.post('http://localhost:5000/user/register', formData);
 
-            const data = await res.json();
+            const data = res.data;
 
-            if (res.ok) {
+            // console.log(data);
+
+            if (res) {
                 setSuccess("Registration Successfull");
                 setError(null);
-                dispatch(setUserProfile({
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password
-                }));
+                dispatch({
+                    name: formData.name, reg_no: formData.reg_no, email: formData.email,
+                    password: formData.password, token: data.token
+                })
+
+                Cookies.set('token', data.token, { expires: 7 });
+
+                // console.log(data.token)
             }
             else {
                 setError(data.message || "Registration Failed");
@@ -63,10 +59,9 @@ const SignUp = () => {
             }
         }
         catch (err) {
-            console.error("Error:", err);
+            // console.error("Error:", err.message);
             setError(err.message || "An error occurred");
         }
-
     }
 
     return (
@@ -111,9 +106,29 @@ const SignUp = () => {
                             </svg>
                             <input type="text"
                                 className="grow"
-                                placeholder="Username"
-                                name="username"
-                                value={formData.username}
+                                placeholder="Full Name"
+                                name="name"
+                                value={formData.name}
+                                onChange={onChangeForm}
+                                required />
+                        </label>
+                    </div>
+                    {/* reg no. Input */}
+                    <div className="form-control">
+                        <label className="flex items-center gap-2 input input-bordered">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 16 16"
+                                fill="currentColor"
+                                className="h-4 w-4 opacity-70">
+                                <path
+                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                            </svg>
+                            <input type="text"
+                                className="grow"
+                                placeholder="Registration number"
+                                name="reg_no"
+                                value={formData.reg_no}
                                 onChange={onChangeForm}
                                 required />
                         </label>

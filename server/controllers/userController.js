@@ -13,10 +13,11 @@ const register = async (req, res) => {
     try {
         const { name, reg_no, email, password } = req.body;
 
+
         //check if the user already exists
         let user = await userModel.findOne({ reg_no });
         if (user) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: "User already exists" });
         }
 
         if (!name || !reg_no || !email || !password)
@@ -48,29 +49,32 @@ const register = async (req, res) => {
 
 // login user API
 const login = async (req, res) => {
-    const { email, reg_no, password, rememberMe } = req.body;
+    const { id, password, rememberMe } = req.body;
+
 
     try {
 
         let user = null;
-        if (email)
-            user = await userModel.findOne({ email });
-        else if (reg_no)
-            user = await userModel.findOne({ reg_no });
+
+        user = await userModel.findOne({ email: id });
+
+        if (!user)
+            user = await userModel.findOne({ reg_no: id });
 
         if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+            return res.status(400).json({ message: 'No user exists' });
         }
+
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credendtials' });
+            return res.status(400).json({ message: 'Wrong Password' });
         }
 
         // set the token expiration based on "Remember Me"
         const tokenExpiry = rememberMe ? '7d' : '1h'; // 7 days if "Remember Me" is checked, 1 hour if not
 
-        
+
 
         // generate a JWT token
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: tokenExpiry });
@@ -91,24 +95,24 @@ const login = async (req, res) => {
 
 // coordinator login user API
 const coordinatorLogin = async (req, res) => {
-    const { id,password } = req.body;
+    const { id, password } = req.body;
 
     try {
 
-        if(!id || !password){
+        if (!id || !password) {
             return res.status(400).json({ message: 'Fill the required fields.' });
         }
 
         const coordinatorId = process.env.COORDINATOR_ID;
         const coordinatorPassword = process.env.COORDINATOR_PASSWORD;
-        
-        if(coordinatorId!==id && coordinatorPassword!==id){
+
+        if (coordinatorId !== id && coordinatorPassword !== id) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         req.session.isCoordinator = true;  // Store session value
 
-        res.status(200).json({ message:'Login successful' });
+        res.status(200).json({ message: 'Login successful' });
 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -138,14 +142,16 @@ const getProfile = async (req, res) => {
 // Profile edit API using PATCH
 const editProfile = async (req, res) => {
     try {
-        const _id = req.user._id; //get email from the authenticated user
+        const _id = req.user.email; //get email from the authenticated user
 
         //directly use req.body for update while ensuring to omit sensitive fields
         const updateData = req.body;
 
+        // console.log(_id);
+
         // update user profile details
         const updatedUser = await userModel.findOneAndUpdate(
-            { _id: _id },
+            { email: _id },
             { $set: updateData }, // Use req.body directly
             { new: true } // Return the updated document
         );
@@ -208,4 +214,4 @@ const logout = async (req, res) => {
 }
 
 
-module.exports = { login, register, logout, getProfile, editProfile, logout, changePassword,coordinatorLogin };
+module.exports = { login, register, logout, getProfile, editProfile, logout, changePassword, coordinatorLogin };

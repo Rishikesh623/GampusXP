@@ -2,18 +2,23 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
-import { updateEmail, updateUsername } from '../redux/user/userSlice';
+import { updateEmail, updateRegNo } from '../redux/user/userSlice';
+import axios from "axios"
 
 const Profile = () => {
     const dispatch = useDispatch();
     const currentTheme = useSelector((state) => state.theme);
     const currentUser = useSelector((state) => state.user);
+    const token = currentUser.token;
 
     const [formData, setFormData] = useState({
-        username: "",
-        email: "",
+        reg_no: currentUser.reg_no,
+        name: currentUser.name,
+        email: currentUser.email,
         bio: ""
     });
+
+    console.log(currentUser);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,11 +33,25 @@ const Profile = () => {
         });
     };
 
-    const onSubmitEditForm = (e) => {
+    const onSubmitEditForm = async (e) => {
         e.preventDefault();
-        dispatch(updateUsername(formData.username));
-        dispatch(updateEmail(formData.email));
-        setIsModalOpen(false); // Close the modal after submission
+        try {
+            const res = await axios.patch('http://localhost:5000/user/profile/edit', formData)
+
+            const data = res.data;
+
+            if (!res) {
+                console.log("Edit profile failed", data.message)
+                return;
+            }
+
+            dispatch(updateRegNo(data.reg_no));
+            dispatch(updateEmail(data.email));
+        }
+        catch (err) {
+            console.log(err.response.data.message)
+        }
+        // setIsModalOpen(false); // Close the modal after submission
     };
 
     const onClickEditButton = () => {
@@ -143,7 +162,7 @@ const Profile = () => {
                         <h2 className="text-2xl font-bold">Profile</h2>
                         <div className="mt-4">
                             <label className="block text-gray-600 font-semibold">Username</label>
-                            <p>{currentUser.username}</p>
+                            <p>{currentUser.reg_no}</p>
                         </div>
                         <div className="mt-4">
                             <label className="block text-gray-600 font-semibold">Email</label>
@@ -207,10 +226,10 @@ const Profile = () => {
                                     <label className="block text-gray-600 font-semibold">Username</label>
                                     <input
                                         type="text"
-                                        name="username"
-                                        value={formData.username}
+                                        name="reg_no"
+                                        value={formData.reg_no}
                                         onChange={onChangeEditForm}
-                                        className="w-full p-2 border border-gray-300 rounded"
+                                        className="w-full p-2 border border-gray-300 rounded text-white"
                                         placeholder={currentUser.username}
                                     />
                                 </div>
@@ -221,7 +240,7 @@ const Profile = () => {
                                         name="email"
                                         value={formData.email}
                                         onChange={onChangeEditForm}
-                                        className="w-full p-2 border border-gray-300 rounded"
+                                        className="w-full p-2 border border-gray-300 rounded text-white"
                                         placeholder={currentUser.email}
                                     />
                                 </div>
@@ -233,7 +252,7 @@ const Profile = () => {
                                         value={formData.bio}
                                         onChange={onChangeEditForm}
                                         placeholder="Enter Bio"
-                                        className="w-full p-2 border border-gray-300 rounded"
+                                        className="w-full p-2 border border-gray-300 rounded text-white"
                                     />
                                 </div>
                                 <div className="flex justify-end space-x-4">
