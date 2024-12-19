@@ -1,9 +1,18 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const currentTheme = useSelector((state) => state.theme);
+    const currentUser = useSelector((state) => state.user);
+
+    useEffect(() => {
+        if (currentUser)
+            navigate('/main');
+    }, []);
 
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));

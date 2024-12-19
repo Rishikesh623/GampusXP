@@ -29,7 +29,9 @@ const SignIn = () => {
         e.preventDefault();
 
         try {
-            const res = await axios.post('http://localhost:5000/user/login', formData);
+            const res = await axios.post('http://localhost:5000/user/login', formData, {
+                withCredentials: true, // Include cookies in the request
+              });
             const data = res.data;
 
             // console.log(data);
@@ -41,11 +43,9 @@ const SignIn = () => {
                     name: data.name,
                     reg_no: data.reg_no,
                     email: data.email,
-                    password: data.password,
-                    token: data.token,
+                    password: data.password
                 }));
 
-                Cookies.set('token', data.token, { expires: 7 });
                 navigate("/main");
             }
             else {

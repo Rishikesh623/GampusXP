@@ -16,6 +16,8 @@ const authUser = (req, res, next) => {
     if (!token) {
       return res.status(401).json({ message: 'No token, authorization denied', error: true });
     }
+
+
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded; //attach the decoded user id to the request object
     next();

@@ -18,13 +18,14 @@ app.use(cors({
     origin: 'http://localhost:3000', // allow requests only from this origin
     credentials: true,               // allow cookies and credentials
 }));
-app.use(session({
-    secret: 'yourSecretKey',  // A secret key to sign the session cookie (for encryption)
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }  // Use 'true' when using HTTPS
-}));
-7
+
+// app.use(session({
+//     secret: 'yourSecretKey',  // A secret key to sign the session cookie (for encryption)
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: false }  // Use 'true' when using HTTPS
+// }));
+
 app.use(express.json());
 app.use(cookieParser());
 

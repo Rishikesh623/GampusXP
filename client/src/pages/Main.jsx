@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
-
+import axios from "axios";
 const Main = () => {
     const dispatch = useDispatch();
 
@@ -149,7 +149,7 @@ const Main = () => {
                                     alt="Profile"
                                     className="w-8 h-8 rounded-full"
                                 />
-                                <span className="font-semibold">{currentUser.username}</span>
+                                <span className="font-semibold">{currentUser.name}</span>
                             </button>
 
                             {/* Dropdown Menu */}
@@ -170,7 +170,7 @@ const Main = () => {
                 < main className="p-6" >
                     {/* Greeting and Aura Points */}
                     < div className="mb-6" >
-                        <h2 className="text-2xl font-bold">Welcome back, [{currentUser.username}]!</h2>
+                        <h2 className="text-2xl font-bold">Welcome back, [{currentUser.name}]!</h2>
                         <div className="mt-2 text-gray-600">Current Aura Level: 3</div>
                         <div className="mt-2 bg-blue-100 rounded-lg">
                             <div

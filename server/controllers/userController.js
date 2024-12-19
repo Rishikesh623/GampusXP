@@ -85,6 +85,7 @@ const login = async (req, res) => {
             secure: false, // set to true in production with HTTPS
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000 // 7 days or 1 hour in milliseconds
         });
+        console.log(token);
 
         res.status(200).json({ name: user.name, reg_no: user.reg_no, email: user.email });
     } catch (error) {
@@ -142,7 +143,7 @@ const getProfile = async (req, res) => {
 // Profile edit API using PATCH
 const editProfile = async (req, res) => {
     try {
-        const _id = req.user.email; //get email from the authenticated user
+        const _id = req.user._id; //get email from the authenticated user
 
         //directly use req.body for update while ensuring to omit sensitive fields
         const updateData = req.body;
@@ -151,7 +152,7 @@ const editProfile = async (req, res) => {
 
         // update user profile details
         const updatedUser = await userModel.findOneAndUpdate(
-            { email: _id },
+            { _id: _id },
             { $set: updateData }, // Use req.body directly
             { new: true } // Return the updated document
         );

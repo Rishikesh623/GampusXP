@@ -36,7 +36,9 @@ const Profile = () => {
     const onSubmitEditForm = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.patch('http://localhost:5000/user/profile/edit', formData)
+            const res = await axios.patch('http://localhost:5000/user/profile/edit', formData, {
+                withCredentials: true, // Include cookies in the request
+              });
 
             const data = res.data;
 
@@ -230,7 +232,7 @@ const Profile = () => {
                                         value={formData.reg_no}
                                         onChange={onChangeEditForm}
                                         className="w-full p-2 border border-gray-300 rounded text-white"
-                                        placeholder={currentUser.username}
+                                        placeholder={currentUser.name}
                                     />
                                 </div>
                                 <div className="mb-4">
