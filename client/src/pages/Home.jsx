@@ -10,7 +10,7 @@ const Home = () => {
     const currentUser = useSelector((state) => state.user);
 
     useEffect(() => {
-        if (currentUser)
+        if (currentUser.reg_no)
             navigate('/main');
     }, []);
 
