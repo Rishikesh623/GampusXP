@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
@@ -9,7 +9,6 @@ const Profile = () => {
     const dispatch = useDispatch();
     const currentTheme = useSelector((state) => state.theme);
     const currentUser = useSelector((state) => state.user);
-    const token = currentUser.token;
 
     const [formData, setFormData] = useState({
         reg_no: currentUser.reg_no,
@@ -17,6 +16,16 @@ const Profile = () => {
         email: currentUser.email,
         bio: ""
     });
+
+    useEffect(() => {
+        setFormData({
+            reg_no: currentUser.reg_no,
+            name: currentUser.name,
+            email: currentUser.email,
+            // bio: formData.bio, // Retain bio from local state
+        });
+    }, [currentUser]);
+
 
     console.log(currentUser);
 
@@ -38,7 +47,7 @@ const Profile = () => {
         try {
             const res = await axios.patch('http://localhost:5000/user/profile/edit', formData, {
                 withCredentials: true, // Include cookies in the request
-              });
+            });
 
             const data = res.data;
 
@@ -47,13 +56,22 @@ const Profile = () => {
                 return;
             }
 
+            // console.log(data)
+
             dispatch(updateRegNo(data.reg_no));
             dispatch(updateEmail(data.email));
+
+            setFormData({
+                reg_no: data.reg_no,
+                name: data.name,
+                email: data.email,
+                bio: ""
+            });
         }
         catch (err) {
             console.log(err.response.data.message)
         }
-        // setIsModalOpen(false); // Close the modal after submission
+        setIsModalOpen(false); // Close the modal after submission
     };
 
     const onClickEditButton = () => {
@@ -231,8 +249,8 @@ const Profile = () => {
                                         name="reg_no"
                                         value={formData.reg_no}
                                         onChange={onChangeEditForm}
-                                        className="w-full p-2 border border-gray-300 rounded text-white"
-                                        placeholder={currentUser.name}
+                                        className="w-full p-2 border border-gray-300 rounded text-black bg-white"
+                                        placeholder={currentUser.reg_no}
                                     />
                                 </div>
                                 <div className="mb-4">
@@ -242,7 +260,7 @@ const Profile = () => {
                                         name="email"
                                         value={formData.email}
                                         onChange={onChangeEditForm}
-                                        className="w-full p-2 border border-gray-300 rounded text-white"
+                                        className="w-full p-2 border border-gray-300 rounded text-black bg-white"
                                         placeholder={currentUser.email}
                                     />
                                 </div>
@@ -254,7 +272,7 @@ const Profile = () => {
                                         value={formData.bio}
                                         onChange={onChangeEditForm}
                                         placeholder="Enter Bio"
-                                        className="w-full p-2 border border-gray-300 rounded text-white"
+                                        className="w-full p-2 border border-gray-300 rounded text-black bg-white"
                                     />
                                 </div>
                                 <div className="flex justify-end space-x-4">

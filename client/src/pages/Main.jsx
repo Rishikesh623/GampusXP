@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
-import axios from "axios";
 const Main = () => {
     const dispatch = useDispatch();
 
@@ -11,7 +10,7 @@ const Main = () => {
     const [profileT, setProfileT] = useState(false);
 
     useEffect(() => {
-        console.log(currentUser);
+        // console.log(currentUser);
     });
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));
@@ -157,8 +156,8 @@ const Main = () => {
                             {
                                 profileT && (<div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-lg shadow-lg">
                                     <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
-                                    <a href="#" className="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
+                                    <Link to="/settings" className="block px-4 py-2 hover:bg-gray-100">Settings</Link>
+                                    <Link to="/logout" className="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</Link>
                                 </div>)
                             }
 

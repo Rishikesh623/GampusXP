@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setUserProfile } from "../redux/user/userSlice";
 import axios from "axios"
-import Cookies from "js-cookie"
 
 const SignIn = () => {
     const [formData, setFormData] = useState({
