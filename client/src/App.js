@@ -38,7 +38,7 @@ const App = () => {
 
 
         if (data && data.reg_no) {
-          console.log(data);
+          // console.log(data);
           dispatch(setUserProfile({
             name: data.name,
             reg_no: data.reg_no,
@@ -47,7 +47,7 @@ const App = () => {
         }
 
       } catch (error) {
-        console.error('Error fetching profile:', error);
+          console.error('Error fetching profile:', error);
       }
     }
 

@@ -1,20 +1,24 @@
 const timetableModel = require("../models/timetableModel");
 
+
 const getTimetable = async (req, res) => {
     try {
         const timetable = await timetableModel.findOne({ creator_id: req.user._id });
         if (!timetable) 
             return res.status(404).json({ message: 'Timetable not found.' });
 
-        res.status(200).json(timetable);
+        res.status(200).json(timetable.days);
     } catch (error) {
-        res.status(500).json({ message: 'Serevr error', error: error.message });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
 
 const createTimetable = async (req, res) => {
     const { timetable } = req.body; // timetable contains entire weekly schedule
     try {
+        
         const newTimetable = new timetableModel({
             creator_id: req.user._id,
             days: timetable
@@ -49,7 +53,7 @@ const addSlot = async (req, res) => {
         }
 
         await timetable.save();
-        res.status(200).json({ message: 'Timetable entry added successfully.' });
+        res.status(200).json({ timetable:timetable.days,message: 'Timetable entry added successfully.' });
     } catch (error) {
         res.status(500).json({ message: 'Serevr error', error: error.message });
     }
@@ -81,7 +85,7 @@ const editSlot = async (req, res) => {
             slot.course = newCourse;
         await timetable.save();
 
-        res.status(200).json({ message: 'Timetable slot updated successfully.' });
+        res.status(200).json({ timetable:timetable.days, message: 'Timetable slot updated successfully.' });
     } catch (error) {
         res.status(500).json({ message: 'Serevr error', error: error.message });
     }
