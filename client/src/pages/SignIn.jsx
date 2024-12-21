@@ -9,6 +9,7 @@ const SignIn = () => {
     const [formData, setFormData] = useState({
         id: "",//id can be email or reg_no
         password: "",
+        rememberMe: true
     });
 
     const dispatch = useDispatch();
@@ -21,8 +22,9 @@ const SignIn = () => {
     const onChangeForm = (e) => {
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
-        })
+            [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value
+        });
+        
     }
 
     const onSubmitForm = async (e) => {
@@ -31,7 +33,7 @@ const SignIn = () => {
         try {
             const res = await axios.post('http://localhost:5000/user/login', formData, {
                 withCredentials: true, // Include cookies in the request
-              });
+            });
             const data = res.data;
 
             // console.log(data);
@@ -106,7 +108,11 @@ const SignIn = () => {
                                 placeholder="Password" />
                         </label>
                     </div>
-
+                    <label className="label cursor-pointer">
+                        <span className="label-text">Remember me</span>
+                        <input type="checkbox" name="rememberMe" onChange={onChangeForm}
+                                value={formData.rememberMe} className="toggle" defaultChecked />
+                    </label>
                     {error && <p className="text-red-500 text-center">{error}</p>}
                     {success && <p className="text-green-500 text-center">{success}</p>}
 
