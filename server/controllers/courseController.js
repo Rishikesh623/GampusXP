@@ -66,6 +66,23 @@ const editCourse = async (req, res) => {
     }
 };
 
+// course delete API - coordinator only
+const deleteCourse = async (req, res) => {
+    const { _id } = req.body;
+    try {
+        // delete course 
+        await courseModel.findByIdAndDelete(
+            { _id: _id },
+            { new: true } // Return the updated document
+        );
+
+        // return updated courses list
+        res.status(200).json({ message: 'Course deleted successfully' });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
 //add course - student
 const addCourse = async (req, res) => {
@@ -90,9 +107,9 @@ const addCourse = async (req, res) => {
 
         // Add course to user's semester courses
         if (!semesterCourses) {
-            user.courses.push({ semester, courses: [{ _id: course._id, course_code: course.course_code, professor_name: professor_name }] });
+            user.courses.push({ semester, courses: [{ _id: course._id, course_name: course.name, course_code: course.course_code, professor_name: professor_name }] });
         } else {
-            semesterCourses.courses.push({ _id: course._id, course_code: course.course_code, professor_name: professor_name });
+            semesterCourses.courses.push({ _id: course._id, course_name: course.name, course_code: course.course_code, professor_name: professor_name });
         }
 
         await user.save();
@@ -115,7 +132,11 @@ const removeCourse = async (req, res) => {
 
         // Remove course
         semesterCourses.courses.splice(courseIndex, 1);
-
+        
+        if (semesterCourses.courses.length === 0) {
+            user.courses = user.courses.filter(s => s.semester !== semester);
+        }
+        
 
         await user.save();
 
@@ -126,4 +147,4 @@ const removeCourse = async (req, res) => {
 };
 
 
-module.exports = { getCourse, createCourse, editCourse, addCourse, removeCourse };
+module.exports = { getCourse, createCourse, editCourse, deleteCourse, addCourse, removeCourse };

@@ -81,11 +81,13 @@ const CourseManagement = () => {
                 })
             }
             catch (err) {
-                console.log("Error in onSubmitEditForm in Course creation", err || err.message);
+                alert(err.response.data.message);
+                // console.log("Error in onSubmitEditForm in Course creation", err || err.message);
             }
         }
         else {
             try {
+
                 const res = await axios.post('http://localhost:5000/course/edit', addNewCourseForm, {
                     headers: {
                         coordinator: true
@@ -106,7 +108,8 @@ const CourseManagement = () => {
                 })
             }
             catch (err) {
-                console.log("Error in onSubmitEditForm in Course edit", err.response?.data?.message || err.message);
+                alert(err.response.data.message);
+                console.log("Error in onSubmitEditForm in Course edit", err);
             }
         }
     }
@@ -123,6 +126,7 @@ const CourseManagement = () => {
             fetchCourses();
         }
         catch (err) {
+            alert(err.response.data.message);
             console.log("Error in onRemoveCourses function", err.response.data.message)
         }
     }
@@ -154,6 +158,7 @@ const CourseManagement = () => {
                                 {semesterData.courses.map((course) => (
                                     <div key={course._id} className="mt-2">
                                         {/* Display course details */}
+                                        <h1 > {course.course_name}</h1>
                                         <p className="text-sm text-gray-600">Course Code: {course.course_code}</p>
                                         <p className="text-sm text-gray-500">Professor: {course.professor_name}</p>
 
@@ -195,12 +200,13 @@ const CourseManagement = () => {
 
                                 <form onSubmit={onSubmitEditForm}>
                                     <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Course Code</label>
+                                        <label className="block text-gray-600 font-semibold">Semester</label>
                                         <input
                                             type="text"
                                             name="semester"
                                             value={addNewCourseForm.semester}
                                             onChange={onChangeEditForm}
+                                            required
                                             className="w-full p-2 border border-gray-300 rounded text-black bg-white"
                                             placeholder={"Semester"}
                                         />
@@ -212,6 +218,7 @@ const CourseManagement = () => {
                                             name="course_code"
                                             value={addNewCourseForm.course_code}
                                             onChange={onChangeEditForm}
+                                            required
                                             className="w-full p-2 border border-gray-300 rounded text-black bg-white"
                                             placeholder={"Course Code"}
                                         />

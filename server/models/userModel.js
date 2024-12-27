@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
       courses: [
         {
           _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
+          course_name:String,
           course_code: String,
           professor_name: String
         }
