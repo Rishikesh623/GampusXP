@@ -18,43 +18,71 @@ const SignIn = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
+    const [isCoordinator, setIsCoordinator] = useState(false);
+
     const onChangeForm = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value
         });
-        
+
     }
 
     const onSubmitForm = async (e) => {
         e.preventDefault();
 
-        try {
-            const res = await axios.post('http://localhost:5000/user/login', formData, {
-                withCredentials: true, // Include cookies in the request
-            });
-            const data = res.data;
+        if (isCoordinator) {
+            try {
+                const res = await axios.post('http://localhost:5000/user/coordinator-login', formData);
+                const data = res.data;
 
-            // console.log(data);
+                if (res) {
+                    setSuccess("Login Successfull");
+                    dispatch(setUserProfile({
+                        reg_no: formData.id,
+                        name : "Co-ordinator",
+                        email : "coordinator@gmail.com"
+                    }));
 
-            if (res) {
-                setSuccess("Login Successfull");
-
-                dispatch(setUserProfile({
-                    name: data.name,
-                    reg_no: data.reg_no,
-                    email: data.email,
-                    password: data.password
-                }));
-
-                navigate("/main");
+                    navigate("/course-management");
+                }
+                else {
+                    setError(data.message || "Login Failed");
+                }
             }
-            else {
-                setError(data.message || "Login Failed");
+            catch (err) {
+                console.log("Error in isCoordinator block", err);
+                setError(err.response.data.message || "An error occurred")
             }
         }
-        catch (err) {
-            setError(err.response.data.message || "An error occurred")
+        else {
+            try {
+                const res = await axios.post('http://localhost:5000/user/login', formData, {
+                    withCredentials: true, // Include cookies in the request
+                });
+                const data = res.data;
+
+                // console.log(data);
+
+                if (res) {
+                    setSuccess("Login Successfull");
+
+                    dispatch(setUserProfile({
+                        name: data.name,
+                        reg_no: data.reg_no,
+                        email: data.email,
+                        password: data.password
+                    }));
+
+                    navigate("/main");
+                }
+                else {
+                    setError(data.message || "Login Failed");
+                }
+            }
+            catch (err) {
+                setError(err.response.data.message || "An error occurred")
+            }
         }
     }
 
@@ -78,7 +106,7 @@ const SignIn = () => {
                                     d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                             </svg>
                             <input type="text"
-                                className="grow"
+                                className="grow text-white"
                                 name="id"
                                 onChange={onChangeForm}
                                 value={formData.id}
@@ -100,7 +128,7 @@ const SignIn = () => {
                                     clipRule="evenodd" />
                             </svg>
                             <input type="password"
-                                className="grow"
+                                className="grow text-white"
                                 name="password"
                                 onChange={onChangeForm}
                                 value={formData.password}
@@ -110,13 +138,14 @@ const SignIn = () => {
                     <label className="label cursor-pointer">
                         <span className="label-text">Remember me</span>
                         <input type="checkbox" name="rememberMe" onChange={onChangeForm}
-                                value={formData.rememberMe} className="toggle" defaultChecked />
+                            value={formData.rememberMe} className="toggle" defaultChecked />
                     </label>
                     {error && <p className="text-red-500 text-center">{error}</p>}
                     {success && <p className="text-green-500 text-center">{success}</p>}
 
                     {/* Submit Button */}
-                    <button type="submit" className="btn btn-primary w-full mt-4">Sign In</button>
+                    <button type="submit" onClick={() => { setIsCoordinator(false) }} className="btn btn-primary w-full mt-4">Sign In</button>
+                    <button type="submit" onClick={() => { setIsCoordinator(true) }} className="btn btn-primary w-full mt-4">Co-ordinator Login</button>
                 </form>
 
                 <p className="text-center">

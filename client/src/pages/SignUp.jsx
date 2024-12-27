@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 // import { setUserProfile } from "../redux/user/userSlice";
 import axios from "axios"
-import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -12,6 +12,8 @@ const SignUp = () => {
         password: "",
         confirmPassword: ""
     })
+
+    const navigate = useNavigate();
 
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -49,8 +51,8 @@ const SignUp = () => {
                     password: formData.password, token: data.token
                 })
 
-                Cookies.set('token', data.token, { expires: 7 });
-
+                // Cookies.set('token', data.token, { expires: 7 });
+                navigate("/sigin");
                 // console.log(data.token)
             }
             else {
@@ -60,7 +62,7 @@ const SignUp = () => {
         }
         catch (err) {
             // console.error("Error:", err.message);
-            setError(err.message || "An error occurred");
+            setError(err.response.data.message || "An error occurred");
         }
     }
 

@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTimeTable } from '../redux/timetable/timetableSlice';
 
 
 const Timetable = () => {
+
+    const currentTimeTable = useSelector((state) => state.ctimetable);
+    const dispatch = useDispatch();
 
     const initialTimetable = [
         {
@@ -36,25 +41,28 @@ const Timetable = () => {
         }
     ];
 
-    const [timetable, setTimetable] = useState(null);
+    const [timetable, setTimetable] = useState(initialTimetable);
 
     useEffect(() => {
         async function fetchTimetable() {
             try {
                 const res = await axios.get('http://localhost:5000/timetable', {
-                    withCredentials: true, // Include cookies in the request
+                    withCredentials: true,
                 });
-
                 setTimetable(res.data);
-
+                dispatch(setTimeTable({ ctimetable: res.data }));
             } catch (error) {
                 console.error('Error fetching timetable:', error);
                 setTimetable(null);
             }
         }
-
         fetchTimetable();
+
     }, []);
+
+    useEffect(() => {
+        console.log("Store time table : ", currentTimeTable); // Logs updated state when it changes
+    }, [currentTimeTable]);
 
     const [day, setDay] = useState('');
     const [time, setTime] = useState('');
@@ -76,7 +84,10 @@ const Timetable = () => {
                 return parseTime(a.split(" - ")[0]) - parseTime(b.split(" - ")[0]);
             });
             setTimeSlots(temp);
+            dispatch(setTimeTable(timetable));
         }
+
+        // console.log(timetable);
     }, [timetable])
 
 
@@ -91,6 +102,7 @@ const Timetable = () => {
             });
 
             setTimetable(initialTimetable);
+            dispatch(setTimeTable(timetable));
 
             alert(res.data.message);
         } catch (error) {
@@ -117,7 +129,7 @@ const Timetable = () => {
 
     //for edit or add slot
     const handleSave = async (e) => {
-       
+
         try {
 
             if (slotId != '') {
@@ -127,6 +139,7 @@ const Timetable = () => {
                     withCredentials: true, // Include cookies in the request
                 });
                 setTimetable(res.data.timetable);
+                dispatch(setTimeTable({ timeTable: res.data.timetable }));
                 alert(res.data.message);
             } else {
                 const res = await axios.patch('http://localhost:5000/timetable/add-slot', {
@@ -135,6 +148,7 @@ const Timetable = () => {
                     withCredentials: true, // Include cookies in the request
                 });
                 setTimetable(res.data.timetable);
+                dispatch(setTimeTable(initialTimetable));
                 alert(res.data.message);
             }
 
@@ -219,13 +233,13 @@ const Timetable = () => {
                         </table>
                     </div>
                     {
-                        !editMode && 
+                        !editMode &&
 
-                    <label className="btn btn-outline btn-primary" onClick={() => setEditMode(true)}>Edit mode</label>
+                        <label className="btn btn-outline btn-primary" onClick={() => setEditMode(true)}>Edit mode</label>
                     }
                     {editMode &&
                         <>
-                        <label className="btn btn-outline btn-primary" onClick={() => setEditMode(false)}>Back to View mode</label>
+                            <label className="btn btn-outline btn-primary" onClick={() => setEditMode(false)}>Back to View mode</label>
                             <label htmlFor="my_modal_6" className="btn btn-outline btn-primary">Add slot</label>
                             <input type="checkbox" id="my_modal_6" className="modal-toggle" />
                             <div className="modal" role="dialog">

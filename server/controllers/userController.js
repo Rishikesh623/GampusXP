@@ -85,7 +85,7 @@ const login = async (req, res) => {
             secure: false, // set to true in production with HTTPS
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000 // 7 days or 1 hour in milliseconds
         });
-        console.log(token);
+        // console.log(token);
 
         res.status(200).json({ name: user.name, reg_no: user.reg_no, email: user.email });
     } catch (error) {
@@ -107,15 +107,19 @@ const coordinatorLogin = async (req, res) => {
         const coordinatorId = process.env.COORDINATOR_ID;
         const coordinatorPassword = process.env.COORDINATOR_PASSWORD;
 
-        if (coordinatorId !== id && coordinatorPassword !== id) {
+        // console.log(id);
+        // console.log(password);
+
+        if (coordinatorId !== id || coordinatorPassword !== password) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        req.session.isCoordinator = true;  // Store session value
+        // req.session.isCoordinator = true;  // Store session value
 
         res.status(200).json({ message: 'Login successful' });
 
     } catch (error) {
+        console.error('Error in coordinatorLogin:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

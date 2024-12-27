@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
+import { persistor } from '../redux/store';
+import { logout } from '../redux/user/userSlice';
 const Main = () => {
     const dispatch = useDispatch();
 
@@ -18,6 +20,14 @@ const Main = () => {
 
     const profileToggle = () => {
         setProfileT(!profileT);
+    }
+
+    const logoutHandle = () => {
+        // Clear Redux state
+        dispatch(logout());
+
+        // Purge persisted data
+        persistor.purge();
     }
 
     return (
@@ -157,7 +167,7 @@ const Main = () => {
                                 profileT && (<div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-lg shadow-lg">
                                     <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
                                     <Link to="/settings" className="block px-4 py-2 hover:bg-gray-100">Settings</Link>
-                                    <Link to="/logout" className="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</Link>
+                                    <Link to="/signin" onClick={logoutHandle} className="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</Link>
                                 </div>)
                             }
 
