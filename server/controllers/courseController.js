@@ -2,6 +2,20 @@ const courseModel = require('../models/courseModel');
 const userModel = require('../models/userModel');
 
 
+// get course API - coordinator only
+const getCourse = async (req, res) => {
+    try {
+        
+        //fetch all courses 
+        let courses = await courseModel.find();
+        
+        res.status(201).json(courses);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 // create course API - coordinator only
 const createCourse = async (req, res) => {
     try {
@@ -30,9 +44,9 @@ const createCourse = async (req, res) => {
 
 // course detailsedit API - coordinator only
 const editCourse = async (req, res) => {
-    const { course_code, update_course_data } = req.body;
+    const { course_code, ...update_course_data } = req.body;
     try {
-
+        //console.log( update_course_data);
         // update course details
         const updatedCourse = await courseModel.findOneAndUpdate(
             { course_code: course_code },
@@ -108,4 +122,4 @@ const removeCourse = async (req, res) => {
 };
 
 
-module.exports = { createCourse, editCourse, addCourse, removeCourse };
+module.exports = { getCourse,createCourse, editCourse, addCourse, removeCourse };

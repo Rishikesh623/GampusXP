@@ -27,7 +27,8 @@ const authUser = (req, res, next) => {
 };
 
 const authCoordinator = (req, res, next) => {
-  if (req.session.isCoordinator) {
+  
+  if (req.headers.coordinator) {
     return next();  // Proceed to the requested route
   } else {
     res.status(403).send({ message: 'Forbidden: You are not authorized.', error: true });
