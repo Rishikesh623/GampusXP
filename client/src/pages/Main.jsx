@@ -43,7 +43,7 @@ const Main = () => {
                             <Link to="/">Dashboard</Link>
                         </li>
                         <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                            <Link to="/course-management">Course Management</Link>
+                            <Link to="/course-management-user">Course Management</Link>
                         </li>
                         <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
                             <Link to="/assignment-tracking">Assignment Tracking</Link>

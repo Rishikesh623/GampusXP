@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { useNavigate, BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Main from './pages/Main';
-import CourseManagement from './pages/CourseManagement';
+import CourseManagementUser from './pages/CourseManagementUser';
+import CourseManagementCoordinator from './pages/CourseManagementCoordinator';
 import AssignmentTracking from './pages/AssignmentTracking';
 import Leaderboards from './pages/Leaderboards';
 import RewardsAndChallenges from './pages/RewardsChallenges';
@@ -35,19 +36,17 @@ const App = () => {
           return;
         }
 
-
-
         if (data && data.reg_no) {
           // console.log(data);
           dispatch(setUserProfile({
             name: data.name,
             reg_no: data.reg_no,
             email: data.email
-        }));
+          }));
         }
 
       } catch (error) {
-          console.error('Error fetching profile:', error);
+        console.error('Error fetching profile:', error);
       }
     }
 
@@ -65,7 +64,8 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/main" element={<Main />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/course-management" element={<CourseManagement />} />
+        <Route path="/course-management-user" element={<CourseManagementUser />} />
+        <Route path="/course-management-coordinator" element={<CourseManagementCoordinator />} />
         <Route path="/assignment-tracking" element={<AssignmentTracking />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
         <Route path="/rewards-challenges" element={<RewardsAndChallenges />} />

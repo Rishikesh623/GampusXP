@@ -1,4 +1,3 @@
-
 const express = require('express');
 const {authCoordinator, authUser} = require('../middlewares/authMiddleware'); 
 const {getCourse,createCourse,editCourse, addCourse, removeCourse} = require('../controllers/courseController');

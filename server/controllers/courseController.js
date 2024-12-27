@@ -5,10 +5,10 @@ const userModel = require('../models/userModel');
 // get course API - coordinator only
 const getCourse = async (req, res) => {
     try {
-        
+
         //fetch all courses 
         let courses = await courseModel.find();
-        
+
         res.status(201).json(courses);
 
     } catch (error) {
@@ -69,11 +69,15 @@ const editCourse = async (req, res) => {
 
 //add course - student
 const addCourse = async (req, res) => {
-    const { course_code, semester,professor_name} = req.body;
+    const { semester, course_code, professor_name } = req.body;
+    // console.log(req.body);
 
     try {
         const course = await courseModel.findOne({ course_code });
-        if (!course) 
+
+        // console.log(course);
+
+        if (!course)
             return res.status(404).json({ message: 'Course not found' });
 
         // Check if already enrolled
@@ -86,9 +90,9 @@ const addCourse = async (req, res) => {
 
         // Add course to user's semester courses
         if (!semesterCourses) {
-            user.courses.push({ semester, courses: [{ _id: course._id, course_code: course.course_code, professor_name:professor_name }] });
+            user.courses.push({ semester, courses: [{ _id: course._id, course_code: course.course_code, professor_name: professor_name }] });
         } else {
-            semesterCourses.courses.push({ id: course._id, code: course.course_code, professor_name: professor_name });
+            semesterCourses.courses.push({ _id: course._id, course_code: course.course_code, professor_name: professor_name });
         }
 
         await user.save();
@@ -106,20 +110,20 @@ const removeCourse = async (req, res) => {
     try {
         const user = await userModel.findById(req.user._id);
         const semesterCourses = user.courses.find(s => s.semester === semester);
-    
+
         const courseIndex = semesterCourses.courses.findIndex(c => c.course_code === course_code);
 
         // Remove course
         semesterCourses.courses.splice(courseIndex, 1);
 
-        
+
         await user.save();
-      
-        res.status(200).json({message:"Course removed successfully"});
+
+        res.status(200).json({ message: "Course removed successfully" });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
 
-module.exports = { getCourse,createCourse, editCourse, addCourse, removeCourse };
+module.exports = { getCourse, createCourse, editCourse, addCourse, removeCourse };

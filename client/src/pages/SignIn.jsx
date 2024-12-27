@@ -44,7 +44,7 @@ const SignIn = () => {
                         email : "coordinator@gmail.com"
                     }));
 
-                    navigate("/course-management");
+                    navigate("/course-management-coordinator");
                 }
                 else {
                     setError(data.message || "Login Failed");
