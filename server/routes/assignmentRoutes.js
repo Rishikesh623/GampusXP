@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/',authUser,getAssignments);
 router.post('/add',authUser,addAssignment);
 router.patch('/edit',authUser,editAssignment);
-router.delete('/remove',authUser,removeAssignment);
+router.delete('/remove/:assignment_id',authUser,removeAssignment);
 
 
 module.exports = router;

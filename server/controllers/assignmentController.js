@@ -31,7 +31,7 @@ const addAssignment = async (req, res) => {
             assignment.assignments.push({ title, description, due_date });
             await assignment.save();
 
-            return res.status(201).json({ message: 'Assignment added successfully', assignment });
+            return res.status(201).json({ message: 'Assignment added successfully' });
         }
 
         const newAssignmentList = new assignmentModel({
@@ -40,7 +40,7 @@ const addAssignment = async (req, res) => {
         });
         await newAssignmentList.save();
 
-        return res.status(201).json({ message: 'Assignment added successfully', newAssignmentList });
+        return res.status(201).json({ message: 'Assignment added successfully'});
 
     } catch (error) {
       res.status(500).json({ message: 'Server error', error: error.message });
@@ -82,20 +82,23 @@ const editAssignment = async (req, res) => {
 
 const removeAssignment = async (req, res) => {
     try {
+       
         const creator_id = req.user._id;
-        const { assignment_id } = req.body;
-
+        const { assignment_id } = req.params;
+        
         //find the assignment and remove it
         const assignment = await assignmentModel.findOne({ creator_id });
-
+        
         const assignmentIndex = assignment.assignments.findIndex(
             (item) => item._id.toString() === assignment_id
         );
-
+        
         //remove the assignment
         assignment.assignments.splice(assignmentIndex, 1);
-
+      
+        
         await assignment.save();
+        
 
         return res.status(200).json({ message: 'Assignment removed successfully', assignment });
 
