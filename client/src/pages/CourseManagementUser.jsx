@@ -8,7 +8,7 @@ import axios from 'axios';
 const CourseManagement = () => {
     const [courses, setCourses] = useState([]);
     const [showAddCourseForm, setShowAddCourseForm] = useState(false);
-    const [editCourseForm, setEditCourseForm] = useState(false);
+    // const [editCourseForm, setEditCourseForm] = useState(false);
 
     const [addNewCourseForm, setAddNewCourseForm] = useState({
         semester: "",
@@ -43,15 +43,15 @@ const CourseManagement = () => {
         setShowAddCourseForm(!showAddCourseForm);
     }
 
-    const onEditCourseButton = (course) => {
-        setShowAddCourseForm(!showAddCourseForm);
-        setEditCourseForm(true);
+    // const onEditCourseButton = (course) => {
+    //     setShowAddCourseForm(!showAddCourseForm);
+    //     setEditCourseForm(true);
 
-        setAddNewCourseForm(({
-            course_code: course.course_code,
-            professor_name: course.professor_name
-        }));
-    }
+    //     setAddNewCourseForm(({
+    //         course_code: course.course_code,
+    //         professor_name: course.professor_name
+    //     }));
+    // }
 
     const onChangeEditForm = (e) => {
         setAddNewCourseForm({
@@ -62,55 +62,26 @@ const CourseManagement = () => {
     const onSubmitEditForm = async (e) => {
         e.preventDefault();
 
-        if (!editCourseForm) {
-            try {
-                const res = await axios.patch('http://localhost:5000/course/add', addNewCourseForm, {
-                    withCredentials: true
-                })
+        try {
+            const res = await axios.patch('http://localhost:5000/course/add', addNewCourseForm, {
+                withCredentials: true
+            })
 
-                const data = res.data;
+            const data = res.data;
 
-                console.log("Course created successfully", data.message);
+            console.log("Course created successfully", data.message);
 
-                fetchCourses();
-                onAddNewCourseHandler();
-                setAddNewCourseForm({
-                    semester: "",
-                    course_code: "",
-                    professor_name: ""
-                })
-            }
-            catch (err) {
-                alert(err.response.data.message);
-                // console.log("Error in onSubmitEditForm in Course creation", err || err.message);
-            }
+            fetchCourses();
+            onAddNewCourseHandler();
+            setAddNewCourseForm({
+                semester: "",
+                course_code: "",
+                professor_name: ""
+            })
         }
-        else {
-            try {
-
-                const res = await axios.post('http://localhost:5000/course/edit', addNewCourseForm, {
-                    headers: {
-                        coordinator: true
-                    }
-                })
-
-                const data = res.data;
-
-                console.log("Course edited successfully", data.message);
-
-                fetchCourses();
-                setShowAddCourseForm(!showAddCourseForm);
-                setEditCourseForm(false);
-                setAddNewCourseForm({
-                    semester: "",
-                    course_code: "",
-                    professor_name: ""
-                })
-            }
-            catch (err) {
-                alert(err.response.data.message);
-                console.log("Error in onSubmitEditForm in Course edit", err);
-            }
+        catch (err) {
+            alert(err.response.data.message);
+            // console.log("Error in onSubmitEditForm in Course creation", err || err.message);
         }
     }
 
@@ -161,14 +132,6 @@ const CourseManagement = () => {
                                         <h1 > {course.course_name}</h1>
                                         <p className="text-sm text-gray-600">Course Code: {course.course_code}</p>
                                         <p className="text-sm text-gray-500">Professor: {course.professor_name}</p>
-
-                                        {/* Button to edit the course */}
-                                        <button
-                                            onClick={() => onEditCourseButton(course)}
-                                            className="mt-2 mx-1  px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
-                                        >
-                                            Edit Course
-                                        </button>
                                         <button
                                             onClick={() => onRemoveCourse(course, semesterData.semester)}
                                             className="mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"

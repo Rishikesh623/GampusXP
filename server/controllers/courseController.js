@@ -71,10 +71,7 @@ const deleteCourse = async (req, res) => {
     const { _id } = req.body;
     try {
         // delete course 
-        await courseModel.findByIdAndDelete(
-            { _id: _id },
-            { new: true } // Return the updated document
-        );
+        await courseModel.findByIdAndDelete(_id);
 
         // return updated courses list
         res.status(200).json({ message: 'Course deleted successfully' });
@@ -132,11 +129,11 @@ const removeCourse = async (req, res) => {
 
         // Remove course
         semesterCourses.courses.splice(courseIndex, 1);
-        
+
         if (semesterCourses.courses.length === 0) {
             user.courses = user.courses.filter(s => s.semester !== semester);
         }
-        
+
 
         await user.save();
 

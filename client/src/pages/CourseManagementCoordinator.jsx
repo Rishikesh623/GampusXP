@@ -34,6 +34,8 @@ const CourseManagement = () => {
         fetchCourses();
     }, []);
 
+    // console.log(courses);
+
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
@@ -115,6 +117,24 @@ const CourseManagement = () => {
         }
     }
 
+    const onRemoveCourse = async (id) => {
+        try {
+            const res = await axios.delete('http://localhost:5000/course/delete', {
+                headers: { coordinator: true },
+                data: { _id: id }
+            });
+
+            const data = res.data;
+
+            console.log(data);
+            fetchCourses();
+        }
+        catch (err) {
+            alert(err.response.data.message);
+            console.log("Error in onRemoveCourses function", err.response.data.message)
+        }
+    }
+
     const logoutHandler = () => {
         // Clear Redux state
         dispatch(logout());
@@ -144,6 +164,12 @@ const CourseManagement = () => {
                                 <p className="text-sm text-gray-500">Course Code: {course.course_code}</p>
 
                                 <button onClick={() => onEditCourseButton(course)} className="mt-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">Edit Course</button>
+                                <button
+                                    onClick={() => onRemoveCourse(course._id)}
+                                    className="mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
+                                >
+                                    Remove Course
+                                </button>
                             </div>
                         ))
                     ) : (
