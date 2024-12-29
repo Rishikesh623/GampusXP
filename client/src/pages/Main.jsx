@@ -4,16 +4,45 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
 import { persistor } from '../redux/store';
 import { logout } from '../redux/user/userSlice';
+import axios from 'axios';
+import { clearAssignment, setCAssignment } from '../redux/assignment/assignmentSlice';
 const Main = () => {
     const dispatch = useDispatch();
+
+    const [assignments, setAssignments] = useState([]);
 
     const currentTheme = useSelector((state) => state.theme);
     const currentUser = useSelector((state) => state.user);
     const [profileT, setProfileT] = useState(false);
 
     useEffect(() => {
-        // console.log(currentUser);
-    });
+        const fetchAssignments = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/assignment', {
+                    withCredentials: true,
+                });
+                const fetchedAssignments = res.data.assignments || [];
+                setAssignments(fetchedAssignments);
+                dispatch(setCAssignment(fetchedAssignments)); // Dispatch after setting state
+            } catch (error) {
+                if (error.response?.status === 404) {
+                    setAssignments([]);
+                    dispatch(setCAssignment([])); // Clear Redux state if no assignments found
+                } else {
+                    console.error('Error fetching assignments:', error.response?.message);
+                }
+            }
+        };
+
+        fetchAssignments();
+        dueAssignmentHandler(); // Call the function
+    }, []);
+
+
+    const cassignment = useSelector((state) => state.cassignment.cassignment)
+
+    // console.log(assignments)
+
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));
     }
@@ -25,10 +54,29 @@ const Main = () => {
     const logoutHandle = () => {
         // Clear Redux state
         dispatch(logout());
+        dispatch(clearAssignment());
 
         // Purge persisted data
         persistor.purge();
+
+        // console.log(cassignment)
     }
+
+    const dueAssignmentHandler = () => {
+        let cnt = 0;
+
+        // Iterate over the assignments and count those with "pending" status
+        cassignment.forEach((assignment) => {
+            if (assignment.status === "Pending") {
+                cnt++;
+            }
+        });
+
+        // console.log(cnt);
+
+        return cnt; // Return the count of pending assignments
+    };
+
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -195,7 +243,7 @@ const Main = () => {
                     < div className="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3" >
                         <div className="p-4 bg-white border rounded-lg shadow-sm">
                             <h3 className="text-lg font-semibold">Upcoming Assignments</h3>
-                            <p>3 assignments due this week</p>
+                            <p>{dueAssignmentHandler()} assignments due this week</p>
                         </div>
                         <div className="p-4 bg-white border rounded-lg shadow-sm">
                             <h3 className="text-lg font-semibold">Challenges in Progress</h3>
