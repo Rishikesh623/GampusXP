@@ -8,32 +8,36 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CourseManagement = () => {
-    const [courses, setCourses] = useState([]);
-    const [showAddCourseForm, setShowAddCourseForm] = useState(false);
-    const [editCourseForm, setEditCourseForm] = useState(false);
+    const [challenges, setChallenges] = useState([]);
+    const [showAddChallengeForm, setShowAddChallengeForm] = useState(false);
+    const [editChallengeForm, setEditChallengeForm] = useState(false);
 
-    const [addNewCourseForm, setAddNewCourseForm] = useState({
-        name: "",
+    const [addNewChallengeForm, setAddNewChallengeForm] = useState({
+        challenge_id: "",
+        title: "",
         description: "",
-        credits: "",
-        coures_no: ""
+        aura_points: "",
+        end_date: ""
     });
 
-    const fetchCourses = async () => {
+    const fetchChallenges = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/course/', {
+            const res = await axios.get('http://localhost:5000/challenges/', {
                 headers: {
                     coordinator: "true" // Include the required header
-                }
+                },
+                withCredentials: true
             });
-            setCourses(res.data); // Assuming the API response is an array of courses
+
+            // console.log(res.data.challenges);
+            setChallenges(res.data.challenges); // Assuming the API response is an array of courses
         } catch (err) {
             console.error("Error fetching courses:", err.response?.data?.message || err.message);
         }
     };
 
     useEffect(() => {
-        fetchCourses();
+        fetchChallenges();
     }, []);
 
     const currentTheme = useSelector((state) => state.theme);
@@ -42,40 +46,34 @@ const CourseManagement = () => {
 
     const navigate = useNavigate();
 
-    const onAddNewCourseHandler = () => {
-        setShowAddCourseForm(!showAddCourseForm);
-        setEditCourseForm(false);
-        setAddNewCourseForm({
-            name: "",
-            description: "",
-            credits: "",
-            coures_no: ""
-        });
+    const onAddNewChallengeHandler = () => {
+        setShowAddChallengeForm(!showAddChallengeForm);
     }
 
-    const onEditCourseButton = (course) => {
-        setShowAddCourseForm(!showAddCourseForm);
-        setEditCourseForm(true);
-        setAddNewCourseForm({
-            name: course.name,
-            description: course.description,
-            credits: course.credits,
-            course_code: course.course_code,
+    const onEditChallengeButton = (challenges) => {
+        setShowAddChallengeForm(!showAddChallengeForm);
+        setEditChallengeForm(true);
+        setAddNewChallengeForm({
+            challenge_id: challenges._id,
+            title: challenges.title,
+            description: challenges.description,
+            aura_points: challenges.aura_points,
+            end_date: (challenges.end_date)
         });
     }
 
     const onChangeEditForm = (e) => {
-        setAddNewCourseForm({
-            ...addNewCourseForm, [e.target.name]: e.target.value
+        setAddNewChallengeForm({
+            ...addNewChallengeForm, [e.target.name]: e.target.value
         })
     }
 
     const onSubmitEditForm = async (e) => {
         e.preventDefault();
 
-        if (!editCourseForm) {
+        if (!editChallengeForm) {
             try {
-                const res = await axios.post('http://localhost:5000/course/create', addNewCourseForm, {
+                const res = await axios.post('http://localhost:5000/challenges/create', addNewChallengeForm, {
                     headers: {
                         coordinator: true
                     }
@@ -85,9 +83,9 @@ const CourseManagement = () => {
 
                 console.log("Course created successfully", data.message);
 
-                fetchCourses();
-                onAddNewCourseHandler();
-                setAddNewCourseForm({
+                fetchChallenges();
+                onAddNewChallengeHandler();
+                setAddNewChallengeForm({
                     name: "",
                     description: "",
                     credits: "",
@@ -100,7 +98,7 @@ const CourseManagement = () => {
         }
         else {
             try {
-                const res = await axios.post('http://localhost:5000/course/edit', addNewCourseForm, {
+                const res = await axios.patch('http://localhost:5000/challenges/edit', addNewChallengeForm, {
                     headers: {
                         coordinator: true
                     }
@@ -110,14 +108,14 @@ const CourseManagement = () => {
 
                 console.log("Course edited successfully", data.message);
 
-                fetchCourses();
-                setShowAddCourseForm(!showAddCourseForm);
-                setEditCourseForm(false);
-                setAddNewCourseForm({
-                    name: "",
+                fetchChallenges();
+                setShowAddChallengeForm(!showAddChallengeForm);
+                setEditChallengeForm(false);
+                setAddNewChallengeForm({
+                    title: "",
                     description: "",
-                    credits: "",
-                    coures_no: ""
+                    aura_points: "",
+                    end_date: ""
                 })
             }
             catch (err) {
@@ -128,7 +126,7 @@ const CourseManagement = () => {
 
     const onRemoveCourse = async (id) => {
         try {
-            const res = await axios.delete('http://localhost:5000/course/delete', {
+            const res = await axios.delete('http://localhost:5000/challenges/delete', {
                 headers: { coordinator: true },
                 data: { _id: id }
             });
@@ -136,7 +134,7 @@ const CourseManagement = () => {
             const data = res.data;
 
             console.log(data);
-            fetchCourses();
+            fetchChallenges();
         }
         catch (err) {
             alert(err.response.data.message);
@@ -268,84 +266,84 @@ const CourseManagement = () => {
                 </header >
             </div>
             <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Course Management</h1>
-                <button onClick={onAddNewCourseHandler} className="px-4 py-2 bg-blue-600 text-white rounded-lg mb-6">Add New Course</button>
+                <h1 className="text-2xl font-bold mb-4">Challenges Management</h1>
+                <button onClick={onAddNewChallengeHandler} className="px-4 py-2 bg-blue-600 text-white rounded-lg mb-6">Create New Challenge</button>
 
                 <div className="space-y-4">
-                    {courses.length > 0 ? (
-                        courses.map((course) => (
+                    {challenges.length > 0 ? (
+                        challenges.map((challenge) => (
                             <div
-                                key={course.course_code}
+                                key={challenge._id}
                                 className="p-4 border rounded-lg shadow-sm bg-gray-50"
                             >
-                                <h2 className="text-lg font-semibold">{course.name}</h2>
-                                <p className="text-sm text-gray-600">{course.description}</p>
-                                <p className="text-sm text-gray-500">Credits: {course.credits}</p>
-                                <p className="text-sm text-gray-500">Course Code: {course.course_code}</p>
+                                <h2 className="text-lg font-semibold">{challenge.title}</h2>
+                                <p className="text-sm text-gray-600">{challenge.description}</p>
+                                <p className="text-sm text-gray-500">Aura Points: {challenge.aura_points}</p>
+                                <p className="text-sm text-gray-500">Due Date: {new Date(challenge.end_date).toLocaleDateString()}</p>
 
-                                <button onClick={() => onEditCourseButton(course)} className="mt-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">Edit Course</button>
+                                <button onClick={() => onEditChallengeButton(challenge)} className="mt-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">Edit Challenge</button>
                                 <button
-                                    onClick={() => onRemoveCourse(course._id)}
+                                    onClick={() => onRemoveCourse(challenge._id)}
                                     className="mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
                                 >
-                                    Remove Course
+                                    Remove Challenge
                                 </button>
                             </div>
                         ))
                     ) : (
-                        <p className="text-gray-500">No courses available.</p>
+                        <p className="text-gray-500">No challenges available.</p>
                     )}
                 </div>
             </div>
             <div>
                 {
-                    showAddCourseForm && (
+                    showAddChallengeForm && (
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
                             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
                                 <h3 className="text-xl font-semibold mb-4">Edit Profile</h3>
 
                                 <form onSubmit={onSubmitEditForm}>
                                     <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Course Name</label>
+                                        <label className="block text-gray-600 font-semibold">Challenge Title</label>
                                         <input
                                             type="text"
-                                            name="name"
-                                            value={addNewCourseForm.name}
+                                            name="title"
+                                            value={addNewChallengeForm.title}
                                             onChange={onChangeEditForm}
                                             className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                            placeholder={"Course Name"}
+                                            placeholder={"Challenge Title"}
                                         />
                                     </div>
                                     <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Course Description</label>
+                                        <label className="block text-gray-600 font-semibold">Challenge Description</label>
                                         <input
                                             type="text"
                                             name="description"
-                                            value={addNewCourseForm.description}
+                                            value={addNewChallengeForm.description}
                                             onChange={onChangeEditForm}
                                             className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                            placeholder={"Course Description"}
+                                            placeholder={"Challenge Description"}
                                         />
                                     </div>
                                     <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Course Credits</label>
+                                        <label className="block text-gray-600 font-semibold">Challenge Aura Points</label>
                                         <input
                                             type="text"
-                                            name="credits"
-                                            value={addNewCourseForm.credits}
+                                            name="aura_points"
+                                            value={addNewChallengeForm.aura_points}
                                             onChange={onChangeEditForm}
-                                            placeholder="Course Credits"
+                                            placeholder="Challenge Aura Points"
                                             className="w-full p-2 border border-gray-300 rounded text-black bg-white"
                                         />
                                     </div>
                                     <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Course Code</label>
+                                        <label className="block text-gray-600 font-semibold">Challenge End Date</label>
                                         <input
-                                            type="text"
-                                            name="course_code"
-                                            value={addNewCourseForm.course_code}
+                                            type="date"
+                                            name="end_date"
+                                            value={addNewChallengeForm.end_date}
                                             onChange={onChangeEditForm}
-                                            placeholder="Course_Code"
+                                            placeholder="Challenge End Date"
                                             className="w-full p-2 border border-gray-300 rounded text-black bg-white"
                                         />
                                     </div>
@@ -353,7 +351,7 @@ const CourseManagement = () => {
                                         <button
                                             type="button"
                                             className="px-4 py-2 bg-gray-200 text-gray-600 rounded"
-                                            onClick={onAddNewCourseHandler}
+                                            onClick={onAddNewChallengeHandler}
                                         >
                                             Cancel
                                         </button>

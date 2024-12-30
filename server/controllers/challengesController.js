@@ -21,7 +21,9 @@ updateChallenge = async (req, res) => {
     try {
         const { challenge_id, title, description, aura_points, end_date } = req.body;
 
-        const challenge = await challengesModel.findById({_id:challenge_id});
+        // console.log(req.body)
+
+        const challenge = await challengesModel.findById({ _id: challenge_id });
 
         if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
@@ -49,10 +51,10 @@ updateChallenge = async (req, res) => {
 // propose Challenge API
 proposeChallenge = async (req, res) => {
     try {
-        const { title, description, aura_points, end_date, invitedUsers,isPublic } = req.body;
-        const creator_id = req.user._id;  
+        const { title, description, aura_points, end_date, invitedUsers, isPublic } = req.body;
+        const creator_id = req.user._id;
 
-        const newChallenge = new challengesModel({title, description,creator_id,aura_points,end_date,invitedUsers,isPublic});
+        const newChallenge = new challengesModel({ title, description, creator_id, aura_points, end_date, invitedUsers, isPublic });
 
         await newChallenge.save();
 
@@ -66,19 +68,19 @@ proposeChallenge = async (req, res) => {
 // invite others to challenge API 
 inviteOthers = async (req, res) => {
     try {
-        const { challenge_id,invitee_id} = req.body;
+        const { challenge_id, invitee_id } = req.body;
 
-        const challenge = await challengesModel.findById( { _id : challenge_id });
+        const challenge = await challengesModel.findById({ _id: challenge_id });
 
-        if (!challenge) 
+        if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
 
-        
+
         const isUserInvited = challenge.invitedUsers.some(invite => invite.invitee_id.toString() === invitee_id);
-        if (isUserInvited) 
+        if (isUserInvited)
             return res.status(400).json({ message: 'User is already invited' });
-        
-        challenge.invitedUsers.push({ invitee_id: invitee_id});
+
+        challenge.invitedUsers.push({ invitee_id: invitee_id });
 
         await challenge.save();
 
@@ -92,12 +94,12 @@ inviteOthers = async (req, res) => {
 acceptChallenge = async (req, res) => {
     try {
         const { challenge_id } = req.body;
-        
-        const challenge = await challengesModel.findById({_id:challenge_id});
-        if (!challenge) 
+
+        const challenge = await challengesModel.findById({ _id: challenge_id });
+        if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
 
-        if(!challenge.isPublic){
+        if (!challenge.isPublic) {
             const invitedUser = challenge.invitedUsers.find(user => (user.invitee_id).toString() === req.user._id);
             if (!invitedUser) {
                 return res.status(400).json({ message: 'You have already accepted this challenge or were not invited' });
@@ -119,15 +121,15 @@ acceptChallenge = async (req, res) => {
 
 getChallenges = async (req, res) => {
     try {
-        
+
         const challenges = await challengesModel.find({
             $or: [
-                { 'participants.user': req.user._id } ,
-                {'isPublic':true}  
+                { 'participants.user': req.user._id },
+                { 'isPublic': true }
             ]
         });
 
-        res.status(200).json({message:"All challenges returned.", challenges });
+        res.status(200).json({ message: "All challenges returned.", challenges });
 
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -138,12 +140,12 @@ markComplete = async (req, res) => {
     try {
         const { challenge_id } = req.body;
 
-        const challenge = await challengesModel.findById({_id:challenge_id});
+        const challenge = await challengesModel.findById({ _id: challenge_id });
 
-        if (!challenge) 
+        if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
 
-        const participant = challenge.participants.find( (p )=>{ return ((p.user).toString() === req.user._id);});
+        const participant = challenge.participants.find((p) => { return ((p.user).toString() === req.user._id); });
 
         if (!participant || participant.status !== 'in-progress') {
             return res.status(400).json({ message: 'Challenge not in progress' });
@@ -153,12 +155,12 @@ markComplete = async (req, res) => {
         participant.status = 'completed';
         participant.completionDate = new Date();
 
-        
-        // add to achievements
-        const achievement = await achievementModel.findOne({ user: req.user._id }) 
-                                || new achievementModel({ user: req.user._id, achievements: [] });
 
-        const description =`Completed the ${challenge.title} challenge.`;
+        // add to achievements
+        const achievement = await achievementModel.findOne({ user: req.user._id })
+            || new achievementModel({ user: req.user._id, achievements: [] });
+
+        const description = `Completed the ${challenge.title} challenge.`;
         achievement.achievements.push({
             challenge_id: challenge._id,
             description: description,
@@ -168,7 +170,7 @@ markComplete = async (req, res) => {
 
         await achievement.save();
         await challenge.save();
-        
+
         res.status(200).json({ message: 'Challenge marked as completed and added to achievements' });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -179,11 +181,13 @@ markComplete = async (req, res) => {
 //delete challnge API
 deleteChallenge = async (req, res) => {
     try {
-        const { challenge_id } = req.body;
+        const { _id } = req.body;
+
+        // console.log(req.body);
 
         // find the challenge by ID
-        const challenge = await challengesModel.findById({ _id: challenge_id });
-        if (!challenge) 
+        const challenge = await challengesModel.findById({ _id: _id });
+        if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
 
         /*
@@ -194,7 +198,7 @@ deleteChallenge = async (req, res) => {
         */
 
         // delete the challenge
-        await challengesModel.deleteOne({ _id: challenge_id });
+        await challengesModel.deleteOne({ _id: _id });
 
         res.status(200).json({ message: 'Challenge deleted successfully' });
 
@@ -203,7 +207,7 @@ deleteChallenge = async (req, res) => {
     }
 };
 
-module.exports= {
+module.exports = {
     createChallenge, updateChallenge, proposeChallenge, inviteOthers, acceptChallenge,
     getChallenges, markComplete, deleteChallenge
 };
