@@ -1,5 +1,6 @@
 const achievementModel = require("../models/achievementModel");
 const challengesModel = require("../models/challengesModel");
+const mongoose = require('mongoose');
 
 //create challnege API 
 createChallenge = async (req, res) => {
@@ -54,12 +55,32 @@ proposeChallenge = async (req, res) => {
         const { title, description, aura_points, end_date, invitedUsers, isPublic } = req.body;
         const creator_id = req.user._id;
 
-        const newChallenge = new challengesModel({ title, description, creator_id, aura_points, end_date, invitedUsers, isPublic });
+        if (!creator_id) {
+            return res.status(400).json({ message: "Creator ID is required" });
+        }
+
+        // Validate invitedUsers
+        const validatedUsers = invitedUsers.map((user) => {
+            if (!mongoose.Types.ObjectId.isValid(user.invitee_id)) {
+                throw new Error(`Invalid invitee_id: ${user.invitee_id}`);
+            }
+            return { invitee_id: mongoose.Types.ObjectId(user.invitee_id) };
+        });
+
+        const newChallenge = new challengesModel({
+            title,
+            description,
+            creator_id,
+            aura_points,
+            end_date,
+            invitedUsers: validatedUsers,
+            isPublic,
+        });
 
         await newChallenge.save();
-
         res.status(201).json({ message: 'Challenge proposed successfully', challenge: newChallenge });
     } catch (error) {
+        console.error("Error in proposeChallenge:", error);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -93,16 +114,25 @@ inviteOthers = async (req, res) => {
 //accept the propose challenge
 acceptChallenge = async (req, res) => {
     try {
-        const { challenge_id } = req.body;
+        const { _id } = req.body;
 
-        const challenge = await challengesModel.findById({ _id: challenge_id });
+        const challenge = await challengesModel.findById({ _id: _id });
         if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
+
+        // Check if the user is already a participant
+        const isAlreadyParticipant = challenge.participants.some(
+            participant => participant.user.toString() === req.user._id
+        );
+
+        if (isAlreadyParticipant) {
+            return res.status(400).json({ message: 'You are already a participant in this challenge' });
+        }
 
         if (!challenge.isPublic) {
             const invitedUser = challenge.invitedUsers.find(user => (user.invitee_id).toString() === req.user._id);
             if (!invitedUser) {
-                return res.status(400).json({ message: 'You have already accepted this challenge or were not invited' });
+                return res.status(400).json({ message: 'You were not invited' });
             }
             challenge.invitedUsers = challenge.invitedUsers.filter((i) = i.invitee_id !== req.user._id);
         }

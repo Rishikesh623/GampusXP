@@ -27,7 +27,6 @@ const challengeSchema = new mongoose.Schema({
     invitedUsers: [
         {
             invitee_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            
         }
     ],
     createdAt: { type: Date, default: Date.now },
