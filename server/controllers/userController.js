@@ -125,7 +125,7 @@ const coordinatorLogin = async (req, res) => {
 };
 
 
-// Profile fetch API
+// Profile fetch API - own
 const getProfile = async (req, res) => {
     try {
         const _id = req.user._id; //get _id from the authenticated user
@@ -138,6 +138,23 @@ const getProfile = async (req, res) => {
         //return user profile details without the password
         const { password, ...profile } = user.toObject();
         res.status(200).json(profile);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+// Profile fetch API - others
+const getOtherUserProfile = async (req, res) => {
+    try {
+        const {reg_no} = req.params; //get _id from the authenticated user
+        console.log(req.params)
+        const userProfile = await userModel.findOne({ reg_no:reg_no }).select("_id name reg_no email");
+
+        if (!userProfile) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        res.status(200).json({userProfile});
 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -219,4 +236,4 @@ const logout = async (req, res) => {
 }
 
 
-module.exports = { login, register, logout, getProfile, editProfile, logout, changePassword, coordinatorLogin };
+module.exports = { login, register, logout, getProfile,getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };

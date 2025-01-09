@@ -6,7 +6,7 @@ const challengeSchema = new mongoose.Schema({
         required: true
     },
     description: String,
-    creator_id: {
+    creator_id: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
@@ -26,7 +26,7 @@ const challengeSchema = new mongoose.Schema({
     isPublic: { type: Boolean, default: true }, // If open to all users or not
     invitedUsers: [
         {
-            invitee_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            type: mongoose.Schema.Types.ObjectId, ref: 'User'
         }
     ],
     createdAt: { type: Date, default: Date.now },

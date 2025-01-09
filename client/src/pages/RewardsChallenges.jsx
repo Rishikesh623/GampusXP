@@ -31,16 +31,9 @@ const RewardsChallenges = () => {
     const proposeChallengeHandler = async (e) => {
         e.preventDefault();
         try {
-            // Convert invitedUsersInput to an array
-            const invitedUsersArray = invitedUsersInput
-                .split(',')
-                .map((id) => id.trim())
-                .filter((id) => id); // Remove empty entries
-
-            const response = await axios.post("http://localhost:5000/challenges/propose", {
-                ...newChallenge,
-                invitedUsers: invitedUsersArray
-            }, {
+            
+            const response = await axios.post("http://localhost:5000/challenges/propose", 
+                newChallenge, {
                 withCredentials: true
             }
 
@@ -103,6 +96,49 @@ const RewardsChallenges = () => {
         }
     }
 
+    const handleInviteClick = async () => {
+
+        try {
+            const reg_no = invitedUsersInput ; 
+
+            const res = await axios.get(`http://localhost:5000/user/profile/${reg_no}`, {
+                withCredentials: true, 
+            });
+
+            const data = res.data;
+
+            let invitedUsers = [...newChallenge.invitedUsers]; 
+            invitedUsers.push(data.userProfile._id); 
+            
+            setNewChallenge((prev) => ({
+                ...prev,
+                invitedUsers, 
+            }));
+            
+        }
+        catch (err) {
+            console.log(err);
+            if(err.response.status === 404){
+                alert("USer not found");
+            }
+        }
+
+        
+    }
+
+    const handleRemoveUser = (_id) => {
+
+        // console.log(invitedUsers)
+        let invitedUsers = newChallenge.invitedUsers.filter( (id) => id !==_id ); 
+        console.log(invitedUsers)
+        
+        setNewChallenge((prev) => ({
+            ...prev,
+            invitedUsers, 
+        }));
+        console.log(invitedUsers)
+
+    }
 
     return (
         <div className="p-6">
@@ -201,15 +237,42 @@ const RewardsChallenges = () => {
                                     />
                                 </div>
                                 <div className="mb-4">
-                                    <label className="block text-gray-600 font-semibold">Invite Users (Comma-separated User IDs)</label>
-                                    <input
-                                        type="text"
-                                        value={invitedUsersInput}
-                                        onChange={handleInvitedUsersChange}
-                                        className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                        placeholder="e.g., user1,user2,user3"
-                                    />
+                                    <label className="block text-gray-600 font-semibold mb-2">
+                                        Invite Users
+                                    </label>
+                                    <div className="flex items-center">
+                                        <input
+                                            type="text"
+                                            value={invitedUsersInput}
+                                            onChange={handleInvitedUsersChange}
+                                            className="flex-grow p-2 border border-gray-300 rounded text-black bg-white"
+                                            placeholder="e.g., user1,user2,user3"
+                                        />
+                                        <button
+                                            onClick={handleInviteClick} // Replace with your function
+                                            className="ml-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+                                        >
+                                            Invite
+                                        </button>
+                                    </div>
+                                    <div className="mt-4 flex flex-wrap gap-2">
+                                        {newChallenge?.invitedUsers.map((user, index) => (
+                                            <span
+                                                key={index}
+                                                className="flex items-center bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm"
+                                            >
+                                                {user}
+                                                <button
+                                                    onClick={() => handleRemoveUser(user)}
+                                                    className="ml-2 text-red-500 hover:text-red-700"
+                                                >
+                                                    &times;
+                                                </button>
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
+
                                 <div className="mb-4">
                                     <label className="block text-gray-600 font-semibold">Is Public</label>
                                     <input

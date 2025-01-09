@@ -1,5 +1,7 @@
 const achievementModel = require("../models/achievementModel");
 const challengesModel = require("../models/challengesModel");
+const userModel = require("../models/userModel");
+
 const mongoose = require('mongoose');
 
 //create challnege API 
@@ -53,19 +55,12 @@ updateChallenge = async (req, res) => {
 proposeChallenge = async (req, res) => {
     try {
         const { title, description, aura_points, end_date, invitedUsers, isPublic } = req.body;
+        
         const creator_id = req.user._id;
 
         if (!creator_id) {
             return res.status(400).json({ message: "Creator ID is required" });
         }
-
-        // Validate invitedUsers
-        const validatedUsers = invitedUsers.map((user) => {
-            if (!mongoose.Types.ObjectId.isValid(user.invitee_id)) {
-                throw new Error(`Invalid invitee_id: ${user.invitee_id}`);
-            }
-            return { invitee_id: mongoose.Types.ObjectId(user.invitee_id) };
-        });
 
         const newChallenge = new challengesModel({
             title,
@@ -73,10 +68,10 @@ proposeChallenge = async (req, res) => {
             creator_id,
             aura_points,
             end_date,
-            invitedUsers: validatedUsers,
+            invitedUsers,
             isPublic,
         });
-
+        console.log(newChallenge);
         await newChallenge.save();
         res.status(201).json({ message: 'Challenge proposed successfully', challenge: newChallenge });
     } catch (error) {
