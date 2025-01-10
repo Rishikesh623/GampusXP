@@ -55,7 +55,7 @@ updateChallenge = async (req, res) => {
 proposeChallenge = async (req, res) => {
     try {
         const { title, description, aura_points, end_date, invitedUsers, isPublic } = req.body;
-        
+
         const creator_id = req.user._id;
 
         if (!creator_id) {
@@ -161,16 +161,56 @@ getChallenges = async (req, res) => {
     }
 };
 
+getProposedChallenges = async (req, res) => {
+    try {
+
+        const challenges = await challengesModel.find({
+            $and: [
+                { 'creator_id': req.user._id },
+                { 'isPublic': false }
+            ]
+        });
+
+        res.status(200).json({ message: "All challenges returned.", challenges });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+getAcceptedChallenges = async (req, res) => {
+    try {
+
+        const challenges = await challengesModel.find({
+            $and: [
+                { 'creator_id': req.user._id }
+            ]
+        });
+
+        res.status(200).json({ message: "All challenges returned.", challenges });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
 markComplete = async (req, res) => {
     try {
-        const { challenge_id } = req.body;
+        const { _id } = req.body;
 
-        const challenge = await challengesModel.findById({ _id: challenge_id });
+        // console.log(req.body);
+
+        const challenge = await challengesModel.findById({ _id: _id });
+
+        // console.log(challenge);
 
         if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
-
+        
         const participant = challenge.participants.find((p) => { return ((p.user).toString() === req.user._id); });
+
+        console.log(participant);
+        console.log(req.user._id);
 
         if (!participant || participant.status !== 'in-progress') {
             return res.status(400).json({ message: 'Challenge not in progress' });
@@ -234,5 +274,5 @@ deleteChallenge = async (req, res) => {
 
 module.exports = {
     createChallenge, updateChallenge, proposeChallenge, inviteOthers, acceptChallenge,
-    getChallenges, markComplete, deleteChallenge
+    getChallenges, markComplete, deleteChallenge, getProposedChallenges, getAcceptedChallenges
 };

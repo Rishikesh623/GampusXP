@@ -13,6 +13,8 @@ import RewardsAndChallenges from './pages/RewardsChallenges';
 import Timetable from './pages/Timetable';
 import Settings from './pages/Settings';
 import CoordinatorChallenges from './pages/CoordinatorChallenges';
+import ProposedChallenges from './pages/ProposedChallenges';
+import AcceptedChallenges from './pages/AcceptedChallenges';
 import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
@@ -70,6 +72,8 @@ const App = () => {
         <Route path="/assignment-tracking" element={<AssignmentTracking />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
         <Route path="/rewards-challenges" element={<RewardsAndChallenges />} />
+        <Route path="/proposed-challenges" element={<ProposedChallenges />} />
+        <Route path="/accepted-challenges" element={<AcceptedChallenges />} />
         <Route path="/coordinator-challenges" element={<CoordinatorChallenges />} />
         <Route path="/timetable" element={<Timetable />} />
         <Route path="/settings" element={<Settings />} />

@@ -68,7 +68,7 @@ const RewardsChallenges = () => {
 
     const getChallenges = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/challenges/", {
+            const res = await axios.get("http://localhost:5000/challenges/proposed", {
                 headers: {
                     coordinator: "true" // Include the required header
                 },

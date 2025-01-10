@@ -68,7 +68,7 @@ const RewardsChallenges = () => {
 
     const getChallenges = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/challenges/", {
+            const res = await axios.get("http://localhost:5000/challenges/accepted", {
                 headers: {
                     coordinator: "true" // Include the required header
                 },
@@ -87,9 +87,9 @@ const RewardsChallenges = () => {
         getChallenges();
     }, [])
 
-    const acceptChallengeHandler = async (challenge) => {
+    const completeChallengeHandler = async (challenge) => {
         try {
-            const res = await axios.patch("http://localhost:5000/challenges/accept", challenge, {
+            const res = await axios.patch("http://localhost:5000/challenges/complete", challenge, {
                 withCredentials: true
             })
 
@@ -103,7 +103,7 @@ const RewardsChallenges = () => {
         catch (err) {
             setError(err.response.data.message)
             setSuccess(null)
-            console.log("Error in acceptChallengeHandler", err.response?.data?.message || err.message)
+            console.log("Error in completeChallengeHandler", err.response?.data?.message || err.message)
         }
     }
 
@@ -267,7 +267,6 @@ const RewardsChallenges = () => {
                                 </li>
                             </ul>
                         </div>
-
                     </div>
                 </header >
             </div>
@@ -293,10 +292,13 @@ const RewardsChallenges = () => {
                                 <p className="text-sm text-gray-500">Due Date: {new Date(challenge.end_date).toLocaleDateString()}</p>
 
                                 <button
-                                    onClick={() => acceptChallengeHandler(challenge)}
-                                    className="mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
+                                    onClick={() => completeChallengeHandler(challenge)}
+                                    className={`mt-2 mx-1 px-4 py-2 rounded-lg ${challenge.status === 'completed'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-blue-100 text-blue-600'
+                                        }`}
                                 >
-                                    Accept Challenge
+                                    {challenge.status === 'completed' ? 'Completed' : 'Complete'}
                                 </button>
                             </div>
                         ))
@@ -392,7 +394,7 @@ const RewardsChallenges = () => {
                                                     onClick={() => handleRemoveUser(user)}
                                                     className="ml-2 text-red-500 hover:text-red-700"
                                                 >
-                                                    &times;
+
                                                 </button>
                                             </span>
                                         ))}
