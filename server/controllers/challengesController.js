@@ -180,7 +180,10 @@ getProposedChallenges = async (req, res) => {
 
 getAcceptedChallenges = async (req, res) => {
     try {
-
+        const participant = challenge.participants.find((p) => {
+            return ((p.user).toString() === req.user._id);
+        })
+        
         const challenges = await challengesModel.find({
             $and: [
                 { 'creator_id': req.user._id }
@@ -206,7 +209,7 @@ markComplete = async (req, res) => {
 
         if (!challenge)
             return res.status(404).json({ message: 'Challenge not found' });
-        
+
         const participant = challenge.participants.find((p) => { return ((p.user).toString() === req.user._id); });
 
         console.log(participant);
