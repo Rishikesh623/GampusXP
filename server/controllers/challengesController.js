@@ -51,11 +51,13 @@ updateChallenge = async (req, res) => {
 };
 
 
+
 // propose Challenge API
 proposeChallenge = async (req, res) => {
     try {
         const { title, description, aura_points, end_date, invitedUsers, isPublic } = req.body;
-
+        
+        const participants = [{user:req.user._id,status:"in-progress"}];
         const creator_id = req.user._id;
 
         if (!creator_id) {
@@ -69,9 +71,10 @@ proposeChallenge = async (req, res) => {
             aura_points,
             end_date,
             invitedUsers,
+            participants,
             isPublic,
         });
-        console.log(newChallenge);
+        // console.log(newChallenge);
         await newChallenge.save();
         res.status(201).json({ message: 'Challenge proposed successfully', challenge: newChallenge });
     } catch (error) {
@@ -185,13 +188,16 @@ getAcceptedChallenges = async (req, res) => {
         })
         
         const challenges = await challengesModel.find({
-            $and: [
-                { 'creator_id': req.user._id }
+            $or: [
+                { 'creator_id': req.user._id },
+                { 'participants': { $elemMatch: { user: req.user._id } } }
             ]
         });
+        
+        
 
         res.status(200).json({ message: "All challenges returned.", challenges });
-
+        
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -212,8 +218,6 @@ markComplete = async (req, res) => {
 
         const participant = challenge.participants.find((p) => { return ((p.user).toString() === req.user._id); });
 
-        console.log(participant);
-        console.log(req.user._id);
 
         if (!participant || participant.status !== 'in-progress') {
             return res.status(400).json({ message: 'Challenge not in progress' });
