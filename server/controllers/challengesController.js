@@ -56,8 +56,8 @@ updateChallenge = async (req, res) => {
 proposeChallenge = async (req, res) => {
     try {
         const { title, description, aura_points, end_date, invitedUsers, isPublic } = req.body;
-        
-        const participants = [{user:req.user._id,status:"in-progress"}];
+
+        const participants = [{ user: req.user._id, status: "in-progress" }];
         const creator_id = req.user._id;
 
         if (!creator_id) {
@@ -190,11 +190,20 @@ getAcceptedChallenges = async (req, res) => {
                 { 'participants': { $elemMatch: { user: req.user._id } } }
             ]
         });
-        
-        
 
-        res.status(200).json({ message: "All challenges returned.", challenges });
-        
+        const detailed_challenges = challenges.map(challenge => {
+            const participantDetails = challenge.participants.find(
+                participant => participant.user.toString() === req.user._id.toString()
+            );
+
+            return {
+                ...challenge.toObject(),
+                participantDetails: participantDetails ,
+            };
+        });
+
+        res.status(200).json({ message: "All challenges returned.", challenges:detailed_challenges });
+
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
