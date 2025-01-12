@@ -183,9 +183,6 @@ getProposedChallenges = async (req, res) => {
 
 getAcceptedChallenges = async (req, res) => {
     try {
-        const participant = challenge.participants.find((p) => {
-            return ((p.user).toString() === req.user._id);
-        })
         
         const challenges = await challengesModel.find({
             $or: [
