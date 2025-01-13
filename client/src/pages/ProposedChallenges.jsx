@@ -50,7 +50,6 @@ const RewardsChallenges = () => {
 
             );
             console.log(response.data);
-            alert("Challenge proposed successfully!");
             setShowModal(false);
             setNewChallenge({
                 title: '',
@@ -61,8 +60,12 @@ const RewardsChallenges = () => {
                 isPublic: false,
             });
             setInvitedUsersInput('');
+            getChallenges();
+
+            setSuccess("Challenge succesfully proposed.")
         } catch (err) {
             console.error("Error proposing challenge:", err.response?.data?.message || err.message);
+            setError(err.response?.data?.message);
         }
     };
 
@@ -86,26 +89,6 @@ const RewardsChallenges = () => {
     useEffect(() => {
         getChallenges();
     }, [])
-
-    const acceptChallengeHandler = async (challenge) => {
-        try {
-            const res = await axios.patch("http://localhost:5000/challenges/accept", challenge, {
-                withCredentials: true
-            })
-
-            if (res.status === 200)
-                setSuccess(res.data.message)
-
-            setError(null)
-
-            console.log(res.data)
-        }
-        catch (err) {
-            setError(err.response.data.message)
-            setSuccess(null)
-            console.log("Error in acceptChallengeHandler", err.response?.data?.message || err.message)
-        }
-    }
 
     const handleInviteClick = async () => {
 
@@ -291,13 +274,6 @@ const RewardsChallenges = () => {
                                 <p className="text-sm text-gray-600">{challenge.description}</p>
                                 <p className="text-sm text-gray-500">Aura Points: {challenge.aura_points}</p>
                                 <p className="text-sm text-gray-500">Due Date: {new Date(challenge.end_date).toLocaleDateString()}</p>
-
-                                <button
-                                    onClick={() => acceptChallengeHandler(challenge)}
-                                    className="mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
-                                >
-                                    Accept Challenge
-                                </button>
                             </div>
                         ))
                     ) : (

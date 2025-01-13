@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setTheme } from '../redux/theme/themeSlice';
+import { setChallengeS } from '../redux/challenges/challengesSlice';
 
 const RewardsChallenges = () => {
     const [challenges, setChallenges] = useState([]);
@@ -76,6 +77,7 @@ const RewardsChallenges = () => {
             })
 
             setChallenges(res.data.challenges);
+            dispatch(setChallengeS(res.data.challenges));
             console.log(res.data);
         }
         catch (err) {
@@ -97,6 +99,8 @@ const RewardsChallenges = () => {
                 setSuccess(res.data.message)
 
             setError(null)
+
+            getChallenges();
 
             console.log(res.data)
         }
@@ -276,35 +280,66 @@ const RewardsChallenges = () => {
                     onClick={() => setShowModal(true)}
                     className="mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
                 >
-                    Propose Challenge
+                    Accepted Challenge
                 </button>
 
                 <div className="mt-5 space-y-4">
                     {challenges.length > 0 ? (
-                        challenges.map((challenge) => (
-                            <div
-                                key={challenge._id}
-                                className="p-4 border rounded-lg shadow-sm bg-gray-50"
-                            >
-                                <h2 className="text-lg font-semibold">{challenge.title}</h2>
-                                <p className="text-sm text-gray-600">{challenge.description}</p>
-                                <p className="text-sm text-gray-500">Aura Points: {challenge.aura_points}</p>
-                                <p className="text-sm text-gray-500">Due Date: {new Date(challenge.end_date).toLocaleDateString()}</p>
+                        <>
+                            {challenges.filter((challenge) => challenge.participantDetails?.status === 'in-progress').map((challenge) => (
+                                <div
+                                    key={challenge._id}
+                                    className="p-4 border rounded-lg shadow-sm bg-gray-50"
+                                >
+                                    <h2 className="text-lg font-semibold">{challenge.title}</h2>
+                                    <p className="text-sm text-gray-600">{challenge.description}</p>
+                                    <p className="text-sm text-gray-500">Aura Points: {challenge.aura_points}</p>
+                                    <p className="text-sm text-gray-500">Due Date: {new Date(challenge.end_date).toLocaleDateString()}</p>
 
-                                <button
-                                    onClick={() => completeChallengeHandler(challenge)}
-                                    className={`mt-2 mx-1 px-4 py-2 rounded-lg ${challenge.status === 'completed'
+                                    <button
+                                        onClick={() => completeChallengeHandler(challenge)}
+                                        className={`mt-2 mx-1 px-4 py-2 rounded-lg ${challenge.participantDetails?.status === 'completed'
                                             ? 'bg-green-500 text-white'
                                             : 'bg-blue-100 text-blue-600'
-                                        }`}
+                                            }`}
+                                    >
+                                        {challenge.participantDetails?.status === 'completed'
+                                            ? 'Completed'
+                                            : 'Complete'}
+                                    </button>
+                                </div>
+                            ))}
+
+                            {challenges.filter((challenge) => challenge.participantDetails?.status === 'completed').map((challenge) => (
+                                <div
+                                    key={challenge._id}
+                                    className="p-4 border rounded-lg shadow-sm bg-gray-50"
                                 >
-                                    {challenge.status === 'completed' ? 'Completed' : 'Complete'}
-                                </button>
-                            </div>
-                        ))
+                                    <h2 className="text-lg font-semibold">{challenge.title}</h2>
+                                    <p className="text-sm text-gray-600">{challenge.description}</p>
+                                    <p className="text-sm text-gray-500">Aura Points: {challenge.aura_points}</p>
+                                    <p className="text-sm text-gray-500">Due Date: {new Date(challenge.end_date).toLocaleDateString()}</p>
+
+                                    <button
+                                        onClick={() => completeChallengeHandler(challenge)}
+                                        className={`mt-2 mx-1 px-4 py-2 rounded-lg ${challenge.participantDetails?.status === 'completed'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-blue-100 text-blue-600'
+                                            }`}
+                                    >
+                                        {challenge.participantDetails?.status === 'completed'
+                                            ? 'Completed'
+                                            : 'Complete'}
+                                    </button>
+                                </div>
+                            ))}
+                        </>
+
                     ) : (
                         <p className="text-gray-500">No challenges available.</p>
                     )}
+
+
                 </div>
                 {error && <p className="mt-5 text-red-500 text-center">{error}</p>}
                 {success && <p className="mt-5 text-green-500 text-center">{success}</p>}

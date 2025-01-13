@@ -6,13 +6,14 @@ import { persistor } from '../redux/store';
 import { logout } from '../redux/user/userSlice';
 import axios from 'axios';
 import { clearAssignment, setCAssignment } from '../redux/assignment/assignmentSlice';
+import { clearChallegneS, setChallengeS } from '../redux/challenges/challengesSlice';
+import { clearAchievement, setAchievement } from '../redux/achievement/achievementSlice';
+
 const Main = () => {
     const dispatch = useDispatch();
-
-    const [assignments, setAssignments] = useState([]);
-
     const currentTheme = useSelector((state) => state.theme);
     const currentUser = useSelector((state) => state.user);
+
     const [profileT, setProfileT] = useState(false);
 
     useEffect(() => {
@@ -22,11 +23,10 @@ const Main = () => {
                     withCredentials: true,
                 });
                 const fetchedAssignments = res.data.assignments || [];
-                setAssignments(fetchedAssignments);
                 dispatch(setCAssignment(fetchedAssignments)); // Dispatch after setting state
             } catch (error) {
                 if (error.response?.status === 404) {
-                    setAssignments([]);
+                    // setAssignments([]);
                     dispatch(setCAssignment([])); // Clear Redux state if no assignments found
                 } else {
                     console.error('Error fetching assignments:', error.response?.message);
@@ -34,12 +34,47 @@ const Main = () => {
             }
         };
 
+        const getChallenges = async () => {
+            try {
+                const res = await axios.get("http://localhost:5000/challenges/accepted", {
+                    headers: {
+                        coordinator: "true" // Include the required header
+                    },
+                    withCredentials: true
+                })
+
+                // setChallenges(res.data.challenges);
+                dispatch(setChallengeS(res.data.challenges));
+                // console.log();
+            }
+            catch (err) {
+                console.error("Error fetching challenges:", err.response?.data?.message || err.message);
+            }
+        }
+
+        const getAchievements = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/achievement/achievements/', { withCredentials: true })
+
+                // console.log("Achievements : ", res.data.achievements.achievements);
+
+                dispatch(setAchievement(res.data.achievements.achievements));
+            }
+            catch (err) {
+                console.log("Error in fetching achievements : ", err.response?.data?.message || err.message);
+            }
+        }
+
+        getChallenges();
         fetchAssignments();
         dueAssignmentHandler(); // Call the function
+        getAchievements();
     }, []);
 
 
     const cassignment = useSelector((state) => state.cassignment.cassignment)
+    const challengeS = useSelector((state) => state.challengeS.challengeS)
+    const achievement = useSelector((state) => state.achievement.achievement);
 
     // console.log(assignments)
 
@@ -55,6 +90,8 @@ const Main = () => {
         // Clear Redux state
         dispatch(logout());
         dispatch(clearAssignment());
+        dispatch(clearChallegneS());
+        dispatch(clearAchievement());
 
         // Purge persisted data
         persistor.purge();
@@ -77,6 +114,18 @@ const Main = () => {
         return cnt; // Return the count of pending assignments
     };
 
+    const dueChallenges = () => {
+        console.log(achievement);
+        let cnt = 0;
+
+        challengeS.forEach((challenge) => {
+            if (challenge.participantDetails?.status === 'in-progress') cnt++;
+        })
+
+        return cnt;
+    }
+
+    // console.log(achievement);
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -247,11 +296,18 @@ const Main = () => {
                         </div>
                         <div className="p-4 bg-white border rounded-lg shadow-sm">
                             <h3 className="text-lg font-semibold">Challenges in Progress</h3>
-                            <p>2 challenges to complete</p>
+                            <p>{dueChallenges()} challenges to complete</p>
                         </div>
                         <div className="p-4 bg-white border rounded-lg shadow-sm">
                             <h3 className="text-lg font-semibold">Recent Achievements</h3>
-                            <p>Completed "Math Wizard" challenge</p>
+                            {
+                                achievement.slice(0, 3)
+                                    .map((achievements) => (
+                                        <li key={achievements._id}>
+                                            <span className="text-xs">{achievements.description}</span>
+                                        </li>
+                                    ))
+                            }
                         </div>
                     </div >
 
@@ -274,10 +330,14 @@ const Main = () => {
                         < div className="p-4 bg-white border rounded-lg shadow-sm" >
                             <h3 className="text-lg font-semibold">Active Challenges</h3>
                             <div className="mt-2">
-                                <p>Challenge 1: Complete 5 quizzes</p>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
-                                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '60%' }}></div>
-                                </div>
+                                {
+                                    challengeS.filter((challenge) => challenge.participantDetails?.status === 'in-progress')
+                                        .map((challenge) => (
+                                            <li key={challenge._id}>
+                                                <span>{challenge.title}</span>
+                                            </li>
+                                        ))
+                                }
                             </div>
                         </div >
                     </div >
