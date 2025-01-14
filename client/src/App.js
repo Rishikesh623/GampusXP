@@ -15,6 +15,7 @@ import Settings from './pages/Settings';
 import CoordinatorChallenges from './pages/CoordinatorChallenges';
 import ProposedChallenges from './pages/ProposedChallenges';
 import AcceptedChallenges from './pages/AcceptedChallenges';
+import Achievement from './pages/Achievements';
 import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
@@ -70,6 +71,7 @@ const App = () => {
         <Route path="/course-management-user" element={<CourseManagementUser />} />
         <Route path="/course-management-coordinator" element={<CourseManagementCoordinator />} />
         <Route path="/assignment-tracking" element={<AssignmentTracking />} />
+        <Route path="/achievement-tracking" element={<Achievement />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
         <Route path="/rewards-challenges" element={<RewardsAndChallenges />} />
         <Route path="/proposed-challenges" element={<ProposedChallenges />} />

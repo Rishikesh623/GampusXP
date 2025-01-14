@@ -276,12 +276,6 @@ const RewardsChallenges = () => {
             </div>
 
             <div className="p-6">
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
-                >
-                    Accepted Challenge
-                </button>
 
                 <div className="mt-5 space-y-4">
                     {challenges.length > 0 ? (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
 import { persistor } from '../redux/store';
@@ -124,6 +124,8 @@ const Main = () => {
 
         return cnt;
     }
+
+    const navigate = useNavigate();
 
     // console.log(achievement);
 
@@ -308,6 +310,12 @@ const Main = () => {
                                         </li>
                                     ))
                             }
+
+                            <button onClick={() => navigate("/achievement-tracking")}
+                                className="mt-2 px-2 py-1 rounded-lg mb-2 bg-blue-500 hover:bg-blue-400 text-white text-xs"
+                            >
+                                See More
+                            </button>
                         </div>
                     </div >
 
