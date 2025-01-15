@@ -17,7 +17,7 @@ const challengeSchema = new mongoose.Schema({
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
             status: {
                 type: String,
-                enum: ['pending', 'completed', 'in-progress'],
+                enum: ['pending', 'completed', 'in-progress','due'],
                 default: 'pending' // Pending, in-progress, or completed
             },
             completionDate: Date,

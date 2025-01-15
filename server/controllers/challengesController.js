@@ -183,7 +183,7 @@ getProposedChallenges = async (req, res) => {
 
 getAcceptedChallenges = async (req, res) => {
     try {
-        
+
         const challenges = await challengesModel.find({
             $or: [
                 { 'creator_id': req.user._id },
@@ -198,11 +198,11 @@ getAcceptedChallenges = async (req, res) => {
 
             return {
                 ...challenge.toObject(),
-                participantDetails: participantDetails ,
+                participantDetails: participantDetails,
             };
         });
 
-        res.status(200).json({ message: "All challenges returned.", challenges:detailed_challenges });
+        res.status(200).json({ message: "All challenges returned.", challenges: detailed_challenges });
 
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -233,12 +233,17 @@ markComplete = async (req, res) => {
         participant.status = 'completed';
         participant.completionDate = new Date();
 
-
+        let reward = 0;
+        if (challenge.end_date >= participant.completionDate && (challenge.isPublic || challenge.participants.length > 1)) {
+            const toadd = challenge.aura_points;
+            reward = toadd;
+            const user = await userModel.findByIdAndUpdate(req.user._id, { $inc: { aura_points: toadd } }, { new: true });
+        }
         // add to achievements
         const achievement = await achievementModel.findOne({ user: req.user._id })
             || new achievementModel({ user: req.user._id, achievements: [] });
 
-        const description = `Completed the ${challenge.title} challenge.`;
+        const description = `Completed the ${challenge.title} challenge. Earned ${reward} aura points.`;
         achievement.achievements.push({
             challenge_id: challenge._id,
             description: description,
@@ -285,7 +290,27 @@ deleteChallenge = async (req, res) => {
     }
 };
 
+//deduct half the reward
+deductAurapoint = async (req, res) => {
+    try {
+        const { _id } = req.body;
+
+        const challenge = await challengesModel.findById({ _id: _id }).select("title aura_points");
+
+        if (!challenge)
+            return res.status(404).json({ message: 'Challenge not found' });
+
+        const todeduct = challenge.aura_points;
+        
+        const user = await userModel.findByIdAndUpdate(req.user._id, { $dec: { aura_points: todeduct } }, { new: true });
+
+        res.status(200).json({ message: 'Deducted ${todeduct} aura points successfully for challenge ${challenge.title}.' });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
 module.exports = {
     createChallenge, updateChallenge, proposeChallenge, inviteOthers, acceptChallenge,
-    getChallenges, markComplete, deleteChallenge, getProposedChallenges, getAcceptedChallenges
+    getChallenges, markComplete, deleteChallenge, getProposedChallenges, getAcceptedChallenges,deductAurapoint
 };

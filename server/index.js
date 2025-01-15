@@ -3,7 +3,7 @@ const dotenv = require('dotenv').config(); //loads .env contents into process.en
 const mongoose = require('mongoose');
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
+const cron = require('node-cron');
 
 const userRoutes = require('./routes/userRoutes.js');
 const courseRoutes = require('./routes/courseRoutes.js');
@@ -37,6 +37,7 @@ app.use("/challenges", challengesRoutes);
 app.use("/achievement", achievementRoutes);
 
 
+
 const PORT = process.env.PORT || 8080;
 const MOGO_URI = process.env.MOGO_URI;
 
@@ -61,3 +62,39 @@ mongoose.connect(MOGO_URI)
         }
     );
 
+const challengeModel = require('./models/challengesModel.js');
+const userModel = require('./models/userModel.js');
+cron.schedule('0 0 * * *', async () => {
+    console.log('Starting the aura points deduction job...');
+    const currentDate = new Date();
+
+    try {
+
+        const overdueChallenges = await challengeModel.find({ end_date: { $lt: currentDate } });
+
+        for (const challenge of overdueChallenges) {
+            const todeduct = - (challenge.aura_points / 2);
+            for (const participant of challenge.participants) {
+                console.log(participant.status);
+                if (participant.status === "in-progress") {
+                    const participantId=participant.user;
+                    await userModel.findByIdAndUpdate(
+                        participantId,
+                        { $inc: { aura_points: todeduct } }
+                    );
+                    
+                    //upadate status
+                    await challengeModel.updateOne(
+                        { _id: challenge._id, 'participants.user': participantId },
+                        { $set: { 'participants.$.status': 'done' } }
+                    );
+                    
+                    console.log(`Deducted ${todeduct} aura points from user: ${participantId}`);
+                }
+            }
+        }
+        console.log('Aura points deduction job completed successfully.');
+    } catch (error) {
+        console.error('Error in aura points deduction job:', error);
+    }
+});

@@ -2,7 +2,7 @@
 const express = require('express');
 const { authUser, authCoordinator } = require('../middlewares/authMiddleware');
 const { createChallenge, updateChallenge, proposeChallenge, inviteOthers, acceptChallenge, getChallenges,
-        markComplete, deleteChallenge, getProposedChallenges, getAcceptedChallenges } = require('../controllers/challengesController');
+        markComplete, deleteChallenge, getProposedChallenges, getAcceptedChallenges,deductAurapoint } = require('../controllers/challengesController');
 
 const router = express.Router();
 
@@ -15,6 +15,7 @@ router.patch('/invite', authUser, inviteOthers);
 router.patch('/accept', authUser, acceptChallenge);
 router.patch('/edit', authCoordinator, updateChallenge);
 router.patch('/complete', authUser, markComplete);
+router.patch('/deduct', authUser, deductAurapoint);
 router.delete('/delete', authCoordinator, deleteChallenge);
 
 module.exports = router;

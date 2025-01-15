@@ -35,7 +35,11 @@ const userSchema = new mongoose.Schema({
         }
       ]
     }
-  ]
+  ],
+  aura_points:{
+    type:Number,
+    default: 0
+  }
 });
 
 // Hash password before saving the user
