@@ -40,8 +40,8 @@ const SignIn = () => {
                     setSuccess("Login Successfull");
                     dispatch(setUserProfile({
                         reg_no: formData.id,
-                        name : "Co-ordinator",
-                        email : "coordinator@gmail.com"
+                        name: "Co-ordinator",
+                        email: "coordinator@gmail.com"
                     }));
 
                     navigate("/course-management-coordinator");
@@ -62,7 +62,7 @@ const SignIn = () => {
                 });
                 const data = res.data;
 
-                // console.log(data);
+                console.log(data);
 
                 if (res) {
                     setSuccess("Login Successfull");
@@ -71,7 +71,8 @@ const SignIn = () => {
                         name: data.name,
                         reg_no: data.reg_no,
                         email: data.email,
-                        password: data.password
+                        password: data.password,
+                        aura_points: data.aura_points
                     }));
 
                     navigate("/main");

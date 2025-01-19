@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTheme } from '../redux/theme/themeSlice';
 import { persistor } from '../redux/store';
-import { logout } from '../redux/user/userSlice';
+import { logout, setUserProfile } from '../redux/user/userSlice';
 import axios from 'axios';
 import { clearAssignment, setCAssignment } from '../redux/assignment/assignmentSlice';
 import { clearChallegneS, setChallengeS } from '../redux/challenges/challengesSlice';
@@ -65,11 +65,44 @@ const Main = () => {
             }
         }
 
+        const getUserProfile = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/user/profile', {
+                    withCredentials: true, // Include cookies in the request
+                });
+                const data = res.data;
+
+                // console.log(data);
+
+                if (res) {
+                    // setSuccess("Login Successfull");
+
+                    dispatch(setUserProfile({
+                        name: data.name,
+                        reg_no: data.reg_no,
+                        email: data.email,
+                        password: data.password,
+                        aura_points: data.aura_points
+                    }));
+
+                    // navigate("/main");
+                }
+                else {
+                    // setError(data.message || "Login Failed");
+                }
+            }
+            catch (err) {
+                // setError(err.response.data.message || "An error occurred")
+            }
+        }
+
         getChallenges();
         fetchAssignments();
         dueAssignmentHandler(); // Call the function
         getAchievements();
-    }, []);
+        auraLevelHandler();
+        getUserProfile();
+    }, [dispatch, currentUser]);
 
 
     const cassignment = useSelector((state) => state.cassignment.cassignment)
@@ -115,7 +148,7 @@ const Main = () => {
     };
 
     const dueChallenges = () => {
-        console.log(achievement);
+        // console.log(achievement);
         let cnt = 0;
 
         challengeS.forEach((challenge) => {
@@ -125,9 +158,22 @@ const Main = () => {
         return cnt;
     }
 
+    const [level, setLevel] = useState(0);
+    const [progressPercentage, setProgressPercentage] = useState(0);
+
+    const auraLevelHandler = () => {
+        const md = 1000; 
+        const aura = currentUser.aura_points ; 
+        const currentLevel = Math.floor(aura / md); 
+        const progressWithinLevel = (aura % md) / md; 
+
+        setLevel(currentLevel); 
+        setProgressPercentage(progressWithinLevel * 100); 
+    };
+
     const navigate = useNavigate();
 
-    // console.log(achievement);
+    console.log(currentUser);
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -279,13 +325,15 @@ const Main = () => {
                     {/* Greeting and Aura Points */}
                     < div className="mb-6" >
                         <h2 className="text-2xl font-bold">Welcome back, [{currentUser.name}]!</h2>
-                        <div className="mt-2 text-gray-600">Current Aura Level: 3</div>
+                        <div className="mt-2 text-gray-600">Current Aura Level: {level}</div>
                         <div className="mt-2 bg-blue-100 rounded-lg">
-                            <div
-                                className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-lg"
-                                style={{ width: '75%' }}
-                            >
-                                75% to next level
+                            <div className="mt-2 bg-blue-100 rounded-lg">
+                                <div
+                                    className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-lg"
+                                    style={{ width: `${progressPercentage}%` }} // Dynamic width
+                                >
+                                    {100 - Math.round(progressPercentage)}% to next level
+                                </div>
                             </div>
                         </div>
                     </div >

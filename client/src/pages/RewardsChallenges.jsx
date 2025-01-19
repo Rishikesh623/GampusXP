@@ -38,6 +38,8 @@ const RewardsChallenges = () => {
     }
 
     const currentTheme = useSelector((state) => state.theme);
+    const currentChallenges = useSelector((state) => state.challengeS.challengeS);
+    console.log(currentChallenges);
 
     const proposeChallengeHandler = async (e) => {
         e.preventDefault();
@@ -76,7 +78,7 @@ const RewardsChallenges = () => {
             })
 
             setChallenges(res.data.challenges);
-            console.log(res.data);
+            // console.log(res.data);
         }
         catch (err) {
             console.error("Error fetching courses:", err.response?.data?.message || err.message);
@@ -98,7 +100,7 @@ const RewardsChallenges = () => {
 
             setError(null)
 
-            console.log(res.data)
+            // console.log(res.data)
         }
         catch (err) {
             setError(err.response.data.message)
@@ -147,7 +149,7 @@ const RewardsChallenges = () => {
             ...prev,
             invitedUsers,
         }));
-        console.log(invitedUsers)
+        // console.log(invitedUsers)
 
     }
 
@@ -281,7 +283,7 @@ const RewardsChallenges = () => {
                 </button>
 
                 <div className="mt-5 space-y-4">
-                    {challenges.length > 0 ? (
+                    {currentChallenges.length > 0 ? (
                         challenges.map((challenge) => (
                             <div
                                 key={challenge._id}
@@ -294,9 +296,11 @@ const RewardsChallenges = () => {
 
                                 <button
                                     onClick={() => acceptChallengeHandler(challenge)}
-                                    className="mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
+                                    className={challenge.participantDetails?.status === 'pending' ? "mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg" :
+                                        "mt-2 mx-1 px-4 py-2 bg-green-600 text-white rounded-lg"
+                                    }
                                 >
-                                    Accept Challenge
+                                    {challenge.participantDetails?.status === 'pending' ? "Accept Challenge" : "Already Accepted"}
                                 </button>
                             </div>
                         ))

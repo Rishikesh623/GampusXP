@@ -52,7 +52,7 @@ const register = async (req, res) => {
 
         // send the token back as an HttpOnly cookie (secure for production)
         res.cookie('token', token, { httpOnly: true, secure: true });
-        res.status(201).json({ name, reg_no, email });
+        res.status(201).json({ name, reg_no, email, aura_points });
 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -99,7 +99,7 @@ const login = async (req, res) => {
         });
         // console.log(token);
 
-        res.status(200).json({ name: user.name, reg_no: user.reg_no, email: user.email });
+        res.status(200).json({ name: user.name, reg_no: user.reg_no, email: user.email, aura_points: user.aura_points });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
@@ -158,15 +158,15 @@ const getProfile = async (req, res) => {
 // Profile fetch API - others
 const getOtherUserProfile = async (req, res) => {
     try {
-        const {reg_no} = req.params; //get _id from the authenticated user
+        const { reg_no } = req.params; //get _id from the authenticated user
         console.log(req.params)
-        const userProfile = await userModel.findOne({ reg_no:reg_no }).select("_id name reg_no email");
+        const userProfile = await userModel.findOne({ reg_no: reg_no }).select("_id name reg_no email");
 
         if (!userProfile) {
             return res.status(404).json({ message: 'User not found' });
         }
-        
-        res.status(200).json({userProfile});
+
+        res.status(200).json({ userProfile });
 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -248,4 +248,8 @@ const logout = async (req, res) => {
 }
 
 
+<<<<<<< HEAD
 module.exports = { getUsers,login, register, logout, getProfile,getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };
+=======
+module.exports = { login, register, logout, getProfile, getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };
+>>>>>>> 483af69152d4cab3a065b3a410e0aff997fad480
