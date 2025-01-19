@@ -9,6 +9,18 @@ const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
 
 //Register user API
+const getUsers = async (req, res) => {
+    try {
+        const users = await userModel.find().select("name reg_no aura_points");
+
+        res.status(200).json(users);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+//Register user API
 const register = async (req, res) => {
     try {
         const { name, reg_no, email, password } = req.body;
@@ -236,4 +248,4 @@ const logout = async (req, res) => {
 }
 
 
-module.exports = { login, register, logout, getProfile,getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };
+module.exports = { getUsers,login, register, logout, getProfile,getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };

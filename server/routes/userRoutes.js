@@ -1,10 +1,11 @@
 const express = require('express');
-const {authUser,authCoordinator} = require('../middlewares/authMiddleware'); 
-const {login,register,getProfile,getOtherUserProfile,editProfile,changePassword,logout,coordinatorLogin} = require('../controllers/userController');
+const {authUser} = require('../middlewares/authMiddleware'); 
+const {getUsers,login,register,getProfile,getOtherUserProfile,editProfile,changePassword,logout,coordinatorLogin} = require('../controllers/userController');
 
 
 const router = express.Router();
 
+router.get('/',getUsers);
 router.post('/login',login);
 router.post('/register',register);
 router.post('/coordinator-login',coordinatorLogin);
