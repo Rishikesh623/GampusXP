@@ -155,6 +155,8 @@ const getProfile = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
 // Profile fetch API - others
 const getOtherUserProfile = async (req, res) => {
     try {
@@ -167,11 +169,11 @@ const getOtherUserProfile = async (req, res) => {
         }
         
         res.status(200).json({userProfile});
-
+        
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
-};
+}
 
 // Profile edit API using PATCH
 const editProfile = async (req, res) => {
