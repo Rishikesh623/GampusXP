@@ -160,16 +160,18 @@ const getProfile = async (req, res) => {
 // Profile fetch API - others
 const getOtherUserProfile = async (req, res) => {
     try {
-        const {reg_no} = req.params; //get _id from the authenticated user
-        console.log(req.params)
-        const userProfile = await userModel.findOne({ reg_no:reg_no }).select("_id name reg_no email");
+        const reg_no = req.params.reg_no; //get _id from the authenticated user
+        // console.log(reg_no)
+        const userProfile = await userModel.findOne({ reg_no: reg_no }).select("_id name reg_no email aura_points");
+
+        // console.log(userProfile);
 
         if (!userProfile) {
             return res.status(404).json({ message: 'User not found' });
         }
-        
-        res.status(200).json({userProfile});
-        
+
+        res.status(200).json({ userProfile });
+
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
@@ -250,4 +252,4 @@ const logout = async (req, res) => {
 }
 
 
-module.exports = { getUsers,login, register, logout, getProfile,getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };
+module.exports = { getUsers, login, register, logout, getProfile, getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };

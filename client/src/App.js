@@ -16,6 +16,7 @@ import CoordinatorChallenges from './pages/CoordinatorChallenges';
 import ProposedChallenges from './pages/ProposedChallenges';
 import AcceptedChallenges from './pages/AcceptedChallenges';
 import Achievement from './pages/Achievements';
+import OtherUserProfile from './pages/OtherUserProfile'
 import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
@@ -68,6 +69,7 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/main" element={<Main />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/other-user-profile" element={<OtherUserProfile />} />
         <Route path="/course-management-user" element={<CourseManagementUser />} />
         <Route path="/course-management-coordinator" element={<CourseManagementCoordinator />} />
         <Route path="/assignment-tracking" element={<AssignmentTracking />} />

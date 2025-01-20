@@ -2,79 +2,40 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
-import { updateEmail, updateRegNo } from '../redux/user/userSlice';
 import axios from "axios"
+import { useLocation } from 'react-router-dom';
+
 
 const Profile = () => {
     const dispatch = useDispatch();
     const currentTheme = useSelector((state) => state.theme);
-    const currentUser = useSelector((state) => state.user);
-
-    const [formData, setFormData] = useState({
-        reg_no: currentUser.reg_no,
-        name: currentUser.name,
-        email: currentUser.email,
-        bio: ""
-    });
-
-    useEffect(() => {
-        setFormData({
-            reg_no: currentUser.reg_no,
-            name: currentUser.name,
-            email: currentUser.email,
-            // bio: formData.bio, // Retain bio from local state
-        });
-
-        auraLevelHandler();
-    }, [currentUser]);
-
-
-    console.log(currentUser);
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState({});
+    const location = useLocation();
 
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));
     };
 
-    const onChangeEditForm = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
+    const regNo = location.state.reg_no || {};
 
-    const onSubmitEditForm = async (e) => {
-        e.preventDefault();
+    // console.log(regNo)
+
+    const getProfile = async () => {
         try {
-            const res = await axios.patch('http://localhost:5000/user/profile/edit', formData, {
-                withCredentials: true, // Include cookies in the request
-            });
+            const res = await axios.get(`http://localhost:5000/user/profile/${regNo}`);
 
-            const data = res.data;
-
-            if (!res) {
-                console.log("Edit profile failed", data.message)
-                return;
-            }
-
-            // console.log(data)
-
-            dispatch(updateRegNo(data.reg_no));
-            dispatch(updateEmail(data.email));
-
-            setFormData({
-                reg_no: data.reg_no,
-                name: data.name,
-                email: data.email,
-                bio: ""
-            });
+            // console.log(res.data.userProfile);
+            setCurrentUser(res.data.userProfile);
         }
         catch (err) {
-            console.log(err.response.data.message)
+            console.log("Error in getProfile", err);
         }
-        setIsModalOpen(false); // Close the modal after submission
-    };
+    }
+
+    useEffect(() => {
+        getProfile();
+        auraLevelHandler();
+    }, [currentUser]);
 
     const [level, setLevel] = useState(0);
     const [progressPercentage, setProgressPercentage] = useState(0);
@@ -90,14 +51,6 @@ const Profile = () => {
         setProgressPercentage(progressWithinLevel * 100);
     };
 
-    const onClickEditButton = () => {
-        setIsModalOpen(true); // Open the modal when "Edit Profile" is clicked
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false); // Close the modal
-    };
-
     return (
         <div className="flex min-h-screen bg-gray-100">
             {/* Sidebar Menu */}
@@ -111,10 +64,7 @@ const Profile = () => {
                             <Link to="/main">Dashboard</Link>
                         </li>
                         <li className="px-4 py-2 bg-blue-100 rounded text-blue-600 font-semibold">
-                            <Link to="/profile">Profile</Link>
-                        </li>
-                        <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                            <Link to="/settings">Settings</Link>
+                            <Link to="/other-user-profile">Profile</Link>
                         </li>
                     </ul>
                 </nav>
@@ -208,11 +158,10 @@ const Profile = () => {
                             <label className="block text-gray-600 font-semibold">Bio</label>
                             <p>Passionate learner at CampusXP</p>
                         </div>
-                        <button onClick={onClickEditButton} className="mt-3 text-blue-600 hover:underline">Edit Profile</button>
                     </div>
 
                     {/* Aura Points and Level */}
-                    <div className="mb-6 p-4 bg-white border rounded-lg shadow-sm">
+                    <div className="mb-6 p-2 px-4 pb-4 bg-white border rounded-lg shadow-sm">
                         <div className="text-gray-600 font-extrabold">Current Aura Level: {level}</div>
                         <div className="mt-2 bg-blue-100 rounded-lg">
                             <div className="mt-2 bg-blue-100 rounded-lg">
@@ -251,66 +200,6 @@ const Profile = () => {
                         </ul>
                     </div>
                 </main>
-
-                {/* Modal for editing profile */}
-                {isModalOpen && (
-                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                            <h3 className="text-xl font-semibold mb-4">Edit Profile</h3>
-
-                            <form onSubmit={onSubmitEditForm}>
-                                <div className="mb-4">
-                                    <label className="block text-gray-600 font-semibold">Username</label>
-                                    <input
-                                        type="text"
-                                        name="reg_no"
-                                        value={formData.reg_no}
-                                        onChange={onChangeEditForm}
-                                        className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                        placeholder={currentUser.reg_no}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-gray-600 font-semibold">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={onChangeEditForm}
-                                        className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                        placeholder={currentUser.email}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-gray-600 font-semibold">Bio</label>
-                                    <input
-                                        type="text"
-                                        name="bio"
-                                        value={formData.bio}
-                                        onChange={onChangeEditForm}
-                                        placeholder="Enter Bio"
-                                        className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                    />
-                                </div>
-                                <div className="flex justify-end space-x-4">
-                                    <button
-                                        type="button"
-                                        className="px-4 py-2 bg-gray-200 text-gray-600 rounded"
-                                        onClick={closeModal}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-600 text-white rounded"
-                                    >
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
