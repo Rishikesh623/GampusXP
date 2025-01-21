@@ -1,0 +1,35 @@
+.react-calendar {
+    border: none;
+    background-color: #f7fafc;
+    border-radius: 8px;
+}
+
+.react-calendar__tile {
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    position: relative; /* Needed for positioning the tooltip relative to the tile */
+}
+
+/* Highlight due assignments or challenges */
+.highlight-due {
+    background-color: #ff4d4d !important; /* Red color for highlighting */
+    color: white;
+}
+
+/* Box styling for the details on hover */
+.hover-details-box {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    z-index: 10; /* Ensure the tooltip is above other elements */
+    max-width: 200px;
+    text-align: center;
+}
+
+/* Optional: Add animation to the hover details box */
+.hover-details-box p {
+    margin: 0;
+}

@@ -8,6 +8,8 @@ import axios from 'axios';
 import { clearAssignment, setCAssignment } from '../redux/assignment/assignmentSlice';
 import { clearChallegneS, setChallengeS } from '../redux/challenges/challengesSlice';
 import { clearAchievement, setAchievement } from '../redux/achievement/achievementSlice';
+import Calendar from 'react-calendar';
+import '../style/Main.css'
 
 const Main = () => {
     const dispatch = useDispatch();
@@ -16,13 +18,29 @@ const Main = () => {
 
     const [profileT, setProfileT] = useState(false);
 
+    // const [holidays, setHolidays] = useState([]);
+    // const [hoveredHolidays, setHoveredHolidays] = useState(null);
+
+    const [date, setDate] = useState(new Date());
+    const [dueAssignments, setDueAssignment] = useState([]);
+    const [dueChallenges, setDueChallenges] = useState([]);
+    const [hoverDetails, setHoverDetails] = useState(null);
+    const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
                 const res = await axios.get('http://localhost:5000/assignment', {
                     withCredentials: true,
                 });
+
                 const fetchedAssignments = res.data.assignments || [];
+
+                const dueDates = fetchedAssignments.filter(assignment => assignment.due_date).map(assignment => new Date(assignment.due_date).toLocaleDateString());
+                setDueAssignment(dueDates);
+
+                // console.log(dueDates);
+
                 dispatch(setCAssignment(fetchedAssignments)); // Dispatch after setting state
             } catch (error) {
                 if (error.response?.status === 404) {
@@ -44,8 +62,11 @@ const Main = () => {
                 })
 
                 // setChallenges(res.data.challenges);
+                const dueDates = res.data.challenges.filter(challenge => challenge.end_date).map(challenge => new Date(challenge.end_date).toLocaleDateString());
+
+                setDueChallenges(dueDates);
                 dispatch(setChallengeS(res.data.challenges));
-                // console.log();
+                // console.log(dueDates);
             }
             catch (err) {
                 console.error("Error fetching challenges:", err.response?.data?.message || err.message);
@@ -102,6 +123,7 @@ const Main = () => {
         getAchievements();
         auraLevelHandler();
         getUserProfile();
+        // fetchHolidays();
     }, [dispatch, currentUser]);
 
 
@@ -147,7 +169,7 @@ const Main = () => {
         return cnt; // Return the count of pending assignments
     };
 
-    const dueChallenges = () => {
+    const dueChallengesHandler = () => {
         // console.log(achievement);
         let cnt = 0;
 
@@ -162,18 +184,50 @@ const Main = () => {
     const [progressPercentage, setProgressPercentage] = useState(0);
 
     const auraLevelHandler = () => {
-        const md = 1000; 
-        const aura = currentUser.aura_points ; 
-        const currentLevel = Math.floor(aura / md); 
-        const progressWithinLevel = (aura % md) / md; 
+        const md = 1000;
+        const aura = currentUser.aura_points;
+        const currentLevel = Math.floor(aura / md);
+        const progressWithinLevel = (aura % md) / md;
 
-        setLevel(currentLevel); 
-        setProgressPercentage(progressWithinLevel * 100); 
+        setLevel(currentLevel);
+        setProgressPercentage(progressWithinLevel * 100);
     };
 
     const navigate = useNavigate();
 
-    console.log(currentUser);
+    // console.log(currentUser);
+
+    // Handle mouse hover to show details box
+    const handleMouseEnter = (e, date) => {
+        const details = getHoverDetails(date);
+        if (details) {
+            setHoverDetails(details);
+            const { top, left, width } = e.target.getBoundingClientRect();
+            setHoverPosition({
+                x: left + width / 2, // Position it in the middle of the tile
+                y: top - 50 // Position it above the tile
+            });
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setHoverDetails(null);
+    };
+
+    const getHoverDetails = (date) => {
+        const dateString = date.toLocaleDateString();
+        let details = '';
+
+        // Check if the date has any due assignments or challenges
+        if (dueAssignments.includes(dateString)) {
+            details += 'Due Assignment\n';
+        }
+        if (dueChallenges.includes(dateString)) {
+            details += 'Due Challenge';
+        }
+
+        return details || null;
+    };
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -346,7 +400,7 @@ const Main = () => {
                         </div>
                         <div className="p-4 bg-white border rounded-lg shadow-sm">
                             <h3 className="text-lg font-semibold">Challenges in Progress</h3>
-                            <p>{dueChallenges()} challenges to complete</p>
+                            <p>{dueChallengesHandler()} challenges to complete</p>
                         </div>
                         <div className="p-4 bg-white border rounded-lg shadow-sm">
                             <h3 className="text-lg font-semibold">Recent Achievements</h3>
@@ -373,13 +427,32 @@ const Main = () => {
                         < div className="p-4 bg-white border rounded-lg shadow-sm" >
                             <h3 className="text-lg font-semibold">Calendar</h3>
                             {/* Example Calendar View */}
-                            <div className="mt-4 grid grid-cols-7 gap-2 text-center text-sm">
-                                {[...Array(30).keys()].map(day => (
-                                    <div key={day} className="p-2 bg-gray-100 rounded-lg">
-                                        {day + 1}
-                                    </div>
-                                ))}
-                            </div>
+                            <Calendar
+                                onChange={setDate} // Set the new date when selected
+                                value={date} // Bind the state to the calendar
+                                tileClassName={({ date }) => {
+                                    const dateString = date.toLocaleDateString();
+                                    if (dueAssignments.includes(dateString) || dueChallenges.includes(dateString)) {
+                                        return 'highlight-due'; // Add a class to highlight due dates
+                                    }
+                                }}
+                                // Adding mouse enter and leave events to each tile
+                                onMouseEnter={(e, date) => handleMouseEnter(e, date)}
+                                onMouseLeave={handleMouseLeave}
+                            />
+                            {/* Show details box when hovering */}
+                            {hoverDetails && (
+                                <div
+                                    className="hover-details-box"
+                                    style={{
+                                        left: `${hoverPosition.x}px`,
+                                        top: `${hoverPosition.y}px`,
+                                        transform: 'translateX(-50%)'
+                                    }}
+                                >
+                                    <p>{hoverDetails}</p>
+                                </div>
+                            )}
                         </div >
 
                         {/* Active Challenges */}

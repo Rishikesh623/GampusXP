@@ -37,7 +37,6 @@ app.use("/challenges", challengesRoutes);
 app.use("/achievement", achievementRoutes);
 
 
-
 const PORT = process.env.PORT || 8080;
 const MOGO_URI = process.env.MOGO_URI;
 
@@ -77,18 +76,18 @@ cron.schedule('0 0 * * *', async () => {
             for (const participant of challenge.participants) {
                 console.log(participant.status);
                 if (participant.status === "in-progress") {
-                    const participantId=participant.user;
+                    const participantId = participant.user;
                     await userModel.findByIdAndUpdate(
                         participantId,
                         { $inc: { aura_points: todeduct } }
                     );
-                    
+
                     //upadate status
                     await challengeModel.updateOne(
                         { _id: challenge._id, 'participants.user': participantId },
                         { $set: { 'participants.$.status': 'done' } }
                     );
-                    
+
                     console.log(`Deducted ${todeduct} aura points from user: ${participantId}`);
                 }
             }

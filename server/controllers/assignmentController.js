@@ -3,6 +3,7 @@ const assignmentModel = require("../models/assignmentModel");
 
 const getAssignments = async (req, res) => {
     try {
+        // console.log(res.body);
         const assignmentDoc = await assignmentModel.findOne({ creator_id: req.user._id });
         if (!assignmentDoc) {
             return res.status(404).json({ message: "NO assignments forund." });
