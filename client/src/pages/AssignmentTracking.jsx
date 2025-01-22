@@ -96,7 +96,7 @@ const AssignmentTracking = () => {
             title: assignment.title,
             description: assignment.description,
             due_date: assignment.due_date,
-            status: 'Completed',
+            status: 'completed',
         };
 
         try {
@@ -127,7 +127,7 @@ const AssignmentTracking = () => {
                     {assignments.map((assignment) => (
                         <div
                             key={assignment._id}
-                            className={`p-5 rounded-lg shadow-md transition-transform transform hover:scale-105 ${assignment.status === 'Completed'
+                            className={`p-5 rounded-lg shadow-md transition-transform transform hover:scale-105 ${assignment.status === 'completed'
                                 ? 'bg-green-100 border border-green-500'
                                 : 'bg-white border border-gray-300'
                                 }`}
@@ -153,14 +153,14 @@ const AssignmentTracking = () => {
                                 Due Date: {new Date(assignment.due_date).toLocaleDateString()}
                             </p>
                             <p
-                                className={`text-sm font-semibold mb-2 ${assignment.status === 'Completed'
+                                className={`text-sm font-semibold mb-2 ${assignment.status === 'completed'
                                     ? 'text-green-600'
                                     : 'text-red-600'
                                     }`}
                             >
                                 Status: {assignment.status}
                             </p>
-                            {assignment.status === 'Pending' && (
+                            {assignment.status === 'pending' && (
                                 <button
                                     onClick={() => assignmentSubmitHandler(assignment)}
                                     className="btn btn-sm btn-primary"

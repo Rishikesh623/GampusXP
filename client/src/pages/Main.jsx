@@ -8,8 +8,8 @@ import axios from 'axios';
 import { clearAssignment, setCAssignment } from '../redux/assignment/assignmentSlice';
 import { clearChallegneS, setChallengeS } from '../redux/challenges/challengesSlice';
 import { clearAchievement, setAchievement } from '../redux/achievement/achievementSlice';
-import Calendar from 'react-calendar';
-import '../style/Main.css'
+import Calendar from "./Calendar";
+// import '../style/Main.css'
 
 const Main = () => {
     const dispatch = useDispatch();
@@ -21,11 +21,8 @@ const Main = () => {
     // const [holidays, setHolidays] = useState([]);
     // const [hoveredHolidays, setHoveredHolidays] = useState(null);
 
-    const [date, setDate] = useState(new Date());
-    const [dueAssignments, setDueAssignment] = useState([]);
-    const [dueChallenges, setDueChallenges] = useState([]);
-    const [hoverDetails, setHoverDetails] = useState(null);
-    const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+    const [dueAssignments, setDueAssignment] = useState([{}]);
+    const [dueChallenges, setDueChallenges] = useState([{}]);
 
     useEffect(() => {
         const fetchAssignments = async () => {
@@ -36,7 +33,12 @@ const Main = () => {
 
                 const fetchedAssignments = res.data.assignments || [];
 
-                const dueDates = fetchedAssignments.filter(assignment => assignment.due_date).map(assignment => new Date(assignment.due_date).toLocaleDateString());
+                // console.log(res.data.assignments);
+
+                const dueDates = fetchedAssignments.filter(assignment => assignment.due_date).map(assignment => ({
+                    date: new Date(assignment.due_date).toLocaleDateString(),
+                    status: assignment.status
+                }));
                 setDueAssignment(dueDates);
 
                 // console.log(dueDates);
@@ -62,11 +64,15 @@ const Main = () => {
                 })
 
                 // setChallenges(res.data.challenges);
-                const dueDates = res.data.challenges.filter(challenge => challenge.end_date).map(challenge => new Date(challenge.end_date).toLocaleDateString());
+                const dueDates = res.data.challenges.filter(challenge => challenge.end_date).map(challenge =>
+                ({
+                    date: new Date(challenge.end_date).toLocaleDateString(),
+                    status: challenge.participantDetails?.status
+                }));
 
                 setDueChallenges(dueDates);
                 dispatch(setChallengeS(res.data.challenges));
-                // console.log(dueDates);
+                // console.log(res.data.challenges);
             }
             catch (err) {
                 console.error("Error fetching challenges:", err.response?.data?.message || err.message);
@@ -194,40 +200,6 @@ const Main = () => {
     };
 
     const navigate = useNavigate();
-
-    // console.log(currentUser);
-
-    // Handle mouse hover to show details box
-    const handleMouseEnter = (e, date) => {
-        const details = getHoverDetails(date);
-        if (details) {
-            setHoverDetails(details);
-            const { top, left, width } = e.target.getBoundingClientRect();
-            setHoverPosition({
-                x: left + width / 2, // Position it in the middle of the tile
-                y: top - 50 // Position it above the tile
-            });
-        }
-    };
-
-    const handleMouseLeave = () => {
-        setHoverDetails(null);
-    };
-
-    const getHoverDetails = (date) => {
-        const dateString = date.toLocaleDateString();
-        let details = '';
-
-        // Check if the date has any due assignments or challenges
-        if (dueAssignments.includes(dateString)) {
-            details += 'Due Assignment\n';
-        }
-        if (dueChallenges.includes(dateString)) {
-            details += 'Due Challenge';
-        }
-
-        return details || null;
-    };
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -427,32 +399,7 @@ const Main = () => {
                         < div className="p-4 bg-white border rounded-lg shadow-sm" >
                             <h3 className="text-lg font-semibold">Calendar</h3>
                             {/* Example Calendar View */}
-                            <Calendar
-                                onChange={setDate} // Set the new date when selected
-                                value={date} // Bind the state to the calendar
-                                tileClassName={({ date }) => {
-                                    const dateString = date.toLocaleDateString();
-                                    if (dueAssignments.includes(dateString) || dueChallenges.includes(dateString)) {
-                                        return 'highlight-due'; // Add a class to highlight due dates
-                                    }
-                                }}
-                                // Adding mouse enter and leave events to each tile
-                                onMouseEnter={(e, date) => handleMouseEnter(e, date)}
-                                onMouseLeave={handleMouseLeave}
-                            />
-                            {/* Show details box when hovering */}
-                            {hoverDetails && (
-                                <div
-                                    className="hover-details-box"
-                                    style={{
-                                        left: `${hoverPosition.x}px`,
-                                        top: `${hoverPosition.y}px`,
-                                        transform: 'translateX(-50%)'
-                                    }}
-                                >
-                                    <p>{hoverDetails}</p>
-                                </div>
-                            )}
+                            <Calendar dueAssignments={dueAssignments} dueChallenges={dueChallenges} />
                         </div >
 
                         {/* Active Challenges */}
