@@ -11,6 +11,7 @@ const assignmentRoutes = require('./routes/assignmentRoutes.js');
 const timetableRoutes = require('./routes/timetableRoutes.js');
 const challengesRoutes = require('./routes/challengesRoutes.js');
 const achievementRoutes = require('./routes/achievementRoutes.js');
+const notificationRoutes = require('./routes/notificationRoutes.js');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/assignment", assignmentRoutes);
 app.use("/timetable", timetableRoutes);
 app.use("/challenges", challengesRoutes);
 app.use("/achievement", achievementRoutes);
+app.use("/notifications", notificationRoutes);
 
 
 const PORT = process.env.PORT || 8080;
@@ -63,6 +65,7 @@ mongoose.connect(MOGO_URI)
 
 const challengeModel = require('./models/challengesModel.js');
 const userModel = require('./models/userModel.js');
+const notificationModel = require("./models/notificationModel.js");
 cron.schedule('0 0 * * *', async () => {
     console.log('Starting the aura points deduction job...');
     const currentDate = new Date();
@@ -88,11 +91,20 @@ cron.schedule('0 0 * * *', async () => {
                         { $set: { 'participants.$.status': 'done' } }
                     );
 
-                    console.log(`Deducted ${todeduct} aura points from user: ${participantId}`);
+                    // console.log(`Deducted ${todeduct} aura points from user: ${participantId}`);
+
+                    //send deduction notification 
+                    const title = ` -${todeduct} Aura points `;
+                    const message = ` ${todeduct} aura points deducted , since not completed the ${challenge.title} challenge before time. `;
+                    const notification = await notificationModel.findOneAndUpdate({ user_id: participantId }, { $push: { notifications: { title, message } } });
+
+
+                    await notification.save();
+
                 }
             }
         }
-        console.log('Aura points deduction job completed successfully.');
+        // console.log('Aura points deduction job completed successfully.');
     } catch (error) {
         console.error('Error in aura points deduction job:', error);
     }

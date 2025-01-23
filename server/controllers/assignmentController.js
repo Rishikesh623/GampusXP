@@ -18,6 +18,7 @@ const getAssignments = async (req, res) => {
 }
 const addAssignment = async (req, res) => {
     try {
+        
         const creator_id = req.user._id;
         const { title, description, due_date } = req.body;
 
@@ -28,13 +29,15 @@ const addAssignment = async (req, res) => {
 
         const assignment = await assignmentModel.findOne({ creator_id });
 
+       
         if (assignment) {
             assignment.assignments.push({ title, description, due_date });
+            console.log(assignment);
             await assignment.save();
-
+            
             return res.status(201).json({ message: 'Assignment added successfully' });
         }
-
+        
         const newAssignmentList = new assignmentModel({
             creator_id,
             assignments: [{ title, description, due_date }],
@@ -44,6 +47,7 @@ const addAssignment = async (req, res) => {
         return res.status(201).json({ message: 'Assignment added successfully' });
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

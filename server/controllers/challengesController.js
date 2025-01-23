@@ -1,5 +1,6 @@
 const achievementModel = require("../models/achievementModel");
 const challengesModel = require("../models/challengesModel");
+const notificationModel = require("../models/notificationModel");
 const userModel = require("../models/userModel");
 
 const mongoose = require('mongoose');
@@ -239,6 +240,7 @@ markComplete = async (req, res) => {
             reward = toadd;
             const user = await userModel.findByIdAndUpdate(req.user._id, { $inc: { aura_points: toadd } }, { new: true });
         }
+
         // add to achievements
         const achievement = await achievementModel.findOne({ user: req.user._id })
             || new achievementModel({ user: req.user._id, achievements: [] });
@@ -250,6 +252,16 @@ markComplete = async (req, res) => {
             aura_points: challenge.aura_points,
             completionDate: new Date(),
         });
+
+        if(reward>0){
+            // add to notifications
+            const title = ` +${reward} Aura points `;
+            const message = `Earned ${reward} aura points by completing the ${challenge.title} challenge on ${new Date()}. `;
+   
+            const notification = await notificationModel.findOneAndUpdate({ user_id: req.user._id }, { $push: { notifications: { title, message } } });
+
+            await notification.save();
+        }
 
         await achievement.save();
         await challenge.save();
