@@ -42,8 +42,8 @@ const markRead = async (req, res) => {
         console.log(req.body)
         const { notificationId } = req.body;
 
-        const notification = await notificationModel.updateOne({ user_id: re.user._id, "notifications._id": notificationId },
-            { $set: { "notifications.$.isRead": "true" } });
+        const notification = await notificationModel.updateOne({ user_id: req.user._id, "notifications._id": notificationId },
+            { $set: { "notifications.$.is_read": "true" } });
 
         res.status(201).json({ message: "success" });
 

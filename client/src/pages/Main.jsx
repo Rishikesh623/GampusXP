@@ -18,6 +18,7 @@ const Main = () => {
     const [isNotification, setIsNotification] = useState(false);
 
     const [notifications, setNotifications] = useState([]);
+    const [unReadNotificationsCount, setUnReadNotificationsCount] = useState(0);
 
     const [profileT, setProfileT] = useState(false);
 
@@ -132,6 +133,8 @@ const Main = () => {
                 // console.log(res.data);
 
                 setNotifications(res.data.notifications);
+                const cnt = (res.data.notifications.filter((nt, indxe) => { return nt.is_read === false ; })).length;
+                setUnReadNotificationsCount(cnt);
             }
             catch (err) {
                 console.log("Error in fetchNotifications controller", err.message);
@@ -203,9 +206,9 @@ const Main = () => {
     }
 
     const markNotification = async (id) => {
-        console.log(id);
+        // console.log(id);
         try {
-            const res = await axios.patch("http://localhost:5000/notifications/mark-read", { id }, {
+            const res = await axios.patch("http://localhost:5000/notifications/mark-read", { notificationId: id }, {
                 withCredentials: true,
             })
 
@@ -348,13 +351,13 @@ const Main = () => {
 
                             {/* Notifications Icon */}
                             <button className="relative">
-                                <span onClick={() => setIsNotification(true)} className="material-icons">Notifications</span>
-                                <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-600 rounded-full"></span>
+                                <span onClick={() => setIsNotification(true)} className=" material-icons">Notifications</span>
+                                <span className="absolute flex items-center  justify-center text-white top-0 -right-3 inline-block w-3 h-3 bg-red-600 rounded-full">{unReadNotificationsCount}</span>
                             </button>
 
                             {/* Profile Dropdown */}
-                            <div className="relative">
-                                <button className="flex items-center space-x-2 focus:outline-none" onClick={profileToggle}>
+                            <div className="relative ">
+                                <button className="ml-4 flex items-center space-x-2 focus:outline-none" onClick={profileToggle}>
                                     <img
                                         src="/profile.jpg" // Example profile image
                                         alt="Profile"
@@ -505,8 +508,8 @@ const Main = () => {
                                 ))
                             }
 
-                            <button onClick={() => setIsNotification(false)} 
-                            className='bg-blue-400 w-1/6 p-1 py-2 mt-auto mx-auto rounded-lg'>Close Notifications</button>
+                            <button onClick={() => setIsNotification(false)}
+                                className='bg-blue-400 w-1/6 p-1 py-2 mt-auto mx-auto rounded-lg'>Close Notifications</button>
                         </div>
                     </div>
                 )
