@@ -43,6 +43,8 @@ const CustomCalendar = ({ dueAssignments, dueChallenges }) => {
         setDetails('');
     };
 
+    // console.log(currentDate.getDate());
+
     return (
         <div className="custom-calendar">
             <h3 className="calendar-title">{currentDate.toLocaleString('default', { month: 'long' })} {currentYear}</h3>
@@ -57,14 +59,14 @@ const CustomCalendar = ({ dueAssignments, dueChallenges }) => {
                         ? matchedDate.status === 'pending'
                             ? 'pending'
                             : matchedDate.status === 'completed'
-                            ? 'completed'
-                            : ''
+                                ? 'completed'
+                                : ''
                         : '';
 
                     return (
                         <div
                             key={day}
-                            className={`calendar-cell ${isMarked ? 'marked' : ''} ${statusClass}`}
+                            className={`calendar-cell ${isMarked ? 'marked' : ''} ${statusClass} ${currentDate.getDate() === day ? 'border-2 border-yellow-400' : ''}`}
                             onMouseEnter={() => handleMouseEnter(formattedDate)}
                             onMouseLeave={handleMouseLeave}
                         >
