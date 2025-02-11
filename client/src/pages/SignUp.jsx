@@ -21,7 +21,7 @@ const SignUp = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        setXp(Object.values(formData).filter(val => val !== "").length * 25);
+        setXp(Object.values(formData).filter(val => val !== "").length * 20);
     }, [formData]);
 
     useEffect(() => {

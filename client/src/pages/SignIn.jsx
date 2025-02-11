@@ -88,14 +88,14 @@ const SignIn = () => {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-base-200">
+        <div className="flex items-center justify-center min-h-screen bg-white logo_bg">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
-                <h2 className="text-2xl font-bold text-center">Login to CampusXP</h2>
+            <h2 className="text-2xl font-bold text-black text-center">Sign In</h2>
                 <form className="space-y-4" onSubmit={onSubmitForm}>
 
                     {/* ID Input */}
                     <div className="form-control">
-                        <label className="flex items-center gap-2 input input-bordered">
+                        <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 16 16"
@@ -107,7 +107,7 @@ const SignIn = () => {
                                     d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                             </svg>
                             <input type="text"
-                                className="grow text-white"
+                                
                                 name="id"
                                 onChange={onChangeForm}
                                 value={formData.id}
@@ -117,7 +117,7 @@ const SignIn = () => {
 
                     {/* Password Input */}
                     <div className="form-control">
-                        <label className="flex items-center gap-2 input input-bordered">
+                        <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 16 16"
@@ -129,7 +129,6 @@ const SignIn = () => {
                                     clipRule="evenodd" />
                             </svg>
                             <input type="password"
-                                className="grow text-white"
                                 name="password"
                                 onChange={onChangeForm}
                                 value={formData.password}
