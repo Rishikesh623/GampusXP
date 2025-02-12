@@ -14,7 +14,7 @@ const achievementRoutes = require('./routes/achievementRoutes.js');
 const notificationRoutes = require('./routes/notificationRoutes.js');
 
 const app = express();
-
+console.log("Loaded ORIGIN_URL:", process.env.ORIGIN_URL);
 app.use(cors({
     origin: process.env.ORIGIN_URL, // allow requests only from this origin
     credentials: true,               // allow cookies and credentials
