@@ -57,9 +57,7 @@ const SignIn = () => {
         }
         else {
             try {
-                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, formData, {
-                    withCredentials: true, // Include cookies in the request
-                });
+                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, formData, {withCredentials: true, credentials: 'include'});
                 const data = res.data;
 
                 console.log(data);
