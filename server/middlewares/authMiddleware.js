@@ -7,7 +7,7 @@ const authUser = (req, res, next) => {
   try {
     const cookieHeader = req.headers.cookie; // get cookie from the headers
 
-    // console.log(cookieHeader);
+    console.log(cookieHeader);
     if (!cookieHeader) {
       return res.status(401).json({ message: 'No token, authorization denied', error: true });
     }
