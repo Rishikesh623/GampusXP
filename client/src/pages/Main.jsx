@@ -36,7 +36,7 @@ const Main = () => {
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
-                const res = await axios.get(`${process.env.BASE_URL}/assignment`, {
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/assignment`, {
                     withCredentials: true,
                 });
                 const fetchedAssignments = res.data.assignments || [];
@@ -59,7 +59,7 @@ const Main = () => {
 
         const getChallenges = async () => {
             try {
-                const res = await axios.get(`${process.env.BASE_URL}/challenges/accepted`, {
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/challenges/accepted`, {
                     headers: {
                         coordinator: "true"
                     },
@@ -80,7 +80,7 @@ const Main = () => {
 
         const getAchievements = async () => {
             try {
-                const res = await axios.get(`${process.env.BASE_URL}/achievement/achievements/`, { withCredentials: true });
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/achievement/achievements/`, { withCredentials: true });
                 dispatch(setAchievement(res.data.achievements.achievements));
             } catch (err) {
                 console.log("Error in fetching achievements:", err.response?.data?.message || err.message);
@@ -89,7 +89,7 @@ const Main = () => {
 
         const getUserProfile = async () => {
             try {
-                const res = await axios.get(`${process.env.BASE_URL}/user/profile`, {
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/profile`, {
                     withCredentials: true,
                 });
                 const data = res.data;
@@ -109,7 +109,7 @@ const Main = () => {
 
         const fetchNotifications = async () => {
             try {
-                const res = await axios.get(`${process.env.BASE_URL}/notifications/`, {
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/notifications/`, {
                     withCredentials: true
                 });
                 setNotifications(res.data.notifications);
@@ -166,7 +166,7 @@ const Main = () => {
 
     const markNotification = async (id) => {
         try {
-            await axios.patch(`${process.env.BASE_URL}/notifications/mark-read`, { notificationId: id }, {
+            await axios.patch(`${process.env.REACT_APP_BASE_URL}/notifications/mark-read`, { notificationId: id }, {
                 withCredentials: true,
             });
             // Optionally update the local state after marking as read.

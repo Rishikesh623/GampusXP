@@ -21,7 +21,7 @@ const CourseManagement = () => {
 
     const fetchCourses = async () => {
         try {
-            const res = await axios.get(`${process.env.BASE_URL}/course/`, {
+            const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/course/`, {
                 headers: {
                     coordinator: "true" // Include the required header
                 }
@@ -75,7 +75,7 @@ const CourseManagement = () => {
 
         if (!editCourseForm) {
             try {
-                const res = await axios.post(`${process.env.BASE_URL}/course/create`, addNewCourseForm, {
+                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/course/create`, addNewCourseForm, {
                     headers: {
                         coordinator: true
                     }
@@ -100,7 +100,7 @@ const CourseManagement = () => {
         }
         else {
             try {
-                const res = await axios.post(`${process.env.BASE_URL}/course/edit`, addNewCourseForm, {
+                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/course/edit`, addNewCourseForm, {
                     headers: {
                         coordinator: true
                     }
@@ -128,7 +128,7 @@ const CourseManagement = () => {
 
     const onRemoveCourse = async (id) => {
         try {
-            const res = await axios.delete(`${process.env.BASE_URL}/course/delete`, {
+            const res = await axios.delete(`${process.env.REACT_APP_BASE_URL}/course/delete`, {
                 headers: { coordinator: true },
                 data: { _id: id }
             });

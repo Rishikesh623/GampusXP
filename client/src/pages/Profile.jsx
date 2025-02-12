@@ -45,7 +45,7 @@ const Profile = () => {
     const onSubmitEditForm = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.patch(`${process.env.BASE_URL}/user/profile/edit`, formData, { withCredentials: true });
+            const res = await axios.patch(`${process.env.REACT_APP_BASE_URL}/user/profile/edit`, formData, { withCredentials: true });
             const data = res.data;
             if (!res) return;
             dispatch(updateRegNo(data.reg_no));

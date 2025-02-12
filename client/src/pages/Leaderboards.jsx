@@ -10,7 +10,7 @@ const Leaderboards = () => {
 
     const getUsers = async () => {
         try {
-            const res = await axios.get(`${process.env.BASE_URL}/user/`);
+            const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/`);
             const sortedUsers = res.data.sort((a, b) => b.aura_points - a.aura_points); // Sort by aura points (descending)
             setAllUsers(sortedUsers);
         } catch (err) {

@@ -22,6 +22,7 @@ const SignUp = () => {
 
     useEffect(() => {
         setXp(Object.values(formData).filter(val => val !== "").length * 20);
+      
     }, [formData]);
 
     useEffect(() => {
@@ -42,7 +43,7 @@ const SignUp = () => {
             return;
         }
         try {
-            const res = await axios.post(`${process.env.BASE_URL}/user/register`, formData);
+            const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/register`, formData);
             if (res) {
                 setSuccess("Registration Successful");
                 setError(null);

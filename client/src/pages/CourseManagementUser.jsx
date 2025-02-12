@@ -18,7 +18,7 @@ const CourseManagement = () => {
 
     const fetchCourses = async () => {
         try {
-            const res = await axios.get(`${process.env.BASE_URL}/user/profile`, {
+            const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/profile`, {
                 withCredentials: true,
             });
             setCourses(res.data.courses.reverse()); // Reverse order to show latest semester first
@@ -58,7 +58,7 @@ const CourseManagement = () => {
     const onSubmitEditForm = async (e) => {
         e.preventDefault();
         try {
-            await axios.patch(`${process.env.BASE_URL}/course/add`, addNewCourseForm, { withCredentials: true });
+            await axios.patch(`${process.env.REACT_APP_BASE_URL}/course/add`, addNewCourseForm, { withCredentials: true });
             fetchCourses();
             onAddNewCourseHandler();
             setAddNewCourseForm({
@@ -73,7 +73,7 @@ const CourseManagement = () => {
 
     const onRemoveCourse = async (course, semester) => {
         try {
-            await axios.patch(`${process.env.BASE_URL}/course/remove`, { course_code: course.course_code, semester }, { withCredentials: true });
+            await axios.patch(`${process.env.REACT_APP_BASE_URL}/course/remove`, { course_code: course.course_code, semester }, { withCredentials: true });
             fetchCourses();
         } catch (err) {
             alert(err.response.data.message);

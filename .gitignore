@@ -7,4 +7,5 @@ server/node_modules
 
 
 #environemnt
+client/.env
 server/.env

@@ -33,7 +33,7 @@ const SignIn = () => {
 
         if (isCoordinator) {
             try {
-                const res = await axios.post(`${process.env.BASE_URL}/user/coordinator-login`, formData);
+                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/coordinator-login`, formData);
                 const data = res.data;
 
                 if (res) {
@@ -57,7 +57,7 @@ const SignIn = () => {
         }
         else {
             try {
-                const res = await axios.post(`${process.env.BASE_URL}/user/login`, formData, {
+                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, formData, {
                     withCredentials: true, // Include cookies in the request
                 });
                 const data = res.data;

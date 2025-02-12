@@ -14,7 +14,7 @@ const RewardsChallenges = () => {
 
     const getChallenges = async () => {
         try {
-            const res = await axios.get(`${process.env.BASE_URL}/challenges/`, {
+            const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/challenges/`, {
                 headers: { coordinator: "true" },
                 withCredentials: true
             });
@@ -29,7 +29,7 @@ const RewardsChallenges = () => {
 
     const acceptChallengeHandler = async (challenge) => {
         try {
-            const res = await axios.patch(`${process.env.BASE_URL}/challenges/accept`, challenge, { withCredentials: true });
+            const res = await axios.patch(`${process.env.REACT_APP_BASE_URL}/challenges/accept`, challenge, { withCredentials: true });
 
             if (res.status === 200) setSuccess(res.data.message);
             setError(null);
