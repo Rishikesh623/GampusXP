@@ -47,7 +47,7 @@ const Profile = () => {
     const onSubmitEditForm = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.patch('http://localhost:5000/user/profile/edit', formData, {
+            const res = await axios.patch(`${process.env.BASE_URL}/user/profile/edit`, formData, {
                 withCredentials: true, // Include cookies in the request
             });
 

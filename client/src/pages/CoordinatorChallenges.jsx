@@ -22,7 +22,7 @@ const CourseManagement = () => {
 
     const fetchChallenges = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/challenges/', {
+            const res = await axios.get(`${process.env.BASE_URL}/challenges/`, {
                 headers: {
                     coordinator: "true" // Include the required header
                 },
@@ -73,7 +73,7 @@ const CourseManagement = () => {
 
         if (!editChallengeForm) {
             try {
-                const res = await axios.post('http://localhost:5000/challenges/create', addNewChallengeForm, {
+                const res = await axios.post(`${process.env.BASE_URL}/challenges/create`, addNewChallengeForm, {
                     headers: {
                         coordinator: true
                     }
@@ -98,7 +98,7 @@ const CourseManagement = () => {
         }
         else {
             try {
-                const res = await axios.patch('http://localhost:5000/challenges/edit', addNewChallengeForm, {
+                const res = await axios.patch(`${process.env.BASE_URL}/challenges/edit`, addNewChallengeForm, {
                     headers: {
                         coordinator: true
                     }
@@ -126,7 +126,7 @@ const CourseManagement = () => {
 
     const onRemoveCourse = async (id) => {
         try {
-            const res = await axios.delete('http://localhost:5000/challenges/delete', {
+            const res = await axios.delete(`${process.env.BASE_URL}/challenges/delete`, {
                 headers: { coordinator: true },
                 data: { _id: id }
             });

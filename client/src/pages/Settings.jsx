@@ -39,7 +39,7 @@ const Settings = () => {
         }
 
         try {
-            const res = await axios.patch("http://localhost:5000/user/change-password", password, {
+            const res = await axios.patch(`${process.env.BASE_URL}/user/change-password`, password, {
                 withCredentials: true,
             });
 

@@ -17,7 +17,7 @@ const Profile = () => {
 
     const getProfile = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/user/profile/${regNo}`);
+            const res = await axios.get(`${process.env.BASE_URL}/user/profile/${regNo}`);
 
             // console.log(res.data.userProfile);
             setCurrentUser(res.data.userProfile);

@@ -13,7 +13,7 @@ const RewardsChallenges = () => {
     useEffect(() => {
         const fetchChallenges = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/challenges/accepted", {
+                const res = await axios.get(`${process.env.BASE_URL}/challenges/accepted`, {
                     headers: { coordinator: "true" },
                     withCredentials: true,
                 });
@@ -31,7 +31,7 @@ const RewardsChallenges = () => {
     const completeChallengeHandler = async (challenge) => {
         try {
             const res = await axios.patch(
-                "http://localhost:5000/challenges/complete",
+                `${process.env.BASE_URL}/challenges/complete`,
                 challenge,
                 { withCredentials: true }
             );

@@ -33,7 +33,7 @@ const RewardsChallenges = () => {
     const proposeChallengeHandler = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:5000/challenges/propose", newChallenge, { withCredentials: true });
+            const response = await axios.post(`${process.env.BASE_URL}/challenges/propose`, newChallenge, { withCredentials: true });
 
             setShowModal(false);
             setNewChallenge({
@@ -54,7 +54,7 @@ const RewardsChallenges = () => {
 
     const getChallenges = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/challenges/proposed", {
+            const res = await axios.get(`${process.env.BASE_URL}/challenges/proposed`, {
                 headers: { coordinator: "true" },
                 withCredentials: true,
             });
@@ -68,7 +68,7 @@ const RewardsChallenges = () => {
 
     const handleInviteClick = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/user/profile/${invitedUsersInput}`, { withCredentials: true });
+            const res = await axios.get(`${process.env.BASE_URL}/user/profile/${invitedUsersInput}`, { withCredentials: true });
             setNewChallenge((prev) => ({
                 ...prev,
                 invitedUsers: [...prev.invitedUsers, res.data.userProfile._id],

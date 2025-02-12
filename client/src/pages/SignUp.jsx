@@ -42,7 +42,7 @@ const SignUp = () => {
             return;
         }
         try {
-            const res = await axios.post('http://localhost:5000/user/register', formData);
+            const res = await axios.post(`${process.env.BASE_URL}/user/register`, formData);
             if (res) {
                 setSuccess("Registration Successful");
                 setError(null);

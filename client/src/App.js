@@ -30,7 +30,7 @@ const App = () => {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const res = await axios.get('http://localhost:5000/user/profile', {
+        const res = await axios.get(`${process.env.BASE_URL}/user/profile`, {
           withCredentials: true, // Include cookies in the request
         });
 

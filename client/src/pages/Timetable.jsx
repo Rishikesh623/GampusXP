@@ -47,7 +47,7 @@ const Timetable = () => {
     useEffect(() => {
         async function fetchTimetable() {
             try {
-                const res = await axios.get('http://localhost:5000/timetable', {
+                const res = await axios.get(`${process.env.BASE_URL}/timetable`, {
                     withCredentials: true,
                 });
                 setTimetable(res.data);
@@ -98,7 +98,7 @@ const Timetable = () => {
     const handleCreate = async () => {
 
         try {
-            const res = await axios.post('http://localhost:5000/timetable/create', { timetable: initialTimetable }, {
+            const res = await axios.post(`${process.env.BASE_URL}/timetable/create`, { timetable: initialTimetable }, {
                 withCredentials: true, // Include cookies in the request
             });
 
@@ -134,7 +134,7 @@ const Timetable = () => {
         try {
 
             if (slotId != '') {
-                const res = await axios.patch('http://localhost:5000/timetable/edit-slot', {
+                const res = await axios.patch(`${process.env.BASE_URL}/timetable/edit-slot`, {
                     day, slotId, newTime: time, newCourse: course
                 }, {
                     withCredentials: true, // Include cookies in the request
@@ -142,7 +142,7 @@ const Timetable = () => {
                 setTimetable(res.data.timetable);
                 dispatch(setTimeTable({ timeTable: res.data.timetable }));
             } else {
-                const res = await axios.patch('http://localhost:5000/timetable/add-slot', {
+                const res = await axios.patch(`${process.env.BASE_URL}/timetable/add-slot`, {
                     day, time, course
                 }, {
                     withCredentials: true, // Include cookies in the request

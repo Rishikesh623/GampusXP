@@ -16,7 +16,7 @@ const notificationRoutes = require('./routes/notificationRoutes.js');
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:3000', // allow requests only from this origin
+    origin: process.env.ORIGIN_URL, // allow requests only from this origin
     credentials: true,               // allow cookies and credentials
 }));
 

@@ -16,7 +16,7 @@ const AssignmentTracking = () => {
 
     const fetchAssignments = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/assignment", { withCredentials: true });
+            const res = await axios.get(`${process.env.BASE_URL}/assignment`, { withCredentials: true });
             setAssignments(res.data.assignments.reverse() || []);
         } catch (error) {
             console.error("Error fetching assignments:", error.response?.message || error.message);
@@ -41,9 +41,9 @@ const AssignmentTracking = () => {
         e.preventDefault();
         try {
             if (editMode) {
-                await axios.patch("http://localhost:5000/assignment/edit", assignmentForm, { withCredentials: true });
+                await axios.patch(`${process.env.BASE_URL}/assignment/edit`, assignmentForm, { withCredentials: true });
             } else {
-                await axios.post("http://localhost:5000/assignment/add", assignmentForm, { withCredentials: true });
+                await axios.post(`${process.env.BASE_URL}/assignment/add`, assignmentForm, { withCredentials: true });
             }
             fetchAssignments();
             toggleModal();
@@ -54,7 +54,7 @@ const AssignmentTracking = () => {
 
     const handleRemove = async (assignment_id) => {
         try {
-            await axios.delete(`http://localhost:5000/assignment/remove/${assignment_id}`, { withCredentials: true });
+            await axios.delete(`${process.env.BASE_URL}/assignment/remove/${assignment_id}`, { withCredentials: true });
             setAssignments(assignments.filter(a => a._id !== assignment_id));
         } catch (error) {
             console.error("Error removing assignment:", error.message);
@@ -70,7 +70,7 @@ const AssignmentTracking = () => {
                 due_date: assignment.due_date,
                 status: 'completed',
             };
-            await axios.patch("http://localhost:5000/assignment/edit", updatedAssignment, { withCredentials: true });
+            await axios.patch(`${process.env.BASE_URL}/assignment/edit`, updatedAssignment, { withCredentials: true });
             fetchAssignments();
         } catch (error) {
             console.error("Error marking assignment as completed:", error.message);
