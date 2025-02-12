@@ -1,0 +1,35 @@
+import React from "react";
+import LeftDrawer from "./LeftDrawer";
+
+const Layout = ({ children,title,additionalHeaderElement}) => {
+    const cleanTitle = (title) => title.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+    return (
+        <div className="drawer">
+            {/* Drawer Toggle Checkbox */}
+            <input id="drawer-toggle" type="checkbox" className="drawer-toggle" />
+
+            {/* Main Content */}
+            <div className="drawer-content p-6 min-h-screen bg-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                    <label htmlFor="drawer-toggle" className="btn btn-square btn-ghost mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </label>
+                    <img src="/logo.png" alt="Logo" className="h-16 w-auto" />
+                    <h1 className="text-3xl font-black text-primary text-center flex-1">{title}</h1>
+                    {additionalHeaderElement}
+                </div>
+                <div>{children}</div>
+
+            </div>
+
+            {/* Left Drawer */}
+            <LeftDrawer title={cleanTitle(title)}/>
+        </div>
+    );
+};
+
+export default Layout;

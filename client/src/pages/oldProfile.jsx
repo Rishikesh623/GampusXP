@@ -14,7 +14,7 @@ const Profile = () => {
         reg_no: currentUser.reg_no,
         name: currentUser.name,
         email: currentUser.email,
-        bio: ""
+        about: ""
     });
 
     useEffect(() => {
@@ -22,7 +22,7 @@ const Profile = () => {
             reg_no: currentUser.reg_no,
             name: currentUser.name,
             email: currentUser.email,
-            // bio: formData.bio, // Retain bio from local state
+            // about: formData.about, // Retain about from local state
         });
 
         auraLevelHandler();
@@ -67,7 +67,7 @@ const Profile = () => {
                 reg_no: data.reg_no,
                 name: data.name,
                 email: data.email,
-                bio: ""
+                about: ""
             });
         }
         catch (err) {
@@ -205,7 +205,7 @@ const Profile = () => {
                             <p>{currentUser.email}</p>
                         </div>
                         <div className="mt-4">
-                            <label className="block text-gray-600 font-semibold">Bio</label>
+                            <label className="block text-gray-600 font-semibold">about</label>
                             <p>Passionate learner at CampusXP</p>
                         </div>
                         <button onClick={onClickEditButton} className="mt-3 text-blue-600 hover:underline">Edit Profile</button>
@@ -282,13 +282,13 @@ const Profile = () => {
                                     />
                                 </div>
                                 <div className="mb-4">
-                                    <label className="block text-gray-600 font-semibold">Bio</label>
+                                    <label className="block text-gray-600 font-semibold">about</label>
                                     <input
                                         type="text"
-                                        name="bio"
-                                        value={formData.bio}
+                                        name="about"
+                                        value={formData.about}
                                         onChange={onChangeEditForm}
-                                        placeholder="Enter Bio"
+                                        placeholder="Enter about"
                                         className="w-full p-2 border border-gray-300 rounded text-black bg-white"
                                     />
                                 </div>

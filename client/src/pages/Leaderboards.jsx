@@ -1,52 +1,100 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { Link } from 'react-router-dom';
+import Layout from "../components/Layout";
 
 const Leaderboards = () => {
-    const [allUser, setAllUsers] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10;
 
     const getUsers = async () => {
         try {
             const res = await axios.get("http://localhost:5000/user/");
-
-            const sortedUsers = res.data.sort((a, b) => b.aura_points - a.aura_points); // Sort users by aura_points in descending order
+            const sortedUsers = res.data.sort((a, b) => b.aura_points - a.aura_points); // Sort by aura points (descending)
             setAllUsers(sortedUsers);
-            // console.log(res.data);
-
+        } catch (err) {
+            console.error("Error fetching users:", err);
         }
-        catch (err) {
-            console.log("Error in getUsers", err);
+    };
+
+    useEffect(() => { getUsers(); }, []);
+
+    // Pagination logic
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = allUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+    const nextPage = () => {
+        if (currentPage < Math.ceil(allUsers.length / usersPerPage)) {
+            setCurrentPage(currentPage + 1);
         }
-    }
+    };
 
-    useEffect(() => {
-        getUsers();
-    }, [])
+    const prevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
 
-    // console.log(allUser);
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Leaderboards</h1>
+        <Layout title="🏆 Leaderboards">
+            <div className="bg-white shadow-md rounded-lg  p-6">
 
-            <div className="space-y-4">
-                {allUser.length > 0 ? (
-                    allUser.map((user, index) => (
-                        <div key={user._id} className="p-4 bg-white rounded-lg shadow-sm">
-                            <h2 className="text-lg font-semibold">Rank {index + 1} :
-                                <Link to={{
-                                    pathname: "/other-user-profile",
-                                }}
-                                    state={{ reg_no: user.reg_no }}
-                                    className="ml-2 text-blue-500 hover:underline">{user.name}</Link></h2>
-                            <p>Reg No : {user.reg_no}</p>
-                            <p>Aura Points: {user.aura_points}</p>
-                        </div>
-                    ))
+                {allUsers.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                            <thead className="bg-blue-500 text-white">
+                                <tr>
+                                    <th className="py-3 px-6 text-left">Rank</th>
+                                    <th className="py-3 px-6 text-left">Name</th>
+                                    <th className="py-3 px-6 text-left">Reg No</th>
+                                    <th className="py-3 px-6 text-left">Aura Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentUsers.map((user, index) => (
+                                    <tr key={user._id} className={`border-b hover:bg-gray-100 ${index < 3 ? 'bg-yellow-100 font-bold' : ''}`}>
+                                        <td className="py-3 px-6">{indexOfFirstUser + index + 1}</td>
+                                        <td className="py-3 px-6">
+                                            <Link 
+                                                to="/other-user-profile" 
+                                                state={{ reg_no: user.reg_no }} 
+                                                className="text-blue-600 hover:underline">
+                                                {user.name}
+                                            </Link>
+                                        </td>
+                                        <td className="py-3 px-6">{user.reg_no}</td>
+                                        <td className="py-3 px-6">{user.aura_points}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 ) : (
-                    <p>No users found.</p>
+                    <p className="text-center text-gray-500 mt-4">No users found.</p>
+                )}
+
+                {/* Pagination Controls */}
+                {allUsers.length > usersPerPage && (
+                    <div className="flex justify-between items-center mt-4">
+                        <button 
+                            onClick={prevPage} 
+                            className="btn btn-outline btn-primary"
+                            disabled={currentPage === 1}>
+                            ◀ Previous
+                        </button>
+                        <span className="text-gray-700">Page {currentPage} of {Math.ceil(allUsers.length / usersPerPage)}</span>
+                        <button 
+                            onClick={nextPage} 
+                            className="btn btn-outline btn-primary"
+                            disabled={currentPage === Math.ceil(allUsers.length / usersPerPage)}>
+                            Next ▶
+                        </button>
+                    </div>
                 )}
             </div>
-        </div>
+        </Layout>
     );
 };
 

@@ -8,7 +8,8 @@ import axios from 'axios';
 import { clearAssignment, setCAssignment } from '../redux/assignment/assignmentSlice';
 import { clearChallegneS, setChallengeS } from '../redux/challenges/challengesSlice';
 import { clearAchievement, setAchievement } from '../redux/achievement/achievementSlice';
-import Calendar from "./Calendar";
+import Calendar from "../components/Calendar"
+import LeftDrawer from '../components/LeftDrawer';
 // import '../style/Main.css';
 
 const Main = () => {
@@ -148,7 +149,7 @@ const Main = () => {
     const dueAssignmentHandler = () => {
         let cnt = 0;
         cassignment.forEach((assignment) => {
-            if (assignment.status === "Pending") {
+            if (assignment.status === "pending") {
                 cnt++;
             }
         });
@@ -184,12 +185,12 @@ const Main = () => {
     };
 
     return (
-        <div className="drawer">
+        <div className="h-screen ">
             {/* Hidden checkbox to control the drawer */}
             <input id="drawer-toggle" type="checkbox" className="drawer-toggle" />
 
             {/* Main content area */}
-            <div className="drawer-content flex flex-col bg-gray-100 min-h-screen">
+            <div className="drawer-content flex flex-col bg-gray-100 h-full">
                 {/* Header with logo and drawer toggle for mobile */}
                 <header className="flex items-center justify-between px-4 py-2 bg-white shadow-md ">
                     <div className="w-1/2 flex items-center">
@@ -207,192 +208,241 @@ const Main = () => {
                     {/* Right side header items */}
                     <div className="w-1/2 flex justify-end gap-4 px-4 py-2">
                         {/* Search Bar */}
-                        <label className="w-1/2 input input-bordered input-info input-md flex items-center gap-2 w-full max-w-lg">
-                            <input type="text" className="grow focus:outline-none" placeholder="Search assignments, courses..." />
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-5 w-5 opacity-70">
-                                <path
-                                    fillRule="evenodd"
-                                    d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </label>
-
-                        {/* Theme Dropdown */}
-                        <div className="dropdown">
-                            <button tabIndex={0} className="btn btn-ghost flex items-center gap-2">
-                                Theme
-                                <svg className="w-4 h-4" viewBox="0 0 2048 2048" fill="currentColor">
-                                    <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path>
+                        <div className='w-1/2'>
+                            <label className="input input-bordered input-info input-md flex items-center gap-2 w-full max-w-lg">
+                                <input type="text" className="grow focus:outline-none" placeholder="Search assignments, courses..." />
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-5 w-5 opacity-70">
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                                        clipRule="evenodd"
+                                    />
                                 </svg>
-                            </button>
-                            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-lg w-44 p-2 shadow-xl">
-                                {['light', 'retro', 'cyberpunk', 'valentine', 'aqua'].map((theme) => (
-                                    <li key={theme}>
-                                        <input
-                                            type="radio"
-                                            name="theme-dropdown"
-                                            className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                                            value={theme}
-                                            aria-label={theme}
-                                            onChange={handleThemeChange}
-                                            checked={currentTheme === theme}
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
+                            </label>
                         </div>
 
-                        {/* Notifications Icon */}
-                        <button className=" btn btn-ghost flex items-center gap-2" onClick={() => setIsNotification(true)}>
-                            Inbox
-                            {unReadNotificationsCount > 0 && (
-                                <span className="badge badge-secondary absolute -top-2 -right-2 text-xs">
-                                    {unReadNotificationsCount}
-                                </span>
-                            )}
-                        </button>
+                        <div className='w-1/2 flex gap-2'>
+                            {/* Theme Dropdown */}
+                            <div className="w-2/4 dropdown">
+                                <button tabIndex={0} className="btn w-full btn-ghost flex items-center gap-2">
+                                    Theme
+                                    <svg className="w-4 h-4" viewBox="0 0 2048 2048" fill="currentColor">
+                                        <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path>
+                                    </svg>
+                                </button>
+                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-lg w-44 p-2 shadow-xl">
+                                    {['light', 'retro', 'cyberpunk', 'valentine', 'aqua'].map((theme) => (
+                                        <li key={theme}>
+                                            <input
+                                                type="radio"
+                                                name="theme-dropdown"
+                                                className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+                                                value={theme}
+                                                aria-label={theme}
+                                                onChange={handleThemeChange}
+                                                checked={currentTheme === theme}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
 
-                        {/* Profile Dropdown */}
-                        <div className="dropdown ">
-                            <button tabIndex={0} className="flex items-center space-x-2 focus:outline-none" onClick={profileToggle}>
-                                <img src="/profile_picture.jpg" alt="Profile" className="w-10 h-10 rounded-full object-cover border border-gray-300" />
+
+                            {/* Notifications Icon */}
+
+                            <button className=" indicator w-1/4  btn btn-ghost flex items-center gap-2" onClick={() => setIsNotification(true)}>
+                                Inbox
+                                {unReadNotificationsCount > 0 && (
+                                    <span className="indicator-item badge badge-secondary">{unReadNotificationsCount}</span>
+                                )}
                             </button>
 
-                            <ul tabIndex={0} className="dropdown-content absolute right-0 mt-2 bg-base-100 rounded-lg w-52 p-2 shadow-xl border border-gray-200">
-                                <li>
-                                    <Link to="/profile" className="block w-full px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100">
-                                        Profile
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/settings" className="block w-full px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100">
-                                        Settings
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/signin" onClick={logoutHandle} className="block w-full px-4 py-2 text-sm font-medium text-red-600 rounded-md hover:bg-red-50">
-                                        Logout
-                                    </Link>
-                                </li>
-                            </ul>
+                            {/* Profile Dropdown */}
+                            <div className="w-1/4 dropdown flex justify-end">
+                                <button tabIndex={0} className="flex items-center space-x-2 focus:outline-none" onClick={profileToggle}>
+                                    <img src="/profile_picture.jpg" alt="Profile" className="w-10 h-10 rounded-full object-cover border border-gray-300" />
+                                </button>
+
+                                <ul tabIndex={0} className="dropdown-content absolute right-0 mt-12 bg-base-100 rounded-lg w-52 p-2 shadow-xl border border-gray-200">
+                                    <li>
+                                        <Link to="/profile" className="block w-full px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100">
+                                            Profile
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/settings" className="block w-full px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100">
+                                            Settings
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/signin" onClick={logoutHandle} className="block w-full px-4 py-2 text-sm font-medium text-red-600 rounded-md hover:bg-red-50">
+                                            Logout
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
                 </header>
 
                 {/* Main Dashboard Content */}
-                <main className="p-4">
+                <main className="pt-3 pr-4 pl-4 pb-0">
+
                     {/* Greeting & Aura Points */}
-                    <div className="mb-4">
-                        <h2 className="text-xl font-bold">Welcome back, {currentUser.name}!</h2>
-                        <div className="mt-1 text-gray-600">Current Aura Level: {level}</div>
-                        <div className="mt-1 bg-blue-100 rounded-lg">
-                            <div
-                                className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-lg"
-                                style={{ width: `${progressPercentage}%` }}
-                            >
-                                {100 - Math.round(progressPercentage)}% to next level
+                    <div className="mb-4 p-4 bg-base-100 shadow-lg rounded-lg">
+                        <h2 className="text-2xl font-semibold text-primary">Welcome back, {currentUser.name}!</h2>
+
+                        <div className="mt-2 text-base-content text-sm flex justify-between">
+                            <span className="font-medium">Current Aura Level:{level}</span>
+                            <span className="font-medium">Total Aura points:{currentUser.aura_points}</span>
+                        </div>
+
+                        <div className="mt-3">
+                            <div className="bg-base-200 rounded-full h-4">
+                                <div
+                                    className="bg-primary text-xs font-semibold text-primary-content text-center h-4 rounded-full transition-all duration-500 ease-in-out"
+                                    style={{ width: `${progressPercentage}%` }}
+                                >
+                                </div>
                             </div>
                         </div>
                     </div>
 
+
                     {/* Quick Stats */}
                     <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-3">
-                        <div className="p-3 bg-white border rounded-lg shadow-sm">
-                            <h3 className="text-base font-semibold">Upcoming Assignments</h3>
-                            <p>{dueAssignmentHandler()} assignments due this week</p>
+                        {/* Upcoming Assignments */}
+                        <div className="card bg-base-100 shadow-md border">
+                            <div className="card-body p-4">
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                    📌 Upcoming Assignments
+                                </h3>
+                                <p className="text-sm text-base-content">
+                                    {dueAssignmentHandler()} assignments due this week
+                                </p>
+                            </div>
                         </div>
-                        <div className="p-3 bg-white border rounded-lg shadow-sm">
-                            <h3 className="text-base font-semibold">Challenges in Progress</h3>
-                            <p>{dueChallengesHandler()} challenges to complete</p>
-                        </div>
-                        <div className="p-3 bg-white border rounded-lg shadow-sm">
-                            <h3 className="text-base font-semibold">Recent Achievements</h3>
-                            <ul className="list-disc ml-4">
-                                {achievement.slice(0, 3).map((achievements) => (
-                                    <li key={achievements._id} className="text-xs">{achievements.description}</li>
-                                ))}
-                            </ul>
-                            <button onClick={() => navigate("/achievement-tracking")}
-                                className="mt-2 px-2 py-1 rounded-lg bg-blue-500 hover:bg-blue-400 text-white text-xs"
-                            >
-                                See More
-                            </button>
-                        </div>
-                    </div>
 
-                    {/* Calendar & Active Challenges */}
-                    <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
-                        <div className="p-3 bg-white border rounded-lg shadow-sm">
-                            <h3 className="text-base font-semibold">Calendar</h3>
-                            <Calendar dueAssignments={dueAssignments} dueChallenges={dueChallenges} />
+                        {/* Challenges in Progress */}
+                        <div className="card bg-base-100 shadow-md border">
+                            <div className="card-body p-4">
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                    🚀 Challenges in Progress
+                                </h3>
+                                <p className="text-sm text-base-content">
+                                    {dueChallengesHandler()} challenges to complete
+                                </p>
+                            </div>
                         </div>
-                        <div className="p-3 bg-white border rounded-lg shadow-sm">
-                            <h3 className="text-base font-semibold">Active Challenges</h3>
-                            <ul className="mt-2">
-                                {challengeS.filter(challenge => challenge.participantDetails?.status === 'in-progress')
-                                    .map(challenge => (
-                                        <li key={challenge._id} className="text-sm">{challenge.title}</li>
-                                    ))
+
+                        {/* Recent Achievements */}
+                        <div className="card bg-base-100 shadow-md border">
+                            <div className="card-body p-4">
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                    🏆 Recent Achievements
+                                </h3>
+                                {
+                                    achievement.length == 0 &&
+
+                                    <p className="text-sm text-base-content">
+                                        No Achievements yet.
+                                    </p>
                                 }
-                            </ul>
+                                <ul className="list-disc ml-4 text-sm text-base-content">
+                                    {achievement.slice(0, 3).map((achievements) => (
+                                        <li key={achievements._id} className="text-xs">{achievements.description}</li>
+                                    ))}
+                                </ul>
+                                <div className="flex justify-end">
+                                    {achievement.length > 3 && (
+                                        <button
+                                            onClick={() => navigate("/achievement-tracking")}
+                                            className="btn btn-xs btn-primary mt-2"
+                                        >
+                                            See More
+                                        </button>
+                                    )}
+                                </div>
+
+                            </div>
                         </div>
                     </div>
 
-                    {/* Timetable Snapshot & Recent Activities */}
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                        <div className="p-3 bg-white border rounded-lg shadow-sm">
-                            <h3 className="text-base font-semibold">Today's Timetable</h3>
-                            <ul className="mt-2 list-disc ml-4 text-sm">
-                                <li>10:00 - 11:00 AM: Math</li>
-                                <li>11:30 - 12:30 PM: Science</li>
-                                <li>2:00 - 3:00 PM: History</li>
-                            </ul>
+
+                    {/* Two-column Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+
+                        {/* Left Box: Compact Calendar + Timetable */}
+                        <div className="card bg-base-100 shadow-lg border p-4 rounded-xl">
+                            <h3 className="text-lg font-semibold text-primary flex items-center gap-2 border-b pb-2">
+                                📅 <span className="text-accent">Calendar & Timetable</span>
+                            </h3>
+
+                            <div className="flex gap-4 mt-2">
+                                {/* Compact Calendar */}
+                                <div className="w-2/3 border-r pr-4">
+                                    <Calendar dueAssignments={dueAssignments} dueChallenges={dueChallenges} />
+                                </div>
+
+                                {/* Timetable Snapshot */}
+                                <div className="w-1/3 bg-gradient-to-r from-blue-100 to-blue-200 p-3 rounded-lg shadow-md">
+                                    <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                                        🕒 Timetable
+                                    </h4>
+                                    <ul className="mt-2 text-sm list-disc ml-4 text-gray-700">
+                                        <li>9:00 AM - 📖 Math</li>
+                                        <li>11:00 AM - 🧪 Science Lab</li>
+                                        <li>2:00 PM - 🏛️ History</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div className="p-3 bg-white border rounded-lg shadow-sm">
-                            <h3 className="text-base font-semibold">Recent Activities</h3>
-                            <ul className="mt-2 list-disc ml-4 text-sm">
-                                <li>Completed assignment in Science</li>
-                                <li>Earned 100 Aura points in Math Quiz</li>
-                                <li>Started "Literature Challenge"</li>
-                            </ul>
+
+                        {/* Right Box: Active Challenges + Recent Activities in One Row */}
+                        <div className="card bg-base-100 shadow-lg border p-4 rounded-xl">
+                            <h3 className="text-lg font-semibold text-primary flex items-center gap-2 border-b pb-2">
+                                🔥 <span className="text-accent">Active Challenges & Recent Activities</span>
+                            </h3>
+
+                            <div className="flex gap-4 mt-3">
+                                {/* Active Challenges (Left Side) */}
+                                <div className="w-1/2 bg-base-200 p-3 rounded-lg shadow-md hover:shadow-lg transition-all">
+                                    <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                                        🚀 Challenges
+                                    </h4>
+                                    <ul className="mt-2 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-primary">
+                                        {challengeS.filter(challenge => challenge.participantDetails?.status === 'in-progress')
+                                            .map(challenge => (
+                                                <li key={challenge._id} className="text-sm py-1 border-b last:border-none hover:text-blue-500">
+                                                    {challenge.title}
+                                                </li>
+                                            ))
+                                        }
+                                    </ul>
+                                </div>
+
+                                {/* Recent Activities (Right Side) */}
+                                <div className="w-1/2 bg-gradient-to-r from-green-100 to-green-200 p-3 rounded-lg shadow-md hover:shadow-lg transition-all">
+                                    <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                                        🔄 Recent Activities
+                                    </h4>
+                                    <ul className="mt-2 text-sm list-disc ml-4 text-gray-700">
+                                        <li>✅ Completed Science Assignment</li>
+                                        <li>🏆 Earned 100 Aura points in Quiz</li>
+                                        <li>📖 Started "Literature Challenge"</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
+
+
                 </main>
             </div>
 
-            {/* Drawer Side (Left Navigation Menu) */}
-            <div className="drawer-side">
-                <label htmlFor="drawer-toggle" className="drawer-overlay"></label>
-                <aside className="w-64 h-screen bg-white border-r">
-                    <nav className="mt-6">
-                        <ul className="space-y-2">
-                            <li className="px-4 py-2 bg-blue-100 rounded text-blue-600 font-semibold">
-                                <Link to="/">Dashboard</Link>
-                            </li>
-                            <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                                <Link to="/course-management-user">Course Management</Link>
-                            </li>
-                            <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                                <Link to="/assignment-tracking">Assignment Tracking</Link>
-                            </li>
-                            <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                                <Link to="/leaderboards">Leaderboards</Link>
-                            </li>
-                            <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                                <Link to="/rewards-challenges">Rewards and Challenges</Link>
-                            </li>
-                            <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                                <Link to="/timetable">Timetable</Link>
-                            </li>
-                            <li className="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                                <Link to="/settings">Settings</Link>
-                            </li>
-                        </ul>
-                    </nav>
-                </aside>
-            </div>
+            <LeftDrawer title="Dashboard"/>
 
             {/* Notifications Modal */}
             {isNotification && (
