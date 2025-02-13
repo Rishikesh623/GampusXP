@@ -94,7 +94,9 @@ const login = async (req, res) => {
         // send the token as an HttpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: false, // set to true in production with HTTPS
+            secure: true, // set to true in production with HTTPS
+            sameSite: 'none',
+            domain: "campusxp.onrender.com",
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000 // 7 days or 1 hour in milliseconds
         });
         // console.log(token);
