@@ -13,7 +13,6 @@ const userSlice = createSlice({
             state.name = action.payload.name;
             state.reg_no = action.payload.reg_no;
             state.email = action.payload.email;
-            state.password = action.payload.password;
             state.aura_points = action.payload.aura_points;
         },
         updateRegNo: (state, action) => {

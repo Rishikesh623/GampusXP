@@ -10,6 +10,7 @@ import { clearChallegneS, setChallengeS } from '../redux/challenges/challengesSl
 import { clearAchievement, setAchievement } from '../redux/achievement/achievementSlice';
 import Calendar from "../components/Calendar"
 import LeftDrawer from '../components/LeftDrawer';
+import { setTimeTable } from '../redux/timetable/timetableSlice';
 // import '../style/Main.css';
 
 const Main = () => {
@@ -27,6 +28,7 @@ const Main = () => {
     const [dueChallenges, setDueChallenges] = useState([{}]);
     const [level, setLevel] = useState(0);
     const [progressPercentage, setProgressPercentage] = useState(0);
+    const [todaysTimetable, setTodaysTimetable] = useState({});
 
     // Redux state slices
     const cassignment = useSelector((state) => state.cassignment.cassignment);
@@ -80,8 +82,12 @@ const Main = () => {
 
         const getAchievements = async () => {
             try {
+                if (cassignment.length !== 0) {
+                    return;
+                }
                 const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/achievement/achievements/`, { withCredentials: true });
-                dispatch(setAchievement(res.data.achievements.achievements));
+                if (res.data.achievements)
+                    dispatch(setAchievement(res.data.achievements.achievements));
             } catch (err) {
                 console.log("Error in fetching achievements:", err.response?.data?.message || err.message);
             }
@@ -89,6 +95,9 @@ const Main = () => {
 
         const getUserProfile = async () => {
             try {
+                if (currentUser.name !== null) {
+                    return;
+                }
                 const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/profile`, {
                     withCredentials: true,
                 });
@@ -120,6 +129,29 @@ const Main = () => {
             }
         };
 
+        const getTodaysTImetable = async () => {
+            try {
+                if (!todaysTimetable || Object.keys(todaysTimetable).length === 0) {
+                    // Get current day
+                    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const currentDay = days[new Date().getDay()];
+
+                    const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/timetable/${currentDay}`, {
+                        withCredentials: true,
+                    });
+
+                    if (res.data) {
+                        setTodaysTimetable(res.data.days[0]);
+                        dispatch(setTimeTable({ ctimetable: res.data.days }));
+                    }
+                }
+
+            }
+            catch (err) {
+                console.error('Error fetching todays timetable:', err)
+            }
+        }
+
         // Call the functions
         fetchNotifications();
         getChallenges();
@@ -127,8 +159,9 @@ const Main = () => {
         getAchievements();
         auraLevelHandler();
         getUserProfile();
+        getTodaysTImetable();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch, currentUser]);
+    }, [currentUser]);
 
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));
@@ -387,14 +420,24 @@ const Main = () => {
 
                                 {/* Timetable Snapshot */}
                                 <div className="w-1/3 bg-gradient-to-r from-blue-100 to-blue-200 p-3 rounded-lg shadow-md">
-                                    <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                                    <h4 className="text-md mb-2 font-semibold text-secondary flex items-center gap-2">
                                         🕒 Timetable
                                     </h4>
-                                    <ul className="mt-2 text-sm list-disc ml-4 text-gray-700">
-                                        <li>9:00 AM - 📖 Math</li>
-                                        <li>11:00 AM - 🧪 Science Lab</li>
-                                        <li>2:00 PM - 🏛️ History</li>
-                                    </ul>
+                                    {todaysTimetable?.slots?.length > 0 ? (
+                                        <ul className="space-y-2">
+                                            {todaysTimetable.slots.map((slot, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="flex justify-between items-center text-sm bg-white text-gray-800 px-3 py-1.5 rounded-md shadow-sm"
+                                                >
+                                                    <span className="font-semibold text-blue-600">{slot.time}</span>
+                                                    <span className="text-right text-gray-700 text-sm">{slot.course}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <div className="text-gray-500 text-sm italic">No classes today 🎉</div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -442,7 +485,7 @@ const Main = () => {
                 </main>
             </div>
 
-            <LeftDrawer title="Dashboard"/>
+            <LeftDrawer title="Dashboard" />
 
             {/* Notifications Modal */}
             {isNotification && (

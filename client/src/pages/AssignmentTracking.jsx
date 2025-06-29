@@ -16,6 +16,7 @@ const AssignmentTracking = () => {
 
     const fetchAssignments = async () => {
         try {
+            console.log(process.env.REACT_APP_BASE_URL);
             const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/assignment`, { withCredentials: true });
             setAssignments(res.data.assignments.reverse() || []);
         } catch (error) {

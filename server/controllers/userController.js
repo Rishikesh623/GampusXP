@@ -7,6 +7,11 @@ const validator = require("validator");
 //secret key for JWT
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
+//for production and dev diff
+const isProd = process.env.NODE_ENV === 'prod';
+
+//domain in prod
+const DOMAIN = process.env.DOMAIN;
 
 //get users API
 const getUsers = async (req, res) => {
@@ -51,7 +56,7 @@ const register = async (req, res) => {
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1d' });
 
         // send the token back as an HttpOnly cookie (secure for production)
-        res.cookie('token', token, { httpOnly: true, secure: true });
+        res.cookie('token', token, { httpOnly: true, secure: SECURE_STATUS });
         res.status(201).json({ name, reg_no, email });
 
     } catch (error) {
@@ -94,13 +99,11 @@ const login = async (req, res) => {
         // send the token as an HttpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true, // set to true in production with HTTPS
-            sameSite: 'none',
-            domain: "campusxp.onrender.com",
+            secure: isProd, // set to true in production with HTTPS
+            sameSite: isProd ? 'none' : 'lax', // 'none' for cross-origin in prod, 'lax' works in dev
+            domain: isProd ? DOMAIN : 'localhost', // match  domain
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000 // 7 days or 1 hour in milliseconds
         });
-        // console.log(token);
-
         res.status(200).json({ name: user.name, reg_no: user.reg_no, email: user.email });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });

@@ -21,6 +21,7 @@ import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
 import { setUserProfile } from '../src/redux/user/userSlice';
+import PrivateRoute from './components/PrivateRouter';
 
 const App = () => {
   const theme = useSelector((state) => state.theme);
@@ -33,16 +34,14 @@ const App = () => {
         const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/profile`, {
           withCredentials: true, // Include cookies in the request
         });
-
         const data = res.data;
 
         if (!res) {
-          console.log(data.message);
+          // console.log(data.message);
           return;
         }
 
         if (data && data.reg_no) {
-          // console.log(data);
           dispatch(setUserProfile({
             name: data.name,
             reg_no: data.reg_no,
@@ -67,20 +66,20 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/main" element={<Main />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/other-user-profile" element={<OtherUserProfile />} />
-        <Route path="/course-management-user" element={<CourseManagementUser />} />
-        <Route path="/course-management-coordinator" element={<CourseManagementCoordinator />} />
-        <Route path="/assignment-tracking" element={<AssignmentTracking />} />
-        <Route path="/achievement-tracking" element={<Achievement />} />
-        <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/rewards-challenges" element={<RewardsAndChallenges />} />
-        <Route path="/proposed-challenges" element={<ProposedChallenges />} />
-        <Route path="/accepted-challenges" element={<AcceptedChallenges />} />
-        <Route path="/coordinator-challenges" element={<CoordinatorChallenges />} />
-        <Route path="/timetable" element={<Timetable />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/other-user-profile" element={<PrivateRoute><OtherUserProfile /></PrivateRoute>} />
+        <Route path="/course-management-user" element={<PrivateRoute><CourseManagementUser /></PrivateRoute>} />
+        <Route path="/course-management-coordinator" element={<PrivateRoute><CourseManagementCoordinator /></PrivateRoute>} />
+        <Route path="/assignment-tracking" element={<PrivateRoute><AssignmentTracking /></PrivateRoute>} />
+        <Route path="/achievement-tracking" element={<PrivateRoute><Achievement /></PrivateRoute>} />
+        <Route path="/leaderboards" element={<PrivateRoute><Leaderboards /></PrivateRoute>} />
+        <Route path="/rewards-challenges" element={<PrivateRoute><RewardsAndChallenges /></PrivateRoute>} />
+        <Route path="/proposed-challenges" element={<PrivateRoute><ProposedChallenges /></PrivateRoute>} />
+        <Route path="/accepted-challenges" element={<PrivateRoute><AcceptedChallenges /></PrivateRoute>} />
+        <Route path="/coordinator-challenges" element={<PrivateRoute><CoordinatorChallenges /></PrivateRoute>} />
+        <Route path="/timetable" element={<PrivateRoute><Timetable /></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
       </Routes>
     </div>
   );

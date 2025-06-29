@@ -14,9 +14,14 @@ const achievementRoutes = require('./routes/achievementRoutes.js');
 const notificationRoutes = require('./routes/notificationRoutes.js');
 
 const app = express();
-console.log("Loaded ORIGIN_URL:", process.env.ORIGIN_URL);
+
+//for production and dev diff
+const isProd = process.env.NODE_ENV === 'prod';
+
+console.log("Loaded ORIGIN_URL:", isProd ? process.env.ORIGIN_URL : 'http://localhost:3000');
+
 app.use(cors({
-    origin: process.env.ORIGIN_URL, // allow requests only from this origin
+    origin: isProd ? process.env.ORIGIN_URL : 'http://localhost:3000', // allow requests only from this origin
     credentials: true,               // allow cookies and credentials
 }));
 
@@ -40,7 +45,7 @@ app.use("/notifications", notificationRoutes);
 
 
 const PORT = process.env.PORT || 8080;
-const MOGO_URI = process.env.MOGO_URI;
+const MOGO_URI = isProd ? process.env.MOGO_URI : 'mongodb://0.0.0.0:27017/CampusXP'  ;
 
 app.listen(PORT, (error) => {
     if (error) {

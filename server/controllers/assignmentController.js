@@ -6,14 +6,14 @@ const getAssignments = async (req, res) => {
         // console.log(res.body);
         const assignmentDoc = await assignmentModel.findOne({ creator_id: req.user._id });
         if (!assignmentDoc) {
-            return res.status(404).json({ message: "NO assignments forund." });
+            return res.status(200).json({ message: "NO assignments found." });
         }
         const assignments = assignmentDoc.assignments;
 
         res.status(201).json({ message: "Success", assignments });
     }
     catch (error) {
-        res.status(500).json({ message: "Serevr error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 }
 const addAssignment = async (req, res) => {

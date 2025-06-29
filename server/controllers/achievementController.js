@@ -9,7 +9,7 @@ getAchievements = async (req, res) => {
     // console.log(user.req._id);
 
     if (!achievements) {
-      return res.status(404).json({ message: 'No achievemenets yet.' });
+      return res.status(200).json({ message: 'No achievemenets yet.' });
     }
 
     res.status(200).json({ achievements: achievements });

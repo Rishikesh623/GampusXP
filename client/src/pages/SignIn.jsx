@@ -69,7 +69,6 @@ const SignIn = () => {
                         name: data.name,
                         reg_no: data.reg_no,
                         email: data.email,
-                        password: data.password,
                         aura_points: data.aura_points
                     }));
 
