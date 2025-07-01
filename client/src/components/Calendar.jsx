@@ -46,41 +46,36 @@ const CustomCalendar = ({ dueAssignments, dueChallenges }) => {
     // console.log(currentDate.getDate());
 
     return (
-        <div className="custom-calendar">
-            <h3 className="calendar-title">{currentDate.toLocaleString('default', { month: 'long' })} {currentYear}</h3>
-            <div className="calendar-grid">
-                {Array.from({ length: daysInMonth }, (_, index) => {
-                    const day = index + 1;
-                    const formattedDate = formatDate(day);
-                    const matchedDate = markedDates.find(item => item.date === formattedDate);
+        <div className="grid grid-cols-7 sm:grid-cols-7 xs:grid-cols-5 gap-2 w-full max-w-[400px] sm:max-w-none">
+            {Array.from({ length: daysInMonth }, (_, index) => {
+                const day = index + 1;
+                const formattedDate = formatDate(day);
+                const matchedDate = markedDates.find(item => item.date === formattedDate);
 
-                    const isMarked = !!matchedDate;
-                    const statusClass = matchedDate
-                        ? matchedDate.status === 'pending'
-                            ? 'pending'
-                            : matchedDate.status === 'completed'
-                                ? 'completed'
-                                : ''
-                        : '';
+                const isMarked = !!matchedDate;
+                const statusClass = matchedDate
+                    ? matchedDate.status === 'pending'
+                        ? 'bg-yellow-200'
+                        : matchedDate.status === 'completed'
+                            ? 'bg-green-300'
+                            : ''
+                    : '';
 
-                    return (
-                        <div
-                            key={day}
-                            className={`calendar-cell ${isMarked ? 'marked' : ''} ${statusClass} ${currentDate.getDate() === day ? 'border-2 border-yellow-400' : ''}`}
-                            onMouseEnter={() => handleMouseEnter(formattedDate)}
-                            onMouseLeave={handleMouseLeave}
-                        >
-                            {day}
-                        </div>
-                    );
-                })}
-            </div>
-            {hoveredDate && (
-                <div className="calendar-tooltip">
-                    {details}
-                </div>
-            )}
+                return (
+                    <div
+                        key={day}
+                        className={`text-center rounded-lg p-2 text-sm sm:text-base ${isMarked ? statusClass : 'bg-gray-100'} ${currentDate.getDate() === day ? 'border-2 border-yellow-400' : ''
+                            }`}
+                        onMouseEnter={() => handleMouseEnter(formattedDate)}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        {day}
+                    </div>
+                );
+            })}
         </div>
+
+
     );
 };
 

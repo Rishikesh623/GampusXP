@@ -45,7 +45,8 @@ const App = () => {
           dispatch(setUserProfile({
             name: data.name,
             reg_no: data.reg_no,
-            email: data.email
+            email: data.email,
+            aura_points: data.aura_points
           }));
         }
 
