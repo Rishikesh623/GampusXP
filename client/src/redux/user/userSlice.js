@@ -45,7 +45,7 @@ const userSlice = createSlice({
             }
 
             logOut();
-
+            
             return { name: null, email: null, reg_no: null, aura_points: 0 };
         },
     }

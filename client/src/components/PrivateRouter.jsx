@@ -5,7 +5,7 @@ const PrivateRoute = ({ children }) => {
   const user = useSelector(state => {
     return state.user;
   });
-
+  console.log(user);
   return user.email ? children : <Navigate to="/signin" />;
 
 };

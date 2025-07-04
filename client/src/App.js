@@ -22,7 +22,8 @@ import Profile from './pages/Profile';
 import axios from 'axios';
 import { setUserProfile } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
-import Welcome from './pages/Welocome';
+import Welcome from './pages/Welcome';
+import NotFound from './pages/NotFound';
 
 const App = () => {
   const theme = useSelector((state) => state.theme);
@@ -68,7 +69,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/welcome" element={<Welcome/>} />
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/other-user-profile" element={<PrivateRoute><OtherUserProfile /></PrivateRoute>} />
@@ -83,6 +84,7 @@ const App = () => {
         <Route path="/coordinator-challenges" element={<PrivateRoute><CoordinatorChallenges /></PrivateRoute>} />
         <Route path="/timetable" element={<PrivateRoute><Timetable /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

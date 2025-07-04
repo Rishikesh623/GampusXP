@@ -1,8 +1,25 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: ["./src/**/*.{js,jsx}"],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        fall: 'fall 4s linear infinite',
+        float: 'float 2.5s ease-in-out infinite',
+      },
+      keyframes: {
+        fall: {
+          '0%': { transform: 'translateY(-100px)', opacity: 1 },
+          '100%': { transform: 'translateY(100vh)', opacity: 0 },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '50%': { transform: 'translateX(5px)' },
+        },
+      },
+    }
+
   },
   plugins: [require('daisyui'),],
 
@@ -42,6 +59,6 @@ module.exports = {
       "sunset",
     ],
   },
-  
+
 }
 

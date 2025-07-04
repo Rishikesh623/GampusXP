@@ -82,7 +82,8 @@ const SignUp = () => {
                 dispatch(setUserProfile({
                     name: formData.name, reg_no: formData.reg_no, email: formData.email,
                 }));
-                navigate('/welcome');
+                navigate('/welcome', { state: { fromRegister: true } });
+
             }
         } catch (err) {
             console.log(err);
