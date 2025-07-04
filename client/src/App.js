@@ -22,6 +22,7 @@ import Profile from './pages/Profile';
 import axios from 'axios';
 import { setUserProfile } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
+import Welcome from './pages/Welocome';
 
 const App = () => {
   const theme = useSelector((state) => state.theme);
@@ -35,7 +36,7 @@ const App = () => {
           withCredentials: true, // Include cookies in the request
         });
         const data = res.data;
-
+        console.log(data);
         if (!res) {
           // console.log(data.message);
           return;
@@ -67,6 +68,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/welcome" element={<Welcome/>} />
         <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/other-user-profile" element={<PrivateRoute><OtherUserProfile /></PrivateRoute>} />

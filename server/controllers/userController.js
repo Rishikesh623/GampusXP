@@ -52,11 +52,6 @@ const register = async (req, res) => {
         user = new userModel({ name, reg_no, email, password });
         await user.save();
 
-        // generate a JWT token
-        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1d' });
-
-        // send the token back as an HttpOnly cookie (secure for production)
-        res.cookie('token', token, { httpOnly: true, secure: SECURE_STATUS });
         res.status(201).json({ name, reg_no, email });
 
     } catch (error) {
@@ -96,14 +91,21 @@ const login = async (req, res) => {
         // generate a JWT token
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: tokenExpiry });
 
-        // send the token as an HttpOnly cookie
-        res.cookie('token', token, {
-            httpOnly: true,
+        const cookieOptions = {
+            httpOnly: true, // send the token as an HttpOnly cookie
             secure: isProd, // set to true in production with HTTPS
             sameSite: isProd ? 'none' : 'lax', // 'none' for cross-origin in prod, 'lax' works in dev
-            domain: isProd ? DOMAIN : 'localhost', // match  domain
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000 // 7 days or 1 hour in milliseconds
-        });
+
+        }
+        if (isProd) {
+            cookieOptions.domain = DOMAIN;
+        } else {
+            delete cookieOptions.domain;
+        }
+
+        res.cookie('token', token, cookieOptions);
+
         res.status(200).json({ name: user.name, reg_no: user.reg_no, email: user.email });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -252,9 +254,29 @@ const changePassword = async (req, res) => {
 
 // logout API
 const logout = async (req, res) => {
-    res.clearCookie('token'); //clears the cookie
-    return res.status(200).json({ message: "Logged out successfully" });
+
+    try {
+
+        const clearOptions = {
+            httpOnly: true,
+            sameSite: isProd ? 'none' : 'lax',
+            secure: isProd,
+        };
+
+        if (isProd) {
+            clearOptions.domain = DOMAIN;
+        }
+
+        //clears the cookie
+        res.clearCookie('token', clearOptions);
+
+        return res.status(200).json({ message: "Logged out successfully" });
+    }
+    catch (err) {
+        return res.status(500).json(err.message);
+    }
+
 }
 
 
-module.exports = { getUsers, login, register, logout, getProfile, getOtherUserProfile, editProfile, logout, changePassword, coordinatorLogin };
+module.exports = { getUsers, login, register, logout, getProfile, getOtherUserProfile, editProfile, changePassword, coordinatorLogin };

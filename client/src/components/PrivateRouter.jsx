@@ -6,7 +6,7 @@ const PrivateRoute = ({ children }) => {
     return state.user;
   });
 
-  return user ? children : <Navigate to="/signin" />;
+  return user.email ? children : <Navigate to="/signin" />;
 
 };
 

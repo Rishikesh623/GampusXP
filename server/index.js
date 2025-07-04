@@ -45,7 +45,7 @@ app.use("/notifications", notificationRoutes);
 
 
 const PORT = process.env.PORT || 8080;
-const MOGO_URI = isProd ? process.env.MOGO_URI : 'mongodb://0.0.0.0:27017/CampusXP'  ;
+const MOGO_URI = isProd ? process.env.MOGO_URI : process.env.MOGO_URI  ;
 
 app.listen(PORT, (error) => {
     if (error) {

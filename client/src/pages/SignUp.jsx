@@ -14,7 +14,7 @@ const SignUp = () => {
         reg_no: "",
         email: "",
         password: "",
-        confirmPassword: ""
+        confirm_password: ""
     });
 
     const [xp, setXp] = useState(0);
@@ -56,7 +56,7 @@ const SignUp = () => {
             return "Password must be at least 8 characters.";
         }
 
-        if (formData.confirmPassword !== formData.password) {
+        if (formData.confirm_password !== formData.password) {
             return "Passwords do not match.";
         }
 
@@ -75,15 +75,17 @@ const SignUp = () => {
 
         try {
             const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/register`, formData);
+            console.log(res);
             if (res) {
                 setSuccess("Registration Successful");
                 setError(null);
                 dispatch(setUserProfile({
-                        name: formData.name, reg_no: formData.reg_no, email: formData.email,
-                    }));
-                navigate("/signin");
+                    name: formData.name, reg_no: formData.reg_no, email: formData.email,
+                }));
+                navigate('/welcome');
             }
         } catch (err) {
+            console.log(err);
             setError(err.response?.data?.message || "An error occurred");
         }
     };
@@ -103,7 +105,7 @@ const SignUp = () => {
                 </div>
 
                 <form className="space-y-4" onSubmit={onSubmitForm}>
-                    {['name', 'reg_no', 'email', 'password', 'confirmPassword'].map((field, index) => (
+                    {['name', 'reg_no', 'email', 'password', 'confirm_password'].map((field, index) => (
                         <div className="form-control relative mb-4" key={index}>
                             <input
                                 type={field.toLowerCase().includes("password") ? (showPassword ? "text" : "password") : "text"}
