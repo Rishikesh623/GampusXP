@@ -6,7 +6,7 @@ const userModel = require("../models/userModel");
 const mongoose = require('mongoose');
 
 //create challnege API 
-createChallenge = async (req, res) => {
+const createChallenge = async (req, res) => {
     try {
         const { title, description, aura_points, end_date } = req.body;
 
@@ -21,7 +21,7 @@ createChallenge = async (req, res) => {
 
 
 // updateChallenge API
-updateChallenge = async (req, res) => {
+const updateChallenge = async (req, res) => {
     try {
         const { challenge_id, title, description, aura_points, end_date } = req.body;
 
@@ -54,7 +54,7 @@ updateChallenge = async (req, res) => {
 
 
 // propose Challenge API
-proposeChallenge = async (req, res) => {
+const proposeChallenge = async (req, res) => {
     try {
         const { title, description, aura_points, end_date, invitedUsers, isPublic } = req.body;
 
@@ -86,7 +86,7 @@ proposeChallenge = async (req, res) => {
 
 
 // invite others to challenge API 
-inviteOthers = async (req, res) => {
+const inviteOthers = async (req, res) => {
     try {
         const { challenge_id, invitee_id } = req.body;
 
@@ -111,7 +111,7 @@ inviteOthers = async (req, res) => {
 };
 
 //accept the propose challenge
-acceptChallenge = async (req, res) => {
+const acceptChallenge = async (req, res) => {
     try {
         const { _id } = req.body;
 
@@ -148,7 +148,7 @@ acceptChallenge = async (req, res) => {
 
 
 
-getChallenges = async (req, res) => {
+const getChallenges = async (req, res) => {
     try {
 
         const challenges = await challengesModel.find({
@@ -165,7 +165,7 @@ getChallenges = async (req, res) => {
     }
 };
 
-getProposedChallenges = async (req, res) => {
+const getProposedChallenges = async (req, res) => {
     try {
 
         const challenges = await challengesModel.find({
@@ -182,7 +182,7 @@ getProposedChallenges = async (req, res) => {
     }
 };
 
-getAcceptedChallenges = async (req, res) => {
+const getAcceptedChallenges = async (req, res) => {
     try {
 
         const challenges = await challengesModel.find({
@@ -210,7 +210,7 @@ getAcceptedChallenges = async (req, res) => {
     }
 };
 
-markComplete = async (req, res) => {
+const markComplete = async (req, res) => {
     try {
         const { _id } = req.body;
 
@@ -274,7 +274,7 @@ markComplete = async (req, res) => {
 
 
 //delete challnge API
-deleteChallenge = async (req, res) => {
+const deleteChallenge = async (req, res) => {
     try {
         const { _id } = req.body;
 
@@ -303,7 +303,7 @@ deleteChallenge = async (req, res) => {
 };
 
 //deduct half the reward
-deductAurapoint = async (req, res) => {
+const deductAurapoint = async (req, res) => {
     try {
         const { _id } = req.body;
 

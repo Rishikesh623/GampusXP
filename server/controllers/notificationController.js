@@ -2,7 +2,7 @@ const courseModel = require('../models/courseModel');
 const notificationModel = require('../models/notificationModel');
 
 
-// get course API - coordinator only
+// get notification
 const getNotifications = async (req, res) => {
     try {
 
@@ -23,7 +23,7 @@ const getNotifications = async (req, res) => {
     }
 };
 
-// add notification API - coordinator only
+// add notification API
 const addNotification = async (req, res) => {
     try {
         const { user_id, title, message } = req.body;

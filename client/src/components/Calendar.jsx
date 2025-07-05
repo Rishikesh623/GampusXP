@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import '../style/Calendar.css';
 
-const CustomCalendar = ({ dueAssignments, dueChallenges }) => {
+const Calendar = ({ dueAssignments, dueChallenges }) => {
     const [hoveredDate, setHoveredDate] = useState(null);
-    const [details, setDetails] = useState('');
+    const [details, setDetails] = useState(null);
 
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
@@ -31,10 +31,10 @@ const CustomCalendar = ({ dueAssignments, dueChallenges }) => {
     ];
 
     const handleMouseEnter = (date) => {
-        const match = markedDates.find(item => item.date === date);
-        if (match) {
+        const matches = markedDates.filter(item => item.date === date);
+        if (matches.length > 0) {
             setHoveredDate(date);
-            setDetails(`${match.type} due on ${date}`);
+            setDetails(matches.map(m => `${m.type} due on ${date}`));
         }
     };
 
@@ -70,13 +70,21 @@ const CustomCalendar = ({ dueAssignments, dueChallenges }) => {
                         onMouseLeave={handleMouseLeave}
                     >
                         {day}
+                        {hoveredDate === formattedDate && (
+                            <div className="absolute z-20 top-20 -right-10 -translate-x-1/2 bg-base-100 text-sm px-3 py-2 rounded-md shadow-lg border border-gray-200 whitespace-nowrap">
+                                {details.map((line, i) => (
+                                    <div key={i}>{line}</div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 );
             })}
+
         </div>
 
 
     );
 };
 
-export default CustomCalendar;
+export default Calendar;

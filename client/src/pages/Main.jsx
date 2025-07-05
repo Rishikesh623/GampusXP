@@ -12,11 +12,13 @@ import Calendar from "../components/Calendar"
 import LeftDrawer from '../components/LeftDrawer';
 import NavBar from '../components/NavBar';
 import { setTimeTable } from '../redux/timetable/timetableSlice';
+import { useToast } from '../components/ToastProvider';
 // import '../style/Main.css';
 
 const Main = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
     const currentTheme = useSelector((state) => state.theme);
     const currentUser = useSelector((state) => state.user);
@@ -173,11 +175,32 @@ const Main = () => {
     };
 
     const logoutHandle = () => {
-        dispatch(logout());
-        dispatch(clearAssignment());
-        dispatch(clearChallegneS());
-        dispatch(clearAchievement());
-        persistor.purge();
+
+        async function logOut() {
+            try {
+                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/logout`, {}, {
+                    withCredentials: true
+                });
+
+                dispatch(logout());
+                dispatch(clearAssignment());
+                dispatch(clearChallegneS());
+                dispatch(clearAchievement());
+                persistor.purge();
+                showToast({ message: res.data.message , type: "success" });
+            } catch (error) {
+                if (error.response) {
+                    showToast({ message: error.response.data.message || "Something went wrong!", type: "error" });
+                } else if (error.request) {
+                    showToast({ message: "No response from server. Check your connection.", type: "error" });
+                } else {
+                    showToast({ message: "Unexpected error occurred.", type: "error" });
+                }
+            }
+        }
+
+        logOut()
+
     };
 
     const dueAssignmentHandler = () => {
@@ -230,9 +253,9 @@ const Main = () => {
                 <NavBar
                     currentTheme={currentTheme}
                     handleThemeChange={handleThemeChange}
-                    setIsNotification ={setIsNotification}
+                    setIsNotification={setIsNotification}
                     unReadNotificationsCount={unReadNotificationsCount}
-                    profileToggle = {profileToggle}
+                    profileToggle={profileToggle}
                     logoutHandle={logoutHandle}
                 />
 

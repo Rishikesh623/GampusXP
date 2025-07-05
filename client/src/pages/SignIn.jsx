@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setUserProfile } from "../redux/user/userSlice";
 import axios from "axios"
+import { useToast } from "../components/ToastProvider";
 
 const SignIn = () => {
     const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const SignIn = () => {
 
     const navigate = useNavigate();
 
+    const { showToast } = useToast();
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
@@ -38,6 +40,8 @@ const SignIn = () => {
 
                 if (res) {
                     setSuccess("Login Successfull");
+                    showToast({ message: "Login Successfull", type: "success" });
+
                     dispatch(setUserProfile({
                         reg_no: formData.id,
                         name: "Co-ordinator",
@@ -47,23 +51,21 @@ const SignIn = () => {
                     navigate("/course-management-coordinator");
                 }
                 else {
-                    setError(data.message || "Login Failed");
+                    showToast({ message: data.message || "Login Failed", type: "error" });
                 }
             }
             catch (err) {
-                console.log("Error in isCoordinator block", err);
-                setError(err.response.data.message || "An error occurred")
+                showToast({ message: err.response.data.message || "An error occurred", type: "error" });
             }
         }
         else {
             try {
-                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, formData, {withCredentials: true, credentials: 'include'});
+                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, formData, { withCredentials: true, credentials: 'include' });
                 const data = res.data;
-
-                console.log(data);
 
                 if (res) {
                     setSuccess("Login Successfull");
+                    showToast({ message: "Login Successfull", type: "success" });
 
                     dispatch(setUserProfile({
                         name: data.name,
@@ -71,15 +73,14 @@ const SignIn = () => {
                         email: data.email,
                         aura_points: data.aura_points
                     }));
-
                     navigate("/main");
                 }
                 else {
-                    setError(data.message || "Login Failed");
+                    showToast({ message: data.message || "Login Failed", type: "error" });
                 }
             }
             catch (err) {
-                setError(err.response.data.message || "An error occurred")
+                showToast({ message: err.response.data.message || "An error occurred", type: "error" });
             }
         }
     }
@@ -87,11 +88,11 @@ const SignIn = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-white logo_bg">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-black text-center">Sign In</h2>
+                <h2 className="text-2xl font-bold text-black text-center">Sign In</h2>
                 <form className="space-y-4" onSubmit={onSubmitForm}>
 
                     {/* ID Input */}
-                    <div className="form-control">
+                    <div className="form-control relative mb-4">
                         <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +105,7 @@ const SignIn = () => {
                                     d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                             </svg>
                             <input type="text"
-                                
+                                className="w-full"
                                 name="id"
                                 onChange={onChangeForm}
                                 value={formData.id}
@@ -113,7 +114,7 @@ const SignIn = () => {
                     </div>
 
                     {/* Password Input */}
-                    <div className="form-control">
+                    <div className="form-control relative mb-4">
                         <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +126,8 @@ const SignIn = () => {
                                     d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                                     clipRule="evenodd" />
                             </svg>
-                            <input type="password"
+                            <input className="w-full"
+                                type="password"
                                 name="password"
                                 onChange={onChangeForm}
                                 value={formData.password}

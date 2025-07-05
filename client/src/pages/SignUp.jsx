@@ -75,7 +75,7 @@ const SignUp = () => {
 
         try {
             const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/register`, formData);
-            console.log(res);
+
             if (res) {
                 setSuccess("Registration Successful");
                 setError(null);

@@ -26,26 +26,6 @@ const userSlice = createSlice({
             state.aura_points = action.payload;
         },
         logout: (state) => {
-            async function logOut() {
-                try {
-                    const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/logout`,{}, {
-                        withCredentials: true
-                    });
-                    const data = res.data;
-                    console.log(data);
-
-                    if (!res) {
-                        alert("Error occurred while logout!!!");
-                        return;
-                    }
-                    
-                } catch (error) {
-                    alert("Error occurred while logout!!!");
-                }
-            }
-
-            logOut();
-            
             return { name: null, email: null, reg_no: null, aura_points: 0 };
         },
     }
