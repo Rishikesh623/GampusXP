@@ -16,7 +16,7 @@ import Settings from './pages/Settings';
 import CoordinatorChallenges from './pages/CoordinatorChallenges';
 import ProposedChallenges from './pages/ProposedChallenges';
 import AcceptedChallenges from './pages/AcceptedChallenges';
-import Achievement from './pages/Achievements';
+import Achievements from './pages/Achievements';
 import OtherUserProfile from './pages/OtherUserProfile'
 import './style.css';
 import Profile from './pages/Profile';
@@ -25,7 +25,8 @@ import { logout,setUserProfile } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
-import CoordinatorPage from './pages/CoordinatorPage';
+import Coordinator from './pages/Coordinator';
+import Activity from './pages/Activity';
 
 const App = () => {
   const theme = useSelector((state) => state.theme);
@@ -70,17 +71,18 @@ const App = () => {
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/activity" element={<PrivateRoute><Activity /></PrivateRoute>} />
         <Route path="/other-user-profile" element={<PrivateRoute><OtherUserProfile /></PrivateRoute>} />
         <Route path="/course-management-user" element={<PrivateRoute><CourseManagementUser /></PrivateRoute>} />
         <Route path="/assignment-tracking" element={<PrivateRoute><AssignmentTracking /></PrivateRoute>} />
-        <Route path="/achievement-tracking" element={<PrivateRoute><Achievement /></PrivateRoute>} />
+        <Route path="/achievements" element={<PrivateRoute><Achievements /></PrivateRoute>} />
         <Route path="/leaderboards" element={<PrivateRoute><Leaderboards /></PrivateRoute>} />
         <Route path="/rewards-challenges" element={<PrivateRoute><RewardsAndChallenges /></PrivateRoute>} />
         <Route path="/proposed-challenges" element={<PrivateRoute><ProposedChallenges /></PrivateRoute>} />
         <Route path="/accepted-challenges" element={<PrivateRoute><AcceptedChallenges /></PrivateRoute>} />
         <Route path="/timetable" element={<PrivateRoute><Timetable /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-        <Route path="/coordinator" element={<PrivateRoute><CoordinatorPage /></PrivateRoute>} />
+        <Route path="/coordinator" element={<PrivateRoute><Coordinator /></PrivateRoute>} />
         <Route path="/coordinator/challenges-management" element={<PrivateRoute><CoordinatorChallenges /></PrivateRoute>} />
         <Route path="/coordinator/course-management" element={<PrivateRoute><CourseManagementCoordinator /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />

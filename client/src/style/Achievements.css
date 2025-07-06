@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional subtle road background */
+.road-background {
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 40px,
+    #ccc 40px,
+    #ccc 42px
+  );
+  height: 4px;
+  background-position: center;
+  background-repeat: repeat-x;
+  background-size: 100% 4px;
+}

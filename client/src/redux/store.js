@@ -26,7 +26,7 @@ const cassignmentPersistConfig = {
 };
 
 const challengeSPersistConfig = {
-    key: "challengeS",
+    key: "challenges",
     storage,
 }
 
@@ -48,7 +48,7 @@ const store = configureStore({
         theme: themeReducer,
         ctimetable: persistedCtimetableReducer, // Updated key to ctimetable
         cassignment: persistedassignmentReducer,
-        challengeS: persistedchallengeReducer,
+        challenges: persistedchallengeReducer,
         achievement: persistedachievementReducer
     },
     middleware: (getDefaultMiddleware) =>

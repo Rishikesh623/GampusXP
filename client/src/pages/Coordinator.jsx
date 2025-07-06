@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const CoordinatorPage = () => {
+const Coordinator = () => {
     const coordinatorTools = [
         { path: "/coordinator/course-management", label: "📚 Manage Courses" },
         { path: "/coordinator/challenges-management", label: "🎯 Manage Challenges" },
@@ -69,4 +69,4 @@ const CoordinatorPage = () => {
     );
 };
 
-export default CoordinatorPage;
+export default Coordinator;

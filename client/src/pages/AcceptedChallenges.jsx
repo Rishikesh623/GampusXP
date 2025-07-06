@@ -1,14 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setChallengeS } from "../redux/challenges/challengesSlice";
+import { setChallenges } from "../redux/challenges/challengesSlice";
 import Layout from "../components/Layout";
 import RCRibbon from "../components/RCRibbon";
 
 const RewardsChallenges = () => {
     const [message, setMessage] = useState({ type: "", text: "" });
     const dispatch = useDispatch();
-    const challenges = useSelector((state) => state.challengeS.challengeS);
+    const challenges = useSelector((state) => state.challenges.challenges);
 
     useEffect(() => {
         const fetchChallenges = async () => {
@@ -18,7 +18,7 @@ const RewardsChallenges = () => {
                     withCredentials: true,
                 });
 
-                dispatch(setChallengeS(res.data.challenges));
+                dispatch(setChallenges(res.data.challenges));
             } catch (err) {
                 console.error("Error fetching challenges:", err.response?.data?.message || err.message);
                 setMessage({ type: "error", text: "Failed to load challenges." });
@@ -39,7 +39,7 @@ const RewardsChallenges = () => {
             if (res.status === 200) {
                 setMessage({ type: "success", text: res.data.message });
                 dispatch(
-                    setChallengeS(
+                    setChallenges(
                         challenges.map((ch) =>
                             ch._id === challenge._id
                                 ? { ...ch, participantDetails: { status: "completed" } }

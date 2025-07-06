@@ -300,6 +300,11 @@ const deleteChallenge = async (req, res) => {
     }
 };
 
+// TODO() : add points api 
+const addAuraPoint = async (req,res) => {
+
+}
+
 //deduct half the reward
 const deductAurapoint = async (req, res) => {
     try {

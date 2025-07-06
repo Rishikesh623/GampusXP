@@ -10,7 +10,7 @@ const RewardsChallenges = () => {
     const [success, setSuccess] = useState(null);
 
     const dispatch = useDispatch();
-    const currentChallenges = useSelector((state) => state.challengeS.challengeS);
+    const currentChallenges = useSelector((state) => state.challenges.challenges);
 
     const getChallenges = async () => {
         try {

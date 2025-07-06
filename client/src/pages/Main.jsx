@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { resolvePath, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
 import { persistor } from '../redux/store';
 import { logout, setUserProfile } from '../redux/user/userSlice';
 import axios from 'axios';
 import { clearAssignment, setCAssignment } from '../redux/assignment/assignmentSlice';
-import { clearChallegneS, setChallengeS } from '../redux/challenges/challengesSlice';
+import { clearChallenges, setChallenges } from '../redux/challenges/challengesSlice';
 import { clearAchievement, setAchievement } from '../redux/achievement/achievementSlice';
 import Calendar from "../components/Calendar"
 import LeftDrawer from '../components/LeftDrawer';
 import NavBar from '../components/NavBar';
 import { setTimeTable } from '../redux/timetable/timetableSlice';
 import { useToast } from '../components/ToastProvider';
-// import '../style/Main.css';
 
 const Main = () => {
     const dispatch = useDispatch();
@@ -32,10 +31,11 @@ const Main = () => {
     const [level, setLevel] = useState(0);
     const [progressPercentage, setProgressPercentage] = useState(0);
     const [todaysTimetable, setTodaysTimetable] = useState({});
+    const [recentActivities, setRecentActivities] = useState([]);
 
     // Redux state slices
     const cassignment = useSelector((state) => state.cassignment.cassignment);
-    const challengeS = useSelector((state) => state.challengeS.challengeS);
+    const challenges = useSelector((state) => state.challenges.challenges);
     const achievement = useSelector((state) => state.achievement.achievement);
 
     useEffect(() => {
@@ -75,7 +75,7 @@ const Main = () => {
                         status: challenge.participantDetails?.status
                     }));
                 setDueChallenges(dueDates);
-                dispatch(setChallengeS(res.data.challenges));
+                dispatch(setChallenges(res.data.challenges));
             } catch (err) {
                 if (err.response?.status === 404) {
                     return;
@@ -86,12 +86,12 @@ const Main = () => {
 
         const getAchievements = async () => {
             try {
-                if (cassignment.length !== 0) {
+                if (achievement.length !== 0) {
                     return;
                 }
-                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/achievement/achievements/`, { withCredentials: true });
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/achievements`, { withCredentials: true });
                 if (res.data.achievements)
-                    dispatch(setAchievement(res.data.achievements.achievements));
+                    dispatch(setAchievement(res.data.achievements));
             }
             catch (err) {
                 if (err.response?.status === 404) {
@@ -170,6 +170,25 @@ const Main = () => {
 
         }
 
+        const getRecentActivities = async () => {
+            if (!recentActivities || recentActivities.length === 0) {
+                try {
+                    const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/activity`, {
+                        withCredentials: true,
+                    });
+                    if (res.data) {
+                        setRecentActivities(res.data.activities);
+                    }
+                }
+                catch (err) {
+                    if (err?.response?.status === 404) {
+                        return;
+                    }
+                    showToast({ message: err.response?.data?.message || "Something went wrong while fetching recent activities . Please contact on help.", type: "error" });
+                }
+            }
+        }
+
         // Call the functions
         fetchNotifications();
         getChallenges();
@@ -178,6 +197,8 @@ const Main = () => {
         auraLevelHandler();
         getUserProfile();
         getTodaysTImetable();
+        getRecentActivities();
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
@@ -199,7 +220,7 @@ const Main = () => {
 
                 dispatch(logout());
                 dispatch(clearAssignment());
-                dispatch(clearChallegneS());
+                dispatch(clearChallenges());
                 dispatch(clearAchievement());
                 persistor.purge();
                 showToast({ message: res.data.message, type: "success" });
@@ -230,7 +251,7 @@ const Main = () => {
 
     const dueChallengesHandler = () => {
         let cnt = 0;
-        challengeS.forEach((challenge) => {
+        challenges.forEach((challenge) => {
             if (challenge.participantDetails?.status === 'in-progress') cnt++;
         });
         return cnt;
@@ -335,28 +356,30 @@ const Main = () => {
                                     🏆 Recent Achievements
                                 </h3>
                                 {
-                                    achievement.length === 0 &&
-
-                                    <p className="text-sm text-base-content">
-                                        No Achievements yet.
-                                    </p>
+                                    (!achievement || achievement.length === 0) ? (
+                                        <p className="text-sm text-base-content">
+                                            No Achievements yet.
+                                        </p>
+                                    ) : (
+                                        <>
+                                            <ul className="list-disc ml-4 text-sm text-base-content">
+                                                {achievement.slice(0, 3).map((achievements) => (
+                                                    <li key={achievements._id} className="text-xs">{achievements.description}</li>
+                                                ))}
+                                            </ul>
+                                            <div className="flex justify-end">
+                                                {achievement.length > 3 && (
+                                                    <button
+                                                        onClick={() => navigate("/achievements")}
+                                                        className="btn btn-xs btn-primary mt-2"
+                                                    >
+                                                        See More
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </>
+                                    )
                                 }
-                                <ul className="list-disc ml-4 text-sm text-base-content">
-                                    {achievement.slice(0, 3).map((achievements) => (
-                                        <li key={achievements._id} className="text-xs">{achievements.description}</li>
-                                    ))}
-                                </ul>
-                                <div className="flex justify-end">
-                                    {achievement.length > 3 && (
-                                        <button
-                                            onClick={() => navigate("/achievement-tracking")}
-                                            className="btn btn-xs btn-primary mt-2"
-                                        >
-                                            See More
-                                        </button>
-                                    )}
-                                </div>
-
                             </div>
                         </div>
                     </div>
@@ -412,30 +435,54 @@ const Main = () => {
                             <div className="flex gap-4 mt-3">
                                 {/* Active Challenges (Left Side) */}
                                 <div className="w-1/2 bg-base-200 p-3 rounded-lg shadow-md hover:shadow-lg transition-all">
-                                    <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                                    <h4 className="text-md mb-2 font-semibold text-secondary flex items-center gap-2">
                                         🚀 Challenges
                                     </h4>
-                                    <ul className="mt-2 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-primary">
-                                        {challengeS.filter(challenge => challenge.participantDetails?.status === 'in-progress')
-                                            .map(challenge => (
-                                                <li key={challenge._id} className="text-sm py-1 border-b last:border-none hover:text-blue-500">
-                                                    {challenge.title}
-                                                </li>
-                                            ))
-                                        }
-                                    </ul>
+                                    {
+                                        (challenges !== undefined && challenges.length !== 0) ? (
+                                            <ul className="mt-2 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-primary">
+                                                {challenges.filter(challenge => challenge.participantDetails?.status === 'in-progress')
+                                                    .map(challenge => (
+                                                        <li key={challenge._id} className="text-sm py-1 border-b last:border-none hover:text-blue-500">
+                                                            {challenge.title}
+                                                        </li>
+                                                    ))
+                                                }
+                                            </ul>
+                                        ) : (
+                                            <div className="text-gray-600 text-sm italic">Currently no Challenges  </div>
+                                        )
+                                    }
+
                                 </div>
 
                                 {/* Recent Activities (Right Side) */}
-                                <div className="w-1/2 bg-gradient-to-r from-green-100 to-green-200 p-3 rounded-lg shadow-md hover:shadow-lg transition-all">
-                                    <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                                <div className="w-1/2 min-h-[230px] bg-gradient-to-r from-green-100 to-green-200 p-3 rounded-lg shadow-md hover:shadow-lg transition-all">
+                                    <h4 className="text-md mb-2 font-semibold text-secondary flex items-center gap-2">
                                         🔄 Recent Activities
                                     </h4>
-                                    <ul className="mt-2 text-sm list-disc ml-4 text-gray-700">
-                                        <li>✅ Completed Science Assignment</li>
-                                        <li>🏆 Earned 100 Aura points in Quiz</li>
-                                        <li>📖 Started "Literature Challenge"</li>
-                                    </ul>
+                                    {recentActivities && recentActivities.length > 0 ? (
+                                        <div className="mt-3">
+                                            <ul className="space-y-2">
+                                                {recentActivities.slice(0, 4).map((activity) => (
+                                                    <li
+                                                        key={activity._id}
+                                                        className="text-sm text-gray-700 py-1 border-b border-gray-300 last:border-none"
+                                                    >
+                                                        {activity.message}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            {recentActivities.length > 4 && (
+                                                <button className="mt-2 text-primary text-sm font-medium hover:underline" onClick={() => navigate('/activity')}>
+                                                    See more
+                                                </button>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="text-gray-500 text-sm italic mt-3">No recent activity</div>
+                                    )}
+
                                 </div>
                             </div>
                         </div>

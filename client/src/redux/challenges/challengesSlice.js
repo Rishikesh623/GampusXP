@@ -1,19 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const challengesSlice = createSlice({
-    name: 'challengeS',
+    name: 'challenges',
     initialState: {
-        challengeS: [],
+        challenges: [],
     },
     reducers: {
-        setChallengeS: (state, action) => {
-            state.challengeS = action.payload
+        setChallenges: (state, action) => {
+            state.challenges = action.payload
         },
-        clearChallegneS: (state, action) => {
-            state.challengeS = []
+        clearChallenges: (state, action) => {
+            state.challenges = []
         }
     }
 })
 
-export const { setChallengeS, clearChallegneS } = challengesSlice.actions;
+export const { setChallenges, clearChallenges } = challengesSlice.actions;
 export default challengesSlice.reducer;

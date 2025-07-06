@@ -10,7 +10,6 @@ const courseRoutes = require('./routes/courseRoutes.js');
 const assignmentRoutes = require('./routes/assignmentRoutes.js');
 const timetableRoutes = require('./routes/timetableRoutes.js');
 const challengesRoutes = require('./routes/challengesRoutes.js');
-const achievementRoutes = require('./routes/achievementRoutes.js');
 const notificationRoutes = require('./routes/notificationRoutes.js');
 
 const app = express();
@@ -40,12 +39,11 @@ app.use("/course", courseRoutes);
 app.use("/assignment", assignmentRoutes);
 app.use("/timetable", timetableRoutes);
 app.use("/challenges", challengesRoutes);
-app.use("/achievement", achievementRoutes);
 app.use("/notifications", notificationRoutes);
 
 
 const PORT = process.env.PORT || 8080;
-const MOGO_URI = isProd ? process.env.MOGO_URI : process.env.MOGO_URI  ;
+const MOGO_URI = isProd ? process.env.MOGO_URI : process.env.MOGO_URI;
 
 app.listen(PORT, (error) => {
     if (error) {

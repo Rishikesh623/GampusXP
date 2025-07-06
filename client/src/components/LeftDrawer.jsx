@@ -8,6 +8,7 @@ const LeftDrawer = ({ title }) => {
         { path: "/leaderboards", label: "Leaderboards" },
         { path: "/rewards-challenges", label: "Rewards and Challenges" },
         { path: "/timetable", label: "Timetable" },
+        { path: "/achievement", label: "Achievements" },
         { path: "/settings", label: "Settings" }
     ];
 
