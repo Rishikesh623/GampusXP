@@ -6,9 +6,9 @@ const { createChallenge, updateChallenge, proposeChallenge, inviteOthers, accept
 
 const router = express.Router();
 
-router.get('/', authCoordinator, authUser, getChallenges);
-router.get('/proposed', authCoordinator, authUser, getProposedChallenges);
-router.get('/accepted', authCoordinator, authUser, getAcceptedChallenges);
+router.get('/', authCoordinator, getChallenges);
+router.get('/proposed', authCoordinator, getProposedChallenges);
+router.get('/accepted', authUser, getAcceptedChallenges);
 router.post('/create', authCoordinator, createChallenge);
 router.post('/propose', authUser, proposeChallenge);
 router.patch('/invite', authUser, inviteOthers);

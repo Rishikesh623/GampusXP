@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import 'material-icons/iconfont/material-icons.css';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -20,10 +21,11 @@ import OtherUserProfile from './pages/OtherUserProfile'
 import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
-import { setUserProfile } from '../src/redux/user/userSlice';
+import { logout,setUserProfile } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
+import CoordinatorPage from './pages/CoordinatorPage';
 
 const App = () => {
   const theme = useSelector((state) => state.theme);
@@ -37,12 +39,7 @@ const App = () => {
           withCredentials: true, // Include cookies in the request
         });
         const data = res.data;
-        console.log(data);
-        if (!res) {
-          // console.log(data.message);
-          return;
-        }
-
+        
         if (data && data.reg_no) {
           dispatch(setUserProfile({
             name: data.name,
@@ -53,12 +50,13 @@ const App = () => {
         }
 
       } catch (error) {
+        dispatch(logout());
         console.error('Error fetching profile:', error);
       }
     }
 
     fetchProfile();
-  }, []);
+  }, [dispatch]);
 
   // console.log(theme);
 
@@ -74,16 +72,17 @@ const App = () => {
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/other-user-profile" element={<PrivateRoute><OtherUserProfile /></PrivateRoute>} />
         <Route path="/course-management-user" element={<PrivateRoute><CourseManagementUser /></PrivateRoute>} />
-        <Route path="/course-management-coordinator" element={<PrivateRoute><CourseManagementCoordinator /></PrivateRoute>} />
         <Route path="/assignment-tracking" element={<PrivateRoute><AssignmentTracking /></PrivateRoute>} />
         <Route path="/achievement-tracking" element={<PrivateRoute><Achievement /></PrivateRoute>} />
         <Route path="/leaderboards" element={<PrivateRoute><Leaderboards /></PrivateRoute>} />
         <Route path="/rewards-challenges" element={<PrivateRoute><RewardsAndChallenges /></PrivateRoute>} />
         <Route path="/proposed-challenges" element={<PrivateRoute><ProposedChallenges /></PrivateRoute>} />
         <Route path="/accepted-challenges" element={<PrivateRoute><AcceptedChallenges /></PrivateRoute>} />
-        <Route path="/coordinator-challenges" element={<PrivateRoute><CoordinatorChallenges /></PrivateRoute>} />
         <Route path="/timetable" element={<PrivateRoute><Timetable /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="/coordinator" element={<PrivateRoute><CoordinatorPage /></PrivateRoute>} />
+        <Route path="/coordinator/challenges-management" element={<PrivateRoute><CoordinatorChallenges /></PrivateRoute>} />
+        <Route path="/coordinator/course-management" element={<PrivateRoute><CourseManagementCoordinator /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

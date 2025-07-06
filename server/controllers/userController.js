@@ -50,6 +50,11 @@ const register = async (req, res) => {
 
         // create a new user
         user = new userModel({ name, reg_no, email, password });
+
+        //first time bonus
+
+        user.aura_points = 10 ;
+        
         await user.save();
 
         res.status(201).json({ name, reg_no, email });

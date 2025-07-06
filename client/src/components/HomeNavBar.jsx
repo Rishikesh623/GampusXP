@@ -13,7 +13,7 @@ const HomeNavBar = () => {
         <>
             <nav className="navbar bg-base-100 shadow-md px-6">
                 <div className="flex-1">
-                    <img src="/logo.png" alt="CampusXP" className="h-20 w-auto" />
+                    <img src="/logo.png" alt="GampusXP" className="h-20 w-auto" />
                 </div>
                 <div className="dropdown">
                     <button tabIndex={0} className="btn btn-ghost flex items-center gap-2">

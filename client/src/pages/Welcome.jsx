@@ -1,18 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Welcome = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const [value, setValue] = useState(0);
+    const target = 100;
+    const duration = 4000;
+
     useEffect(() => {
-        if (!location.state?.fromRegister) {
-            navigate('/404'); 
-        }
-        const timer = setTimeout(() => {
-            navigate('/main');
-        }, 5000);
-        return () => clearTimeout(timer);
+        
+        const steps = 60;
+        const interval = duration / steps;
+        const increment = target / steps;
+
+        const timer = setInterval(() => {
+            setValue((prev) => {
+                if (prev >= target) {
+                    clearInterval(timer);
+                    navigate('/main');
+                    return target;
+                }
+                return prev + increment;
+            });
+        }, interval);
+
+        return () => clearInterval(timer);
     }, [location, navigate]);
 
     return (
@@ -63,7 +77,7 @@ const Welcome = () => {
                     </div>
                 </div>
 
-                <progress className="progress progress-accent w-56 mt-4 animate-pulse" value="75" max="100"></progress>
+                <progress className="progress progress-accent w-56 mt-4 animate-pulse" value={value} max="100"></progress>
                 <p className="text-sm text-gray-500 mt-2">Loading your dashboard...</p>
 
                 <button

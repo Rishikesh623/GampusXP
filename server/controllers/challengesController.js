@@ -3,8 +3,6 @@ const challengesModel = require("../models/challengesModel");
 const notificationModel = require("../models/notificationModel");
 const userModel = require("../models/userModel");
 
-const mongoose = require('mongoose');
-
 //create challnege API 
 const createChallenge = async (req, res) => {
     try {
@@ -153,9 +151,9 @@ const getChallenges = async (req, res) => {
 
         const challenges = await challengesModel.find({
             $or: [
-                { 'participants.user': req.user._id },
+                { 'participants.user': req?.user?._id },
                 { 'isPublic': true }
-            ]
+            ]       
         });
 
         res.status(200).json({ message: "All challenges returned.", challenges });

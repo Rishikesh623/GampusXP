@@ -1,38 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { logout } from '../redux/user/userSlice';
 import { persistor } from '../redux/store';
-import { useSelector } from 'react-redux'
-import { setTheme } from '../redux/theme/themeSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const CourseManagement = () => {
+const CoordinatorChallenges = () => {
     const [challenges, setChallenges] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [showAddChallengeForm, setShowAddChallengeForm] = useState(false);
     const [editChallengeForm, setEditChallengeForm] = useState(false);
 
     const [addNewChallengeForm, setAddNewChallengeForm] = useState({
-        challenge_id: "",
-        title: "",
-        description: "",
-        aura_points: "",
-        end_date: ""
+        challenge_id: '',
+        title: '',
+        description: '',
+        aura_points: '',
+        end_date: ''
     });
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const fetchChallenges = async () => {
         try {
             const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/challenges/`, {
-                headers: {
-                    coordinator: "true" // Include the required header
-                },
+                headers: { coordinator: 'true' },
                 withCredentials: true
             });
-
-            // console.log(res.data.challenges);
-            setChallenges(res.data.challenges); // Assuming the API response is an array of courses
+            setChallenges(res.data.challenges);
         } catch (err) {
-            console.error("Error fetching courses:", err.response?.data?.message || err.message);
+            console.error("Error fetching challenges:",err);
         }
     };
 
@@ -40,336 +38,206 @@ const CourseManagement = () => {
         fetchChallenges();
     }, []);
 
-    const currentTheme = useSelector((state) => state.theme);
-
-    const dispatch = useDispatch();
-
-    const navigate = useNavigate();
+    const filteredChallenges = challenges.filter((challenge) =>
+        challenge.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        challenge.aura_points.toString().includes(searchQuery)
+    );
 
     const onAddNewChallengeHandler = () => {
         setShowAddChallengeForm(!showAddChallengeForm);
-    }
+        setEditChallengeForm(false);
+        setAddNewChallengeForm({
+            challenge_id: '',
+            title: '',
+            description: '',
+            aura_points: '',
+            end_date: ''
+        });
+    };
 
-    const onEditChallengeButton = (challenges) => {
-        setShowAddChallengeForm(!showAddChallengeForm);
+    const onEditChallengeButton = (challenge) => {
+        setShowAddChallengeForm(true);
         setEditChallengeForm(true);
         setAddNewChallengeForm({
-            challenge_id: challenges._id,
-            title: challenges.title,
-            description: challenges.description,
-            aura_points: challenges.aura_points,
-            end_date: (challenges.end_date)
+            challenge_id: challenge._id,
+            title: challenge.title,
+            description: challenge.description,
+            aura_points: challenge.aura_points,
+            end_date: challenge.end_date?.split('T')[0] || ''
         });
-    }
+    };
 
     const onChangeEditForm = (e) => {
         setAddNewChallengeForm({
-            ...addNewChallengeForm, [e.target.name]: e.target.value
-        })
-    }
+            ...addNewChallengeForm,
+            [e.target.name]: e.target.value
+        });
+    };
 
     const onSubmitEditForm = async (e) => {
         e.preventDefault();
+        const url = editChallengeForm
+            ? `${process.env.REACT_APP_BASE_URL}/challenges/edit`
+            : `${process.env.REACT_APP_BASE_URL}/challenges/create`;
 
-        if (!editChallengeForm) {
-            try {
-                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/challenges/create`, addNewChallengeForm, {
-                    headers: {
-                        coordinator: true
-                    }
-                })
-
-                const data = res.data;
-
-                console.log("Course created successfully", data.message);
-
-                fetchChallenges();
-                onAddNewChallengeHandler();
-                setAddNewChallengeForm({
-                    name: "",
-                    description: "",
-                    credits: "",
-                    coures_no: ""
-                })
-            }
-            catch (err) {
-                console.log("Error in onSubmitEditForm in Course creation", err.response?.data?.message || err.message);
-            }
-        }
-        else {
-            try {
-                const res = await axios.patch(`${process.env.REACT_APP_BASE_URL}/challenges/edit`, addNewChallengeForm, {
-                    headers: {
-                        coordinator: true
-                    }
-                })
-
-                const data = res.data;
-
-                console.log("Course edited successfully", data.message);
-
-                fetchChallenges();
-                setShowAddChallengeForm(!showAddChallengeForm);
-                setEditChallengeForm(false);
-                setAddNewChallengeForm({
-                    title: "",
-                    description: "",
-                    aura_points: "",
-                    end_date: ""
-                })
-            }
-            catch (err) {
-                console.log("Error in onSubmitEditForm in Course edit", err.response?.data?.message || err.message);
-            }
-        }
-    }
-
-    const onRemoveCourse = async (id) => {
         try {
-            const res = await axios.delete(`${process.env.REACT_APP_BASE_URL}/challenges/delete`, {
+            await axios({
+                method: editChallengeForm ? 'patch' : 'post',
+                url,
+                headers: { coordinator: true },
+                data: addNewChallengeForm
+            });
+
+            fetchChallenges();
+            setShowAddChallengeForm(false);
+            setEditChallengeForm(false);
+        } catch (err) {
+            console.error("Error submitting challenge:", err.response?.data?.message || err.message);
+        }
+    };
+
+    const onRemoveChallenge = async (id) => {
+        try {
+            await axios.delete(`${process.env.REACT_APP_BASE_URL}/challenges/delete`, {
                 headers: { coordinator: true },
                 data: { _id: id }
             });
-
-            const data = res.data;
-
-            console.log(data);
             fetchChallenges();
+        } catch (err) {
+            alert(err.response?.data?.message || err.message);
         }
-        catch (err) {
-            alert(err.response.data.message);
-            console.log("Error in onRemoveCourses function", err.response.data.message)
-        }
-    }
-
-    const handleThemeChange = (event) => {
-        dispatch(setTheme(event.target.value));
-    }
+    };
 
     const logoutHandler = () => {
-        // Clear Redux state
         dispatch(logout());
-
-        // Purge persisted data
         persistor.purge();
-
-        navigate("/signin")
-    }
+        navigate("/signin");
+    };
 
     return (
-        <>
-            <div className="flex-1">
-                {/* Top Navigation Bar */}
-                <header className="flex items-center justify-between px-6 py-4 bg-white border-b">
-                    <div className="flex items-center space-x-4">
-                        <div className="flex items-center justify-center h-16 border-b">
-                            <h1 className="text-xl font-bold text-blue-600">CampusXP</h1>
-                        </div>
-                    </div>
+        <div data-theme="light" className="min-h-screen bg-base-100 px-8 py-6 space-y-10">
+            <div className="flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                    <img src="/logo.png" alt="GampusXP" className="h-16 w-auto bg-white rounded p-1" />
+                </div>
 
-                    <div className="flex space-x-6 items-end justify-center">
-                        <div className="flex space-x-2 items-center justify-center h-16 border-b">
-                            <button
-                                onClick={() => navigate("/course-management-coordinator")}
-                                className={`mt-6 px-4 py-2 rounded-lg mb-6 ${window.location.pathname === "/course-management-coordinator"
-                                    ? "bg-blue-300 text-white"
-                                    : "bg-blue-600 text-white hover:bg-blue-400"
-                                    }`}
-                            >
-                                Course Management
-                            </button>
-                        </div>
+                <h1 className="text-2xl font-semibold text-center flex-1 -ml-12">Challenge Management</h1>
 
-                        <div className="flex space-x-2 items-center justify-center h-16 border-b">
-                            <button
-                                onClick={() => navigate("/coordinator-challenges")}
-                                className={`mt-6 px-4 py-2 rounded-lg mb-6 ${window.location.pathname === "/coordinator-challenges"
-                                    ? "bg-blue-300 text-white"
-                                    : "bg-blue-600 text-white hover:bg-blue-400"
-                                    }`}
-                            >
-                                Challenges Management
-                            </button>
-                        </div>
-                    </div>
-
-
-                    <div className="flex items-center space-x-4">
-                        <div className="dropdown">
-                            <div tabIndex={0} role="button" className="btn m-1">
-                                Theme
-                                <svg
-                                    width="12px"
-                                    height="12px"
-                                    className="inline-block h-2 w-2 fill-current opacity-60"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 2048 2048">
-                                    <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path>
-                                </svg>
-                            </div>
-                            <ul tabIndex={0} className="dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow-2xl">
-                                <li>
-                                    <input
-                                        type="radio"
-                                        name="theme-dropdown"
-                                        className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                                        aria-label="Default"
-                                        value="default"
-                                        onChange={handleThemeChange}
-                                        checked={currentTheme === 'default'} />
-                                </li>
-                                <li>
-                                    <input
-                                        type="radio"
-                                        name="theme-dropdown"
-                                        className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                                        aria-label="Retro"
-                                        value="retro"
-                                        onChange={handleThemeChange}
-                                        checked={currentTheme === 'retro'} />
-                                </li>
-                                <li>
-                                    <input
-                                        type="radio"
-                                        name="theme-dropdown"
-                                        className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                                        aria-label="Cyberpunk"
-                                        value="cyberpunk"
-                                        onChange={handleThemeChange}
-                                        checked={currentTheme === 'cyberpunk'} />
-                                </li>
-                                <li>
-                                    <input
-                                        type="radio"
-                                        name="theme-dropdown"
-                                        className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                                        aria-label="Valentine"
-                                        value="valentine"
-                                        onChange={handleThemeChange}
-                                        checked={currentTheme === 'valentine'} />
-                                </li>
-                                <li>
-                                    <input
-                                        type="radio"
-                                        name="theme-dropdown"
-                                        className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                                        aria-label="Aqua"
-                                        value="aqua"
-                                        onChange={handleThemeChange}
-                                        checked={currentTheme === 'aqua'} />
-                                </li>
-                            </ul>
-                        </div>
-
-                        <button onClick={logoutHandler} className="mt-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">Logout</button>
-                    </div>
-                </header >
+                <button onClick={logoutHandler} className="btn btn-sm btn-outline">
+                    Logout
+                </button>
             </div>
-            <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Challenges Management</h1>
-                <button onClick={onAddNewChallengeHandler} className="px-4 py-2 bg-blue-600 text-white rounded-lg mb-6">Create New Challenge</button>
 
-                <div className="space-y-4">
-                    {challenges.length > 0 ? (
-                        challenges.map((challenge) => (
-                            <div
-                                key={challenge._id}
-                                className="p-4 border rounded-lg shadow-sm bg-gray-50"
-                            >
-                                <h2 className="text-lg font-semibold">{challenge.title}</h2>
-                                <p className="text-sm text-gray-600">{challenge.description}</p>
-                                <p className="text-sm text-gray-500">Aura Points: {challenge.aura_points}</p>
-                                <p className="text-sm text-gray-500">Due Date: {new Date(challenge.end_date).toLocaleDateString()}</p>
+            {/* Action Controls */}
+            <div className="flex flex-wrap justify-between items-center gap-4">
+                <div className="flex gap-2 items-center">
+                    <input
+                        type="text"
+                        placeholder="Search by title or points..."
+                        className="input input-bordered w-64"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <button onClick={onAddNewChallengeHandler} className="btn btn-outline">
+                        ➕ Create Challenge
+                    </button>
+                </div>
+                <button onClick={() => navigate('/coordinator')} className="btn btn-outline">
+                   Go Back
+                </button>
+            </div>
 
-                                <button onClick={() => onEditChallengeButton(challenge)} className="mt-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">Edit Challenge</button>
+            {/* Challenge Table */}
+            <div className="overflow-x-auto">
+                <table className="table table-sm w-full">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Aura Points</th>
+                            <th>End Date</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredChallenges.length > 0 ? (
+                            filteredChallenges.map((c) => (
+                                <tr key={c._id}>
+                                    <td>{c.title}</td>
+                                    <td>{c.aura_points}</td>
+                                    <td>{new Date(c.end_date).toLocaleDateString()}</td>
+                                    <td className="max-w-xs truncate">{c.description}</td>
+                                    <td className="flex flex-wrap gap-2">
+                                        <button
+                                            onClick={() => onEditChallengeButton(c)}
+                                            className="btn btn-outline btn-xs"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => onRemoveChallenge(c._id)}
+                                            className="btn btn-outline btn-xs"
+                                        >
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} className="text-center text-gray-500 py-4">
+                                    No challenges available.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Modal */}
+            {showAddChallengeForm && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-40 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                        <h3 className="text-lg font-semibold mb-4">
+                            {editChallengeForm ? 'Edit Challenge' : 'Create Challenge'}
+                        </h3>
+                        <form onSubmit={onSubmitEditForm} className="space-y-4">
+                            {[
+                                { name: 'title', label: 'Title' },
+                                { name: 'description', label: 'Description' },
+                                { name: 'aura_points', label: 'Aura Points' },
+                                { name: 'end_date', label: 'End Date', type: 'date' }
+                            ].map(({ name, label, type = 'text' }) => (
+                                <div key={name}>
+                                    <label className="block text-sm font-medium">{label}</label>
+                                    <input
+                                        type={type}
+                                        name={name}
+                                        value={addNewChallengeForm[name]}
+                                        onChange={onChangeEditForm}
+                                        className="input input-bordered w-full"
+                                    />
+                                </div>
+                            ))}
+
+                            <div className="flex justify-end gap-2">
                                 <button
-                                    onClick={() => onRemoveCourse(challenge._id)}
-                                    className="mt-2 mx-1 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
+                                    type="button"
+                                    className="btn btn-outline"
+                                    onClick={() => setShowAddChallengeForm(false)}
                                 >
-                                    Remove Challenge
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Save
                                 </button>
                             </div>
-                        ))
-                    ) : (
-                        <p className="text-gray-500">No challenges available.</p>
-                    )}
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div>
-                {
-                    showAddChallengeForm && (
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                                <h3 className="text-xl font-semibold mb-4">Edit Profile</h3>
-
-                                <form onSubmit={onSubmitEditForm}>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Challenge Title</label>
-                                        <input
-                                            type="text"
-                                            name="title"
-                                            value={addNewChallengeForm.title}
-                                            onChange={onChangeEditForm}
-                                            className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                            placeholder={"Challenge Title"}
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Challenge Description</label>
-                                        <input
-                                            type="text"
-                                            name="description"
-                                            value={addNewChallengeForm.description}
-                                            onChange={onChangeEditForm}
-                                            className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                            placeholder={"Challenge Description"}
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Challenge Aura Points</label>
-                                        <input
-                                            type="text"
-                                            name="aura_points"
-                                            value={addNewChallengeForm.aura_points}
-                                            onChange={onChangeEditForm}
-                                            placeholder="Challenge Aura Points"
-                                            className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-600 font-semibold">Challenge End Date</label>
-                                        <input
-                                            type="date"
-                                            name="end_date"
-                                            value={addNewChallengeForm.end_date}
-                                            onChange={onChangeEditForm}
-                                            placeholder="Challenge End Date"
-                                            className="w-full p-2 border border-gray-300 rounded text-black bg-white"
-                                        />
-                                    </div>
-                                    <div className="flex justify-end space-x-4">
-                                        <button
-                                            type="button"
-                                            className="px-4 py-2 bg-gray-200 text-gray-600 rounded"
-                                            onClick={onAddNewChallengeHandler}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="px-4 py-2 bg-blue-600 text-white rounded"
-                                        >
-                                            Save Changes
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )
-                }
-            </div >
-        </>
+            )}
+        </div>
     );
 };
 
-export default CourseManagement;
+export default CoordinatorChallenges;

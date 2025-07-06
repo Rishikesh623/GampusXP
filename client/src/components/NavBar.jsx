@@ -12,7 +12,7 @@ const NavBar = ({ currentTheme,handleThemeChange,setIsNotification,profileToggle
                             d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </label>
-                <img src="/logo.png" alt="CampusXP" className="h-20 w-auto" />
+                <img src="/logo.png" alt="GampusXP" className="h-20 w-auto" />
             </div>
 
             {/* Right side header items */}

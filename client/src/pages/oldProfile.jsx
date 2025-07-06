@@ -103,7 +103,7 @@ const Profile = () => {
             {/* Sidebar Menu */}
             <aside className="w-64 bg-white border-r">
                 <div className="flex items-center justify-center h-16 border-b">
-                    <h1 className="text-xl font-bold text-blue-600">CampusXP</h1>
+                    <h1 className="text-xl font-bold text-blue-600">GampusXP</h1>
                 </div>
                 <nav className="mt-4">
                     <ul className="space-y-2">
@@ -206,7 +206,7 @@ const Profile = () => {
                         </div>
                         <div className="mt-4">
                             <label className="block text-gray-600 font-semibold">about</label>
-                            <p>Passionate learner at CampusXP</p>
+                            <p>Passionate learner at GampusXP</p>
                         </div>
                         <button onClick={onClickEditButton} className="mt-3 text-blue-600 hover:underline">Edit Profile</button>
                     </div>

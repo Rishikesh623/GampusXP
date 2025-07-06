@@ -53,21 +53,19 @@ const Main = () => {
                     }));
                 setDueAssignment(dueDates);
                 dispatch(setCAssignment(fetchedAssignments));
-            } catch (error) {
-                if (error.response?.status === 404) {
+            }
+            catch (err) {
+                if (err.response?.status === 404) {
                     dispatch(setCAssignment([]));
-                } else {
-                    console.error('Error fetching assignments:', error.response?.message);
+                    return;
                 }
+                showToast({ message: err.response?.data?.message || "Something went wrong while fetching assignments . Please contact on help.", type: "error" });
             }
         };
 
         const getChallenges = async () => {
             try {
                 const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/challenges/accepted`, {
-                    headers: {
-                        coordinator: "true"
-                    },
                     withCredentials: true
                 });
                 const dueDates = res.data.challenges
@@ -79,7 +77,10 @@ const Main = () => {
                 setDueChallenges(dueDates);
                 dispatch(setChallengeS(res.data.challenges));
             } catch (err) {
-                console.error("Error fetching challenges:", err.response?.data?.message || err.message);
+                if (err.response?.status === 404) {
+                    return;
+                }
+                showToast({ message: err.response?.data?.message || "Something went wrong while fetching challenges info. Please contact on help.", type: "error" });
             }
         };
 
@@ -91,8 +92,12 @@ const Main = () => {
                 const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/achievement/achievements/`, { withCredentials: true });
                 if (res.data.achievements)
                     dispatch(setAchievement(res.data.achievements.achievements));
-            } catch (err) {
-                console.log("Error in fetching achievements:", err.response?.data?.message || err.message);
+            }
+            catch (err) {
+                if (err.response?.status === 404) {
+                    return;
+                }
+                showToast({ message: err.response?.data?.message || "Something went wrong while fetching achievements. Please contact on help.", type: "error" });
             }
         };
 
@@ -115,7 +120,10 @@ const Main = () => {
                     }));
                 }
             } catch (err) {
-                // Handle error if needed
+                if (err.response?.status === 404) {
+                    return;
+                }
+                showToast({ message: err.response?.data?.message || "Something went wrong while fetching user Info . Please contact on help.", type: "error" });
             }
         };
 
@@ -127,32 +135,39 @@ const Main = () => {
                 setNotifications(res.data.notifications);
                 const cnt = res.data.notifications.filter(nt => nt.is_read === false).length;
                 setUnReadNotificationsCount(cnt);
-            } catch (err) {
-                console.log("Error in fetchNotifications:", err.message);
+            }
+            catch (err) {
+                if (err.response?.status === 404) {
+                    return;
+                }
+                showToast({ message: err.response?.data?.message || "Notifications load error. Please contact on help.", type: "error" });
             }
         };
 
         const getTodaysTImetable = async () => {
-            try {
-                if (!todaysTimetable || Object.keys(todaysTimetable).length === 0) {
-                    // Get current day
-                    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    const currentDay = days[new Date().getDay()];
 
+            if (!todaysTimetable || Object.keys(todaysTimetable).length === 0) {
+                // Get current day
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const currentDay = days[new Date().getDay()];
+
+                try {
                     const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/timetable/${currentDay}`, {
                         withCredentials: true,
                     });
-
                     if (res.data) {
                         setTodaysTimetable(res.data.days[0]);
                         dispatch(setTimeTable({ ctimetable: res.data.days }));
                     }
                 }
+                catch (err) {
+                    if (err?.response?.status === 404) {
+                        return;
+                    }
+                    showToast({ message: err.response?.data?.message || "Something went wrong while fetching timetable . Please contact on help.", type: "error" });
+                }
+            }
 
-            }
-            catch (err) {
-                console.error('Error fetching todays timetable:', err)
-            }
         }
 
         // Call the functions
@@ -187,7 +202,7 @@ const Main = () => {
                 dispatch(clearChallegneS());
                 dispatch(clearAchievement());
                 persistor.purge();
-                showToast({ message: res.data.message , type: "success" });
+                showToast({ message: res.data.message, type: "success" });
             } catch (error) {
                 if (error.response) {
                     showToast({ message: error.response.data.message || "Something went wrong!", type: "error" });
@@ -227,8 +242,12 @@ const Main = () => {
                 withCredentials: true,
             });
             // Optionally update the local state after marking as read.
-        } catch (err) {
-            console.log("Error in markNotification", err);
+        }
+        catch (err) {
+            if (err.response?.status === 404) {
+                return;
+            }
+            showToast({ message: err.response?.data?.message || "Something went wrong . Please contact on help.", type: "error" });
         }
     };
 
@@ -316,7 +335,7 @@ const Main = () => {
                                     🏆 Recent Achievements
                                 </h3>
                                 {
-                                    achievement.length == 0 &&
+                                    achievement.length === 0 &&
 
                                     <p className="text-sm text-base-content">
                                         No Achievements yet.

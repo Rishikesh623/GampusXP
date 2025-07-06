@@ -64,7 +64,7 @@ const Profile = () => {
                 <header className="flex items-center justify-between px-6 py-4 bg-white shadow-md rounded-lg">
                     <div className="w-1/2 flex items-center">
                         <Link to="/">
-                            <img src="/logo.png" alt="CampusXP" className="h-16 w-auto" />
+                            <img src="/logo.png" alt="GampusXP" className="h-16 w-auto" />
                         </Link>
                     </div>
                     <div className="w-1/2 flex justify-end gap-8 items-center">
