@@ -18,6 +18,12 @@ module.exports = {
           '50%': { transform: 'translateX(5px)' },
         },
       },
+      boxShadow: {
+        glass: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
     }
 
   },

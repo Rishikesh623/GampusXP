@@ -4,12 +4,15 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTimeTable } from '../redux/timetable/timetableSlice';
 import Layout from "../components/Layout";
+import { useToast } from '../components/ToastProvider';
+import OverlayLoader from '../components/OverlayLoader';
 
 
 const Timetable = () => {
 
     const currentTimeTable = useSelector((state) => state.ctimetable);
     const dispatch = useDispatch();
+    const { showToast } = useToast();
 
     const initialTimetable = [
         {
@@ -43,17 +46,21 @@ const Timetable = () => {
     ];
 
     const [timetable, setTimetable] = useState(initialTimetable);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         async function fetchTimetable() {
             try {
+                setLoading(true)
                 const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/timetable`, {
                     withCredentials: true,
                 });
                 setTimetable(res.data);
                 dispatch(setTimeTable({ ctimetable: res.data }));
+                setLoading(false)
             } catch (error) {
-                console.error('Error fetching timetable:', error);
+                setLoading(false)
+                showToast({ message: error.response?.data?.message || error.message || "Something went wrong while fetching leaderboards data . Please contact on help.", type: "error" });
                 setTimetable(null);
             }
         }
@@ -164,97 +171,97 @@ const Timetable = () => {
     return (
         <Layout title="🕒 Timetable ">
 
+            <OverlayLoader loading={loading}>
+                <div className='p-5 bg-white shadow-lg rounded-lg'>
+                    {
+                        !timetable &&
+                        <>
+                            <p>TimeTable not found</p>
+                            <label onClick={() => handleCreate()} className="btn btn-outline btn-primary">Create timetable</label>
+                        </>
+                    }
+                    {
+                        timetable &&
+                        <>
 
-            <div className='p-5 bg-white shadow-lg rounded-lg'>
-                {
-                    !timetable &&
-                    <>
-                        <p>TimeTable not found</p>
-                        <label onClick={() => handleCreate()} className="btn btn-outline btn-primary">Create timetable</label>
-                    </>
-                }
-                {
-                    timetable &&
-                    <>
-
-                        <div className="overflow-x-auto bg-white shadow-lg rounded-lg p-4">
-                            <table className="table-lg border rounded-lg " style={{ width: "100%", textAlign: "left" }}>
-                                <thead>
-                                    <tr className='bg-blue-600 text-white text-lg'>
-                                        <th>Day</th>
-                                        {timeSlots?.map((time, index) => (
-                                            <th key={index} >{time}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {timetable?.map((entry, index) => (
-                                        <tr key={index} className="hover:bg-blue-100">
-                                            <td className='text-black'>{entry.day}</td>
-                                            {timeSlots?.map((time, slotIndex) => {
-                                                const slot = entry.slots.find((s) => s.time === time);
-                                                return (
-
-                                                    <td key={slotIndex} className='text-blue-600 font-medium'>
-                                                        <div>
-                                                            {slot ? slot.course : "       "}
-                                                            {editMode &&
-                                                                <button className="p-1" onClick={
-                                                                    () => {
-                                                                        setDay(entry.day);
-                                                                        setTime(time);
-
-                                                                        if (slot?.course)
-                                                                            setSlotId(slot._id);
-                                                                        document.getElementById('my_modal_input').showModal();
-                                                                    }
-
-                                                                }>
-                                                                    {
-                                                                        slot ? (
-                                                                            "✏️"
-                                                                        ) : (
-                                                                            "➕"
-                                                                        )
-                                                                    }
-                                                                </button>
-
-
-                                                            }
-                                                        </div>
-
-                                                    </td>
-
-                                                )
-                                            })}
+                            <div className="overflow-x-auto bg-white shadow-lg rounded-lg p-4">
+                                <table className="table-lg border rounded-lg " style={{ width: "100%", textAlign: "left" }}>
+                                    <thead>
+                                        <tr className='bg-blue-600 text-white text-lg'>
+                                            <th>Day</th>
+                                            {timeSlots?.map((time, index) => (
+                                                <th key={index} >{time}</th>
+                                            ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {
-                            !editMode &&
+                                    </thead>
+                                    <tbody>
+                                        {timetable?.map((entry, index) => (
+                                            <tr key={index} className="hover:bg-blue-100">
+                                                <td className='text-black'>{entry.day}</td>
+                                                {timeSlots?.map((time, slotIndex) => {
+                                                    const slot = entry.slots.find((s) => s.time === time);
+                                                    return (
 
-                            <label className="btn btn-outline btn-primary mt-5 " onClick={() => setEditMode(true)}>Edit mode</label>
-                        }
-                        {editMode &&
-                            <>
-                                <label className="btn btn-outline btn-primary mt-5 mr-2" onClick={() => setEditMode(false)}>Back to View mode</label>
-                                <label htmlFor="my_modal_6" className="btn btn-outline btn-primary">Add slot</label>
-                                <input type="checkbox" id="my_modal_6" className="modal-toggle" />
-                                <div className="modal" role="dialog">
-                                    <div className="modal-box bg-white p-6 rounded-lg  max-w-xs">
-                                        <h2 className="text-xl font-semibold mb-4">Add New Slot</h2>
-                                        <form onSubmit={handleSubmit}>
+                                                        <td key={slotIndex} className='text-blue-600 font-medium'>
+                                                            <div>
+                                                                {slot ? slot.course : "       "}
+                                                                {editMode &&
+                                                                    <button className="p-1" onClick={
+                                                                        () => {
+                                                                            setDay(entry.day);
+                                                                            setTime(time);
 
-                                            <input
-                                                type="text"
-                                                placeholder="Time (e.g., 01:00 PM - 02:00 PM)"
-                                                value={time}
-                                                onChange={(e) => setTime(e.target.value)}
-                                                required
-                                                className="input input-bordered input-primary w-full " />
-                                            {/* <input
+                                                                            if (slot?.course)
+                                                                                setSlotId(slot._id);
+                                                                            document.getElementById('my_modal_input').showModal();
+                                                                        }
+
+                                                                    }>
+                                                                        {
+                                                                            slot ? (
+                                                                                "✏️"
+                                                                            ) : (
+                                                                                "➕"
+                                                                            )
+                                                                        }
+                                                                    </button>
+
+
+                                                                }
+                                                            </div>
+
+                                                        </td>
+
+                                                    )
+                                                })}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {
+                                !editMode &&
+
+                                <label className="btn btn-outline btn-primary mt-5 " onClick={() => setEditMode(true)}>Edit mode</label>
+                            }
+                            {editMode &&
+                                <>
+                                    <label className="btn btn-outline btn-primary mt-5 mr-2" onClick={() => setEditMode(false)}>Back to View mode</label>
+                                    <label htmlFor="my_modal_6" className="btn btn-outline btn-primary">Add slot</label>
+                                    <input type="checkbox" id="my_modal_6" className="modal-toggle" />
+                                    <div className="modal" role="dialog">
+                                        <div className="modal-box bg-white p-6 rounded-lg  max-w-xs">
+                                            <h2 className="text-xl font-semibold mb-4">Add New Slot</h2>
+                                            <form onSubmit={handleSubmit}>
+
+                                                <input
+                                                    type="text"
+                                                    placeholder="Time (e.g., 01:00 PM - 02:00 PM)"
+                                                    value={time}
+                                                    onChange={(e) => setTime(e.target.value)}
+                                                    required
+                                                    className="input input-bordered input-primary w-full " />
+                                                {/* <input
                                             type="text"
                                             placeholder="Day"
                                             onChange={(e) => setDay(e.target.value)}
@@ -262,42 +269,43 @@ const Timetable = () => {
                                             required
                                             className="input input-bordered input-primary w-full max-w-xs" /> */}
 
-                                            <div className="modal-action flex justify-between">
-                                                <label htmlFor="my_modal_6" className="btn btn-outline btn-error">Close!</label>
-                                                <button className="btn btn-outline btn-success" type="submit" >Add Slot</button>
+                                                <div className="modal-action flex justify-between">
+                                                    <label htmlFor="my_modal_6" className="btn btn-outline btn-error">Close!</label>
+                                                    <button className="btn btn-outline btn-success" type="submit" >Add Slot</button>
 
-                                            </div>
-                                        </form>
+                                                </div>
+                                            </form>
 
 
 
+                                        </div>
                                     </div>
-                                </div>
-                            </>
-                        }
-                    </>
-                }
-                <dialog id="my_modal_input" className="modal">
-                    <div className="modal-box bg-white p-6 rounded-lg">
-                        <h2 className="text-xl font-semibold mb-4">Add New Slot</h2>
-                        <div className="flex flex-col gap-4">
-                            <input type="text" placeholder="Time (e.g., 01:00 PM - 02:00 PM)"
-                                value={time} onChange={(e) => setTime(e.target.value)}
-                                className="input input-bordered w-full" />
-                            <input type="text" placeholder="Course Name" className="input input-bordered w-full"
-                                onChange={(e) => setCourse(e.target.value)} value={course} />
+                                </>
+                            }
+                        </>
+                    }
+                    <dialog id="my_modal_input" className="modal">
+                        <div className="modal-box bg-white p-6 rounded-lg">
+                            <h2 className="text-xl font-semibold mb-4">Add New Slot</h2>
+                            <div className="flex flex-col gap-4">
+                                <input type="text" placeholder="Time (e.g., 01:00 PM - 02:00 PM)"
+                                    value={time} onChange={(e) => setTime(e.target.value)}
+                                    className="input input-bordered w-full" />
+                                <input type="text" placeholder="Course Name" className="input input-bordered w-full"
+                                    onChange={(e) => setCourse(e.target.value)} value={course} />
 
+                            </div>
+                            <div className="modal-action">
+                                <form method="dialog">
+                                    <button className="btn btn-error">Close</button>
+                                </form>
+                                <button className="btn btn-success" onClick={handleSave}>Save</button>
+                            </div>
                         </div>
-                        <div className="modal-action">
-                            <form method="dialog">
-                                <button className="btn btn-error">Close</button>
-                            </form>
-                            <button className="btn btn-success" onClick={handleSave}>Save</button>
-                        </div>
-                    </div>
-                </dialog>
+                    </dialog>
 
-            </div>
+                </div>
+            </OverlayLoader>
         </Layout>
     );
 };

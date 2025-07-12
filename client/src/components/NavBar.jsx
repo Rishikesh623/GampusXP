@@ -80,6 +80,11 @@ const NavBar = ({ currentTheme,handleThemeChange,setIsNotification,profileToggle
                                 </Link>
                             </li>
                             <li>
+                                <Link to="/activity" className="block w-full px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100">
+                                    User Activity
+                                </Link>
+                            </li>
+                            <li>
                                 <Link to="/settings" className="block w-full px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100">
                                     Settings
                                 </Link>

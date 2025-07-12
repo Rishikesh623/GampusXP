@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
 import { updateEmail, updateRegNo } from '../redux/user/userSlice';
 import axios from "axios";
+import Layout from '../components/Layout';
+import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 const Profile = () => {
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.user);
+    const achievements = useSelector((state) => state.achievement.achievement);
+    const [recentActivities, setRecentActivities] = useState([]);
+
+    const sortedAchievements = [...achievements].sort(
+        (a, b) => new Date(b.completionDate) - new Date(a.completionDate)
+    );
 
     const [formData, setFormData] = useState({
         reg_no: currentUser.reg_no || "",
@@ -21,8 +29,30 @@ const Profile = () => {
             reg_no: currentUser.reg_no,
             name: currentUser.name,
             email: currentUser.email,
+            about: currentUser.about || ""
         });
+        const getRecentActivities = async () => {
+            if (!recentActivities || recentActivities.length === 0) {
+                try {
+                    const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/activity`, {
+                        withCredentials: true,
+                    });
+                    if (res.data) {
+                        setRecentActivities(res.data.activities);
+                    }
+                }
+                catch (err) {
+                    if (err?.response?.status === 404) {
+                        return;
+                    }
+                    setRecentActivities([]);
+                }
+            }
+        }
+        getRecentActivities();
+
         auraLevelHandler();
+
     }, [currentUser]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,86 +88,170 @@ const Profile = () => {
     };
 
     return (
-<div className="min-h-screen bg-gray-100 p-6 flex justify-center">
-            <div className="w-full max-w-6xl bg-white rounded-xl shadow-xl p-6 space-y-6">
+        <Layout screenHeight="true" title="Profile">
+            <div className="min-h-scrren bg-gray-50" data-theme="light">
 
-                {/* Header */}
-                <header className="flex justify-between items-center p-4 bg-white rounded-xl shadow-md border">
-                    <Link to="/">
-                        <img src="/logo.png" alt="GampusXP" className="h-12" />
-                    </Link>
-                    <div className="flex items-center gap-4">
-                        <p className="text-lg font-semibold text-gray-800">{currentUser.name}</p>
-                        <div className="dropdown dropdown-end">
-                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                                <div className="w-10 rounded-full border">
-                                    <img src="/profile_picture.jpg" alt="Profile" />
-                                </div>
-                            </div>
-                            <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 border">
-                                <li><Link to="/profile">Profile</Link></li>
-                                <li><Link to="/settings">Settings</Link></li>
-                                <li><Link to="/signin" className="text-red-500">Logout</Link></li>
-                            </ul>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Main Content */}
-                <div className="grid md:grid-cols-2 gap-6">
-
-                    {/* Profile Info */}
-                    <div className="bg-white rounded-xl shadow-md p-6 border space-y-4">
-                        <h2 className="text-xl font-bold flex items-center gap-2 text-purple-700">
-                            <span>👤</span> Profile
-                        </h2>
-                        <p className="text-gray-700"><strong>Username:</strong> {currentUser.reg_no}</p>
-                        <p className="text-gray-700"><strong>Email:</strong> {currentUser.email}</p>
-                        <p className="text-gray-700"><strong>About:</strong> {currentUser.about || "—"}</p>
-                        <button onClick={() => setIsModalOpen(true)} className="btn btn-sm btn-outline btn-primary mt-3">
-                            Edit Profile
-                        </button>
-                    </div>
-
-                    {/* Aura Level & Activities */}
-                    <div className="bg-white rounded-xl shadow-md p-6 border space-y-4">
+                {/* Top Banner */}
+                <div className="bg-gradient-to-r from-indigo-500 via-blue-500 to-sky-500 text-white py-9 rounded-b-3xl shadow-md animate-fade-in">
+                    <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between ">
                         <div>
-                            <h3 className="text-xl font-bold text-yellow-600 flex items-center gap-2">🌟 Aura Level</h3>
-                            <div className="w-full bg-gray-200 rounded-full h-4 mt-2 overflow-hidden">
-                                <div
-                                    className="bg-blue-600 h-4 text-xs text-white text-center leading-4"
-                                    style={{ width: `${progressPercentage}%` }}
-                                >
-                                    {100 - Math.round(progressPercentage)}% to next level
-                                </div>
-                            </div>
+                            <h1 className="text-4xl font-bold">My Profile</h1>
+                            <p className="h-6">            </p>
                         </div>
-
-                        <div>
-                            <h3 className="text-xl font-bold text-orange-600 flex items-center gap-2">🏆 Achievements</h3>
-                            <ul className="list-disc list-inside text-gray-700 mt-1 space-y-1">
-                                <li>Math Wizard</li>
-                                <li>Science Champion</li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 className="text-xl font-bold text-pink-600 flex items-center gap-2">📌 Recent Activities</h3>
-                            <ul className="list-disc list-inside text-gray-700 mt-1 space-y-1">
-                                <li>Submitted assignment in Physics</li>
-                                <li>Earned 200 Aura points in Chemistry Quiz</li>
-                                <li>Unlocked "Science Champion" badge</li>
-                            </ul>
+                        <div className="text-right mt-4 md:mt-0">
+                            <p className="text-lg font-medium">
+                                Welcome back, <span className="font-semibold">{currentUser.name}</span>
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Modal */}
+                <div className="max-w-6xl mx-auto px-2 md:px-8 -mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12 z-100 relative">
+
+                    {/* Profile Card */}
+                    <div className="card shadow-xl bg-white rounded-2xl">
+                        <div className="card-body items-center text-center">
+                            <div className="avatar online">
+                                <div className="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                                    <img src="/profile_picture.jpg" alt="Profile" />
+                                </div>
+                            </div>
+                            <h2 className="card-title mt-2">{currentUser.name}</h2>
+                            <p className="text-sm text-gray-500">{currentUser.reg_no}</p>
+
+                            <div className="stats shadow mt-2 ">
+                                <div className="stat">
+                                    <div className="stat-title">Id</div>
+                                    <div className="stat-value text-sm">{currentUser.reg_no}</div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-title">Email</div>
+                                    <div className="stat-value text-sm">{currentUser.email}</div>
+                                </div>
+                            </div>
+
+                            <div className="w-full mt-4">
+                                <div className="border rounded-xl p-4 text-sm bg-white">
+                                    <p className="text-gray-500 font-medium mb-2">About</p>
+                                    <p className="text-gray-700">
+                                        {currentUser.about || (
+                                            <span className="text-gray-400 flex items-center gap-1">—</span>
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 flex flex-col gap-2 w-full">
+                                <button
+                                    className="btn btn-primary btn-sm w-full shadow hover:shadow-md transition"
+                                    onClick={() => setIsModalOpen(true)}
+                                    aria-label="Edit Profile"
+                                >
+                                    Edit Profile
+                                </button>
+                                <button
+                                    className="btn btn-outline btn-sm w-full hover:bg-blue-50 hover:text-blue-600 transition"
+                                    aria-label="Upload Photo"
+                                    onClick={() => alert("Not implemented yet.")}
+                                >
+                                    Upload Photo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Aura + Achievements */}
+                    <div className="space-y-6">
+
+                        {/* Aura Progress */}
+                        <div className="card shadow bg-white rounded-2xl">
+                            <div className="card-body">
+                                <h3 className="text-lg font-semibold text-blue-600 mb-3">Aura Progress</h3>
+                                <progress
+                                    className="progress progress-info w-full"
+                                    value={progressPercentage}
+                                    max="100"
+                                ></progress>
+                                <div className="flex justify-between items-center mt-2">
+                                    <span className="badge badge-info badge-outline shadow-sm">
+                                        Level {level}
+                                    </span>
+                                    <span className="text-sm text-gray-500">
+                                        {100 - Math.round(progressPercentage)}% to next level
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Achievements */}
+                        <div className="card shadow bg-white rounded-2xl">
+                            <div className="card-body">
+                                <h3 className="text-lg font-semibold text-yellow-600 mb-3">Achievements</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-2">
+                                    {sortedAchievements.slice(0, 5).map((ach) => (
+                                        <div
+                                            key={ach._id}
+                                            className="text-sm p-1 rounded bg-yellow-10 text-yellow-800 shadow-sm"
+                                            title={ach.description}
+                                        >
+                                            {ach.description}
+                                        </div>
+                                    ))}
+
+                                    {sortedAchievements.length > 5 && (
+                                        <Link
+                                            to="/achievements"
+                                            className="text-blue-600 text-sm mt-2 hover:underline inline-block"
+                                        >
+                                            See all achievements →
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Activities */}
+                    <div className="card shadow-md bg-white rounded-2xl">
+                        <div className="card-body">
+                            <h3 className="text-xl font-semibold text-pink-600 mb-4 flex items-center gap-2">
+                                🕒 Recent Activities
+                            </h3>
+                            <ul className="timeline timeline-vertical">
+                                {recentActivities.slice(0, 4).map((activity, index) => (
+                                    <li key={activity._id} className="timeline-item flex justify-between items-start mb-6">
+                                        <div className="timeline-content text-sm flex-1 bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-sm max-w-full">
+                                            <p className="font-medium text-gray-700">{activity.message}</p>
+                                            <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
+                                                <span className="badge badge-outline badge-sm text-pink-600 capitalize">
+                                                    {activity.tag}
+                                                </span>
+                                                <span>{moment(activity.createdAt).fromNow()}</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                ))}
+
+                                {recentActivities.length > 4 && (
+                                    <Link
+                                        to="/activity"
+                                        className="text-blue-600 text-sm font-medium hover:underline"
+                                    >
+                                        See all activities →
+                                    </Link>
+                                )}
+                            </ul>
+
+
+                        </div>
+                    </div>
+                </div>
+                {/* Edit Profile Modal */}
                 {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50">
-                        <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl border space-y-4">
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+                        <div className="modal-box bg-white p-6 rounded-xl w-full max-w-md space-y-4 shadow-2xl">
                             <h3 className="text-2xl font-bold text-center">Edit Profile</h3>
-                            <form onSubmit={onSubmitEditForm} className="space-y-3">
+                            <form onSubmit={onSubmitEditForm} className="space-y-4">
                                 <input
                                     type="text"
                                     name="reg_no"
@@ -145,6 +259,7 @@ const Profile = () => {
                                     onChange={onChangeEditForm}
                                     className="input input-bordered w-full"
                                     placeholder="Username"
+                                    aria-label="Username"
                                 />
                                 <input
                                     type="email"
@@ -153,37 +268,32 @@ const Profile = () => {
                                     onChange={onChangeEditForm}
                                     className="input input-bordered w-full"
                                     placeholder="Email"
+                                    aria-label="Email"
                                 />
-                                <input
-                                    type="text"
+                                <textarea
                                     name="about"
                                     value={formData.about}
                                     onChange={onChangeEditForm}
-                                    className="input input-bordered w-full"
+                                    className="textarea textarea-bordered w-full focus:outline-none focus:ring focus:ring-blue-300 transition"
                                     placeholder="About"
+                                    maxLength={200}
+                                    aria-label="About"
                                 />
-                                <div className="flex justify-end gap-2 pt-2">
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline"
-                                        onClick={() => setIsModalOpen(false)}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary"
-                                    >
-                                        Save
-                                    </button>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-400">{formData.about.length}/200</span>
+                                    <div className="flex gap-2 pt-2">
+                                        <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                                        <button type="submit" className="btn btn-primary">Save</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
                     </div>
                 )}
             </div>
-        </div>
+        </Layout>
     );
 };
+
 
 export default Profile;

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/Layout";
+import { useToast } from "../components/ToastProvider";
+import OverlayLoader from "../components/OverlayLoader";
 
 const AssignmentTracking = () => {
+    const { showToast } = useToast();
+
     const [assignments, setAssignments] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editMode, setEditMode] = useState(false);
@@ -13,14 +17,17 @@ const AssignmentTracking = () => {
         due_date: "",
         status: ""
     });
+    const [loading, setLoading] = useState(false);
 
     const fetchAssignments = async () => {
         try {
-            console.log(process.env.REACT_APP_BASE_URL);
+            setLoading(true)
             const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/assignment`, { withCredentials: true });
             setAssignments(res.data.assignments.reverse() || []);
+            setLoading(false)
         } catch (error) {
-            console.error("Error fetching assignments:", error.response?.message || error.message);
+            setLoading(false)
+            showToast({ message: error.response?.data?.message || error.message || "Something went wrong while fetching assignments . Please contact on help.", type: "error" });
         }
     };
 
@@ -81,7 +88,8 @@ const AssignmentTracking = () => {
     return (
 
         <Layout title="📑 Assignment Tracking" additionalHeaderElement={<button onClick={() => toggleModal()} className="btn btn-outline btn-primary mt-4">➕ Add Assignment</button>}>
-            {
+            <OverlayLoader loading={loading}>{
+
                 assignments.length === 0 ? (
                     <p className="text-gray-500 text-center">No assignments available.</p>
                 ) : (
@@ -105,34 +113,34 @@ const AssignmentTracking = () => {
                 )
             }
 
-            {
-                showModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                            <h2 className="text-2xl font-bold mb-4">{editMode ? "Edit Assignment" : "Add Assignment"}</h2>
-                            <form onSubmit={handleSubmit}>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-semibold">Title</label>
-                                    <input type="text" name="title" value={assignmentForm.title} onChange={handleChange} required className="input input-bordered w-full" />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-semibold">Description</label>
-                                    <textarea name="description" value={assignmentForm.description} onChange={handleChange} className="textarea textarea-bordered w-full" required></textarea>
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-semibold">Due Date</label>
-                                    <input type="date" name="due_date" value={assignmentForm.due_date} onChange={handleChange} required className="input input-bordered w-full" />
-                                </div>
-                                <div className="flex justify-end space-x-2">
-                                    <button type="button" className="btn btn-outline btn-error" onClick={() => toggleModal()}>Cancel</button>
-                                    <button type="submit" className="btn btn-outline btn-success">{editMode ? "Save Changes" : "Add"}</button>
-                                </div>
-                            </form>
+                {
+                    showModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                                <h2 className="text-2xl font-bold mb-4">{editMode ? "Edit Assignment" : "Add Assignment"}</h2>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-semibold">Title</label>
+                                        <input type="text" name="title" value={assignmentForm.title} onChange={handleChange} required className="input input-bordered w-full" />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-semibold">Description</label>
+                                        <textarea name="description" value={assignmentForm.description} onChange={handleChange} className="textarea textarea-bordered w-full" required></textarea>
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-semibold">Due Date</label>
+                                        <input type="date" name="due_date" value={assignmentForm.due_date} onChange={handleChange} required className="input input-bordered w-full" />
+                                    </div>
+                                    <div className="flex justify-end space-x-2">
+                                        <button type="button" className="btn btn-outline btn-error" onClick={() => toggleModal()}>Cancel</button>
+                                        <button type="submit" className="btn btn-outline btn-success">{editMode ? "Save Changes" : "Add"}</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                )
-            }
-
+                    )
+                }
+            </OverlayLoader>
         </Layout >
 
     );

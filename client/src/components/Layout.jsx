@@ -1,7 +1,7 @@
 import React from "react";
 import LeftDrawer from "./LeftDrawer";
 
-const Layout = ({ children,title,additionalHeaderElement}) => {
+const Layout = ({ children, title, screenHeight = false, additionalHeaderElement }) => {
     const cleanTitle = (title) => title.replace(/[^a-zA-Z0-9\s]/g, "").trim();
     return (
         <div className="drawer">
@@ -9,7 +9,7 @@ const Layout = ({ children,title,additionalHeaderElement}) => {
             <input id="drawer-toggle" type="checkbox" className="drawer-toggle" />
 
             {/* Main Content */}
-            <div className="drawer-content p-6 min-h-screen bg-gray-100">
+            <div className={screenHeight ? 'drawer-content p-6 bg-gray-100 h-screen' : 'drawer-content p-6 bg-gray-100 min-h-screen'}>
                 <div className="flex items-center justify-between mb-6">
                     <label htmlFor="drawer-toggle" className="btn btn-square btn-ghost mr-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
@@ -27,7 +27,7 @@ const Layout = ({ children,title,additionalHeaderElement}) => {
             </div>
 
             {/* Left Drawer */}
-            <LeftDrawer title={cleanTitle(title)}/>
+            <LeftDrawer title={cleanTitle(title)} />
         </div>
     );
 };
