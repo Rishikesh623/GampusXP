@@ -23,6 +23,7 @@ import Profile from './pages/Profile';
 import axios from 'axios';
 import { logout,setUserProfile } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
+import CoordinatorPrivateRouter from './components/CoordinatorPrivateRouter';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Coordinator from './pages/Coordinator';
@@ -82,9 +83,9 @@ const App = () => {
         <Route path="/accepted-challenges" element={<PrivateRoute><AcceptedChallenges /></PrivateRoute>} />
         <Route path="/timetable" element={<PrivateRoute><Timetable /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-        <Route path="/coordinator" element={<PrivateRoute><Coordinator /></PrivateRoute>} />
-        <Route path="/coordinator/challenges-management" element={<PrivateRoute><CoordinatorChallenges /></PrivateRoute>} />
-        <Route path="/coordinator/course-management" element={<PrivateRoute><CourseManagementCoordinator /></PrivateRoute>} />
+        <Route path="/coordinator" element={<CoordinatorPrivateRouter><Coordinator /></CoordinatorPrivateRouter>} />
+        <Route path="/coordinator/challenges-management" element={<CoordinatorPrivateRouter><CoordinatorChallenges /></CoordinatorPrivateRouter>} />
+        <Route path="/coordinator/course-management" element={<CoordinatorPrivateRouter><CourseManagementCoordinator /></CoordinatorPrivateRouter>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
