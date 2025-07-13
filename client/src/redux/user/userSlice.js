@@ -1,19 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+    name: '',
+    reg_no: '',
+    email: '',
+    aura_points: 0,
+    showRecentActivity: ''
+};
+
 const userSlice = createSlice({
     name: 'user',
-    initialState: {
-        name: '',
-        reg_no: '',
-        email: '',
-        aura_points: 0
-    },
+    initialState,
     reducers: {
         setUserProfile: (state, action) => {
             state.name = action.payload.name;
             state.reg_no = action.payload.reg_no;
             state.email = action.payload.email;
             state.aura_points = action.payload.aura_points;
+            state.showRecentActivity = action.payload.showRecentActivity;
         },
         updateRegNo: (state, action) => {
             state.reg_no = action.payload;
@@ -24,11 +28,19 @@ const userSlice = createSlice({
         updateAuraPoints: (state, action) => {
             state.aura_points = action.payload;
         },
-        logout: (state) => {
-            return { name: null, email: null, reg_no: null, aura_points: 0 };
+        updateShowRecentActivityFlag: (state, action) => {
+            state.showRecentActivity = action.payload;
         },
+        logout: () => initialState,
     }
-})
+});
 
-export const { setUserProfile, updateEmail, updateRegNo, updateAuraPoints, logout } = userSlice.actions;
+export const {
+    setUserProfile,
+    updateEmail,
+    updateRegNo,
+    updateAuraPoints,
+    updateShowRecentActivityFlag,
+    logout
+} = userSlice.actions;
 export default userSlice.reducer;

@@ -21,15 +21,18 @@ import OtherUserProfile from './pages/OtherUserProfile'
 import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
-import { logout,setUserProfile } from '../src/redux/user/userSlice';
+import { logout, setUserProfile } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
 import CoordinatorPrivateRouter from './components/CoordinatorPrivateRouter';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Coordinator from './pages/Coordinator';
 import Activity from './pages/Activity';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 
 const App = () => {
+  const queryClient = new QueryClient();
   const theme = useSelector((state) => state.theme);
 
   const dispatch = useDispatch();
@@ -41,7 +44,7 @@ const App = () => {
           withCredentials: true, // Include cookies in the request
         });
         const data = res.data;
-        
+
         if (data && data.reg_no) {
           dispatch(setUserProfile({
             name: data.name,
@@ -53,7 +56,7 @@ const App = () => {
 
       } catch (error) {
         dispatch(logout());
-        console.error('Error fetching profile:', error);
+        // console.error('Error fetching profile:', error);
       }
     }
 
@@ -64,31 +67,34 @@ const App = () => {
 
 
   return (
-    <div className={`app-container theme-${theme}`}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
-        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-        <Route path="/activity" element={<PrivateRoute><Activity /></PrivateRoute>} />
-        <Route path="/other-user-profile" element={<PrivateRoute><OtherUserProfile /></PrivateRoute>} />
-        <Route path="/course-management-user" element={<PrivateRoute><CourseManagementUser /></PrivateRoute>} />
-        <Route path="/assignment-tracking" element={<PrivateRoute><AssignmentTracking /></PrivateRoute>} />
-        <Route path="/achievements" element={<PrivateRoute><Achievements /></PrivateRoute>} />
-        <Route path="/leaderboards" element={<PrivateRoute><Leaderboards /></PrivateRoute>} />
-        <Route path="/rewards-challenges" element={<PrivateRoute><RewardsAndChallenges /></PrivateRoute>} />
-        <Route path="/proposed-challenges" element={<PrivateRoute><ProposedChallenges /></PrivateRoute>} />
-        <Route path="/accepted-challenges" element={<PrivateRoute><AcceptedChallenges /></PrivateRoute>} />
-        <Route path="/timetable" element={<PrivateRoute><Timetable /></PrivateRoute>} />
-        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-        <Route path="/coordinator" element={<CoordinatorPrivateRouter><Coordinator /></CoordinatorPrivateRouter>} />
-        <Route path="/coordinator/challenges-management" element={<CoordinatorPrivateRouter><CoordinatorChallenges /></CoordinatorPrivateRouter>} />
-        <Route path="/coordinator/course-management" element={<CoordinatorPrivateRouter><CourseManagementCoordinator /></CoordinatorPrivateRouter>} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className={`app-container theme-${theme}`}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/activity" element={<PrivateRoute><Activity /></PrivateRoute>} />
+          <Route path="/profile/u/:reg_no" element={<PrivateRoute><OtherUserProfile /></PrivateRoute>} />
+          <Route path="/course-management-user" element={<PrivateRoute><CourseManagementUser /></PrivateRoute>} />
+          <Route path="/assignment-tracking" element={<PrivateRoute><AssignmentTracking /></PrivateRoute>} />
+          <Route path="/achievements" element={<PrivateRoute><Achievements /></PrivateRoute>} />
+          <Route path="/leaderboards" element={<PrivateRoute><Leaderboards /></PrivateRoute>} />
+          <Route path="/rewards-challenges" element={<PrivateRoute><RewardsAndChallenges /></PrivateRoute>} />
+          <Route path="/proposed-challenges" element={<PrivateRoute><ProposedChallenges /></PrivateRoute>} />
+          <Route path="/accepted-challenges" element={<PrivateRoute><AcceptedChallenges /></PrivateRoute>} />
+          <Route path="/timetable" element={<PrivateRoute><Timetable /></PrivateRoute>} />
+          <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+          <Route path="/coordinator" element={<CoordinatorPrivateRouter><Coordinator /></CoordinatorPrivateRouter>} />
+          <Route path="/coordinator/challenges-management" element={<CoordinatorPrivateRouter><CoordinatorChallenges /></CoordinatorPrivateRouter>} />
+          <Route path="/coordinator/course-management" element={<CoordinatorPrivateRouter><CourseManagementCoordinator /></CoordinatorPrivateRouter>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </QueryClientProvider>
+
   );
 }
 

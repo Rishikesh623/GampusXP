@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');//user model 
+const Activity = require('../models/activityModel');
+const achievementModel = require('../models/achievementModel');
 const validator = require("validator");
 
 
@@ -53,8 +55,8 @@ const register = async (req, res) => {
 
         //first time bonus
 
-        user.aura_points = 10 ;
-        
+        user.aura_points = 10;
+
         await user.save();
 
         res.status(201).json({ name, reg_no, email });
@@ -148,8 +150,8 @@ const coordinatorLogin = async (req, res) => {
 };
 
 
-// Profile fetch API - own
-const getProfile = async (req, res) => {
+// user data fetch API - owner
+const getUserData = async (req, res) => {
     try {
         const _id = req.user._id; //get _id from the authenticated user
         const user = await userModel.findOne({ _id });
@@ -169,19 +171,29 @@ const getProfile = async (req, res) => {
 
 
 // Profile fetch API - others
-const getOtherUserProfile = async (req, res) => {
+const getProfile = async (req, res) => {
     try {
-        const reg_no = req.params.reg_no; //get _id from the authenticated user
-        // console.log(reg_no)
-        const userProfile = await userModel.findOne({ reg_no: reg_no }).select("_id name reg_no email aura_points");
-
-        // console.log(userProfile);
+        const reg_no = req.params.reg_no;
+        const userProfile = await userModel.findOne({ reg_no: reg_no }).select("_id name reg_no email aura_points showRecentActivity");
 
         if (!userProfile) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).json({ userProfile });
+        let userAchievements = await achievementModel
+            .findOne({ user: userProfile._id })
+            .populate('achievements.challenge_id', 'title')
+            .lean();
+
+        // If achievements exist, return only the 5 most recent 
+        if (userAchievements && userAchievements.achievements) {
+            userAchievements.achievements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            userAchievements.achievements = userAchievements.achievements.slice(0, 5);
+        }
+
+        // Get 5 recent activities
+        const activities = userProfile.showRecentActivity ? await Activity.find({ userId: userProfile._id }).sort({ createdAt: -1 }).limit(5) : null;
+        res.status(200).json({ userProfile, achievements: userAchievements?.achievements, activities });
 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -283,4 +295,4 @@ const logout = async (req, res) => {
 }
 
 
-module.exports = { getUsers, login, register, logout, getProfile, getOtherUserProfile, editProfile, changePassword, coordinatorLogin };
+module.exports = { getUsers, login, register, logout, getProfile, getUserData, editProfile, changePassword, coordinatorLogin };

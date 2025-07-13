@@ -134,3 +134,10 @@
 .logo_bg{
   background-image: url("../public/logo.png");
 }
+
+input,
+textarea,
+select {
+  background-color: #fff !important;
+  color: #111 !important;
+}

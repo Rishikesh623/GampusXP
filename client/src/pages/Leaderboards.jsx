@@ -67,7 +67,7 @@ const Leaderboards = () => {
                                             <td className="py-3 px-6">{indexOfFirstUser + index + 1}</td>
                                             <td className="py-3 px-6">
                                                 <Link
-                                                    to="/other-user-profile"
+                                                    to={`/profile/u/${user.reg_no}`}
                                                     state={{ reg_no: user.reg_no }}
                                                     className="text-blue-600 hover:underline">
                                                     {user.name}

@@ -140,7 +140,7 @@ const Timetable = () => {
 
         try {
 
-            if (slotId != '') {
+            if (slotId !== '') {
                 const res = await axios.patch(`${process.env.REACT_APP_BASE_URL}/timetable/edit-slot`, {
                     day, slotId, newTime: time, newCourse: course
                 }, {

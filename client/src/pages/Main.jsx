@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { resolvePath, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
 import { persistor } from '../redux/store';
@@ -116,8 +116,10 @@ const Main = () => {
                         reg_no: data.reg_no,
                         email: data.email,
                         password: data.password,
-                        aura_points: data.aura_points
+                        aura_points: data.aura_points,
+                        showRecentActivity: data.showRecentActivity
                     }));
+                    console.log(currentUser);
                 }
             } catch (err) {
                 if (err.response?.status === 404) {

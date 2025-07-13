@@ -1,4 +1,5 @@
 const courseModel = require('../models/courseModel');
+const userModel = require('../models/userModel');
 const notificationModel = require('../models/notificationModel');
 
 
@@ -28,7 +29,14 @@ const addNotification = async (req, res) => {
     try {
         const { user_id, title, message } = req.body;
 
-        const notification = await notificationModel.findOneAndUpdate({ user_id: user_id }, { $push: { notifications: { title, message } } });
+        const notification = await notificationModel.findOneAndUpdate(
+            { user_id: user_id },
+            {
+                $push: { notifications: { title, message } }
+            },
+            {
+                upsert: true
+            });
 
         res.status(201).json({ message: "success" });
 
@@ -39,7 +47,7 @@ const addNotification = async (req, res) => {
 
 const markRead = async (req, res) => {
     try {
-        console.log(req.body)
+        // console.log(req.body)
         const { notificationId } = req.body;
 
         const notification = await notificationModel.updateOne({ user_id: req.user._id, "notifications._id": notificationId },
@@ -52,4 +60,44 @@ const markRead = async (req, res) => {
     }
 }
 
-module.exports = { getNotifications, addNotification, markRead };
+const notifyCoordinator = async (req, res) => {
+    try {
+        const { oldRegNo, newRegNo, message } = req.body;
+
+        const User = await userModel.findOne(
+            { email: process.env.COORDINATOR_ID }
+        ).select('_id');
+
+        if (!User) {
+            throw new Error('Coordinator not found');
+        }
+        const coordinatorId = User._id;
+
+
+        const notification = await notificationModel.findOneAndUpdate(
+            { user_id: coordinatorId },
+            {
+                $push: {
+                    notifications: {
+                        title: `User ${oldRegNo} requested a registration number change.`,
+                        message: `New Registration Number: ${newRegNo}\nMessage: ${message || ''}`,
+                        date: new Date() // Optional: add a timestamp
+                    }
+                }
+            },
+            {
+                new: true,
+                upsert: true
+            }
+        );
+
+
+        res.status(201).json({ message: "success" });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+
+module.exports = { getNotifications, addNotification, markRead, notifyCoordinator };

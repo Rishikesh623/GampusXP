@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Layout from "../components/Layout";
 import RCRibbon from '../components/RCRibbon';
 
@@ -9,7 +9,6 @@ const RewardsChallenges = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
-    const dispatch = useDispatch();
     const currentChallenges = useSelector((state) => state.challenges.challenges);
 
     const getChallenges = async () => {

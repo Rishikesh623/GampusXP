@@ -29,17 +29,18 @@ const userSchema = new mongoose.Schema({
       courses: [
         {
           _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
-          course_name:String,
+          course_name: String,
           course_code: String,
           professor_name: String
         }
       ]
     }
   ],
-  aura_points:{
-    type:Number,
+  aura_points: {
+    type: Number,
     default: 0
-  }
+  },
+  showRecentActivity: { type: Boolean, default: true }
 });
 
 // Hash password before saving the user
