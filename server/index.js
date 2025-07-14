@@ -11,6 +11,7 @@ const assignmentRoutes = require('./routes/assignmentRoutes.js');
 const timetableRoutes = require('./routes/timetableRoutes.js');
 const challengesRoutes = require('./routes/challengesRoutes.js');
 const notificationRoutes = require('./routes/notificationRoutes.js');
+const searchRoutes = require('./routes/searchRoutes.js');
 
 const app = express();
 
@@ -40,7 +41,7 @@ app.use("/assignment", assignmentRoutes);
 app.use("/timetable", timetableRoutes);
 app.use("/challenges", challengesRoutes);
 app.use("/notifications", notificationRoutes);
-
+app.use('/api/search', searchRoutes);
 
 const PORT = process.env.PORT || 8080;
 const MOGO_URI = isProd ? process.env.MOGO_URI : process.env.MOGO_URI;

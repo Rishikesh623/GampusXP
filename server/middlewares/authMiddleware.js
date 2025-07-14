@@ -28,7 +28,7 @@ const authUser = (req, res, next) => {
 };
 
 const authCoordinator = (req, res, next) => {
-  
+
   if (req.headers.coordinator) {
     return next();  // Proceed to the requested route
   } else {

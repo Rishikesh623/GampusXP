@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
-const NavBar = ({ currentTheme,handleThemeChange,setIsNotification,profileToggle,unReadNotificationsCount,logoutHandle}) => {
+const NavBar = ({ currentTheme, handleThemeChange, setIsNotification, profileToggle, unReadNotificationsCount, logoutHandle }) => {
     return (
         <header className="flex items-center justify-between px-4 py-2 bg-white shadow-md ">
             <div className="w-1/2 flex items-center">
@@ -19,8 +20,9 @@ const NavBar = ({ currentTheme,handleThemeChange,setIsNotification,profileToggle
             <div className="w-1/2 flex justify-end gap-4 px-4 py-2">
                 {/* Search Bar */}
                 <div className='w-1/2 hidden sm:block'>
-                    <label className="input input-bordered input-info input-md flex items-center gap-2 w-full max-w-lg">
-                        <input type="text" className="grow focus:outline-none" placeholder="Search assignments, courses..." />
+                    <label className="bg-white input input-bordered input-info input-md flex items-center gap-2 w-full max-w-lg">
+                        {/* <input type="text" className="grow focus:outline-none" placeholder="Search mates,assignments, challenges..." /> */}
+                        <SearchBar />
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-5 w-5 opacity-70">
                             <path
                                 fillRule="evenodd"
@@ -40,7 +42,7 @@ const NavBar = ({ currentTheme,handleThemeChange,setIsNotification,profileToggle
                                 <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path>
                             </svg>
                         </button>
-                        <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-lg w-44 p-2 shadow-xl">
+                        <ul tabIndex={0} className=" bg-white dropdown-content menu bg-base-100 rounded-lg w-44 p-2 shadow-xl">
                             {['light', 'retro', 'cyberpunk', 'valentine', 'aqua'].map((theme) => (
                                 <li key={theme}>
                                     <input
