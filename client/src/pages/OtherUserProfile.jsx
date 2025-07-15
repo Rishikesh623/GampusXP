@@ -33,7 +33,7 @@ const OtherUserProfile = () => {
             currentUser={data?.userProfile || {}}
             achievements={data?.achievements || []}
             recentActivities={data?.activities || []}
-            hiddenActivityMsg={!data.showRecentActivity}
+            hiddenActivityMsg={!data.userProfile.showRecentActivity}
         />
     );
 };

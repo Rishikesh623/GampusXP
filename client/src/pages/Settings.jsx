@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateEmail } from '../redux/user/userSlice';
+import { updateEmail, updateShowRecentActivityFlag } from '../redux/user/userSlice';
 import { FaEye, FaEyeSlash, FaEdit, FaCheck } from "react-icons/fa";
 import { useToast } from '../components/ToastProvider';
 import axios from "axios";
@@ -37,7 +37,6 @@ const Settings = () => {
     const [showRecentActivity, setShowRecentActivity] = useState(
         currentUser.showRecentActivity ?? true
     );
-    console.log("tgr",currentUser)
     // Handle input changes
     const handlePasswordChange = (e) => {
         setPassword({ ...password, [e.target.name]: e.target.value });
@@ -134,7 +133,10 @@ const Settings = () => {
             { showRecentActivity: newValue },
             `Recent activity is now ${newValue ? "visible" : "hidden"}`
         );
-        if (success) setShowRecentActivity(newValue);
+        if (success) {
+            setShowRecentActivity(newValue);
+            dispatch(updateShowRecentActivityFlag(newValue));
+        }
     };
 
     return (

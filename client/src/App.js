@@ -21,7 +21,7 @@ import OtherUserProfile from './pages/OtherUserProfile'
 import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
-import { logout, setUserProfile } from '../src/redux/user/userSlice';
+import { logout, setUserProfile, updateShowRecentActivityFlag } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
 import CoordinatorPrivateRouter from './components/CoordinatorPrivateRouter';
 import Welcome from './pages/Welcome';
@@ -50,7 +50,8 @@ const App = () => {
             name: data.name,
             reg_no: data.reg_no,
             email: data.email,
-            aura_points: data.aura_points
+            aura_points: data.aura_points,
+            showRecentActivity: data.showRecentActivity
           }));
         }
 

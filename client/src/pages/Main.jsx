@@ -103,9 +103,9 @@ const Main = () => {
 
         const getUserProfile = async () => {
             try {
-                if (currentUser.name !== null) {
-                    return;
-                }
+                // if (currentUser.name !== null) {
+                //     return;
+                // }
                 const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/profile`, {
                     withCredentials: true,
                 });
@@ -119,7 +119,6 @@ const Main = () => {
                         aura_points: data.aura_points,
                         showRecentActivity: data.showRecentActivity
                     }));
-                    console.log(currentUser);
                 }
             } catch (err) {
                 if (err.response?.status === 404) {
