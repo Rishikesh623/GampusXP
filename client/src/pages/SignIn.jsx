@@ -26,8 +26,26 @@ const SignIn = () => {
         });
     };
 
+    const validate = () => {
+        if (!formData.id.trim()) {
+            showToast({ message: "ID is required", type: "info" });
+            return false;
+        }
+        if (!formData.password.trim()) {
+            showToast({ message: "Password is required", type: "info" });
+            return false;
+        } else if (formData.password.length < 6) {
+            showToast({ message: "Password must be at least 6 characters", type: "info" });
+            return false;
+        }
+        return true;
+    };
+
     const onSubmitForm = async (e) => {
         e.preventDefault();
+
+        if (!validate())
+            return;
 
         const endpoint = isCoordinator
             ? "/user/coordinator-login"
@@ -58,7 +76,7 @@ const SignIn = () => {
                 navigate("/main");
             }
 
-            showToast({ message: "Login Successful", type: "success" });
+            showToast({ message: "Login Successful", type: "success", duration: 1000 });
 
         } catch (err) {
             showToast({ message: err.response?.data?.message || "Login failed", type: "error" });

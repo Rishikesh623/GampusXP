@@ -81,12 +81,12 @@ const login = async (req, res) => {
             user = await userModel.findOne({ email: id });
 
         if (!user) {
-            return res.status(404).json({ message: 'No user exists' });
+            return res.status(404).json({ message: 'Invalid Id' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Wrong Password' });
+            return res.status(400).json({ message: 'Wrong Id or Password' });
         }
 
         // set the token expiration based on "Remember Me"
@@ -114,7 +114,7 @@ const login = async (req, res) => {
 
         res.status(200).json({ name: user.name, reg_no: user.reg_no, email: user.email });
     } catch (error) {
-        res.status(500).json({ message: 'Server Error', error: error.message });
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
 

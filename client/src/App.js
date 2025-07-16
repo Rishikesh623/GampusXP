@@ -50,6 +50,7 @@ const App = () => {
             name: data.name,
             reg_no: data.reg_no,
             email: data.email,
+            about: data.about,
             aura_points: data.aura_points,
             showRecentActivity: data.showRecentActivity
           }));

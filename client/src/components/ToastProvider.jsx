@@ -7,12 +7,27 @@ export const useToast = () => useContext(ToastContext);
 export const ToastProvider = ({ children }) => {
     const [toast, setToast] = useState(null);
 
-    const showToast = ({ message, type = 'info', duration = 3000 }) => {
+    const showToast = ({ message, type = 'info', duration = 2000 }) => {
         setToast({ message, type });
 
         setTimeout(() => {
             setToast(null);
         }, duration);
+    };
+
+    const getAlertClass = (type) => {
+        switch (type) {
+            case "success":
+                return "alert alert-success";
+            case "error":
+                return "alert alert-error";
+            case "warning":
+                return "alert alert-warning";
+            case "info":
+                return "alert alert-info";
+            default:
+                return "alert";
+        }
     };
 
     return (
@@ -22,7 +37,7 @@ export const ToastProvider = ({ children }) => {
             {/* Toast UI */}
             {toast && (
                 <div className="toast toast-top toast-end">
-                    <div className = {`alert alert-${toast.type}  duration-300`} >
+                    <div className={`${getAlertClass(toast.type)}  duration-300`} >
                         <span>{toast.message}</span>
                     </div>
                 </div>

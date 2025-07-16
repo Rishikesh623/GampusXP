@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme } from '../redux/theme/themeSlice';
-import { updateEmail, updateRegNo } from '../redux/user/userSlice';
+import { updateAbout, updateEmail, updateRegNo } from '../redux/user/userSlice';
 import axios from "axios";
 import Layout from '../components/Layout';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import { useToast } from './ToastProvider';
 
 const ProfileView = ({ other, currentUser, achievements, recentActivities, hiddenActivityMsg }) => {
     const dispatch = useDispatch();
+    const { showToast } = useToast();
     const sortedAchievements = [...achievements].sort(
         (a, b) => new Date(b.completionDate) - new Date(a.completionDate)
     );
@@ -38,7 +40,6 @@ const ProfileView = ({ other, currentUser, achievements, recentActivities, hidde
             setProgressPercentage(progressWithinLevel * 100);
         };
 
-
         auraLevelHandler();
 
     }, [currentUser]);
@@ -55,9 +56,12 @@ const ProfileView = ({ other, currentUser, achievements, recentActivities, hidde
             if (!res) return;
             dispatch(updateRegNo(data.reg_no));
             dispatch(updateEmail(data.email));
+            dispatch(updateAbout(data.about));
+
+            showToast({ message: "Updated successfully", type: 'success' });
             setFormData({ reg_no: data.reg_no, name: data.name, email: data.email, about: data.about });
         } catch (err) {
-            console.log(err.response.data.message);
+            showToast({ message: "Internal server error" || err.response.data.message , type: 'error' });
         }
         setIsModalOpen(false);
     };
