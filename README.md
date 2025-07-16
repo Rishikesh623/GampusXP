@@ -47,7 +47,3 @@ assignment completr after due point decreeas aua point
 
 ### License
 MIT License
-
---- 
-
-Let me know if you need more specifics for setup or additional sections!
