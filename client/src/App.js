@@ -21,7 +21,7 @@ import OtherUserProfile from './pages/OtherUserProfile'
 import './style.css';
 import Profile from './pages/Profile';
 import axios from 'axios';
-import { logout, setUserProfile, updateShowRecentActivityFlag } from '../src/redux/user/userSlice';
+import { logout, setUserProfile } from '../src/redux/user/userSlice';
 import PrivateRoute from './components/PrivateRouter';
 import CoordinatorPrivateRouter from './components/CoordinatorPrivateRouter';
 import Welcome from './pages/Welcome';
@@ -63,7 +63,9 @@ const App = () => {
     }
 
     fetchProfile();
-  }, [dispatch]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // console.log(theme);
 

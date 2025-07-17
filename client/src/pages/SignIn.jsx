@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {  useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setUserProfile } from "../redux/user/userSlice";
@@ -61,16 +61,17 @@ const SignIn = () => {
 
             if (isCoordinator) {
                 dispatch(setUserProfile({
-                    reg_no: null,
                     name: "Co-ordinator",
                     email: "coordinator@gmail.com",
                 }));
+
                 navigate("/coordinator");
             } else {
                 dispatch(setUserProfile({
                     name: data.name,
                     reg_no: data.reg_no,
                     email: data.email,
+                    about: data.about,
                     aura_points: data.aura_points,
                 }));
                 navigate("/main");

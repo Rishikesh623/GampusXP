@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 const CoordinatorPrivateRouter = ({ children }) => {
   const user = useSelector(state => {
-    return state.email;
+    return state.user.email;
   });
   // console.log(user);
   return (user === "coordinator@gmail.com"  )? children : <Navigate to="/404" />;
