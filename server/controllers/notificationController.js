@@ -10,19 +10,19 @@ const getNotifications = async (req, res) => {
         //fetch all notifications of user 
         let notificationsDoc = await notificationModel.findOne({ user_id: req.user._id });
 
-
         if (!notificationsDoc) {
             notificationsDoc = new notificationModel({ user_id: req.user._id, notifications: [] });
             await notificationsDoc.save();
-
         }
 
-        res.status(201).json({ notifications: notificationsDoc.notifications });
+        const reversedNotifications = [...notificationsDoc.notifications].reverse();
 
+        res.status(200).json({ notifications: reversedNotifications });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 // add notification API
 const addNotification = async (req, res) => {

@@ -5,6 +5,7 @@ const authUser = (req, res, next) => {
 
 
   try {
+    console.log(req.headers);
     const cookieHeader = req.headers.cookie; // get cookie from the headers
 
     // console.log(req.headers);

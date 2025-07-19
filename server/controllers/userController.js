@@ -124,7 +124,6 @@ const coordinatorLogin = async (req, res) => {
     const { id, password } = req.body;
 
     try {
-
         if (!id || !password) {
             return res.status(400).json({ message: 'Fill the required fields.' });
         }
@@ -132,15 +131,30 @@ const coordinatorLogin = async (req, res) => {
         const coordinatorId = process.env.COORDINATOR_ID;
         const coordinatorPassword = process.env.COORDINATOR_PASSWORD;
 
-        // console.log(id);
-        // console.log(password);
-
         if (coordinatorId !== id || coordinatorPassword !== password) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // req.session.isCoordinator = true;  // Store session value
+        // Find coordinator user in DB
+        let user = await userModel.findOne({ email: coordinatorId });
 
+        // Generate JWT for _id of coordinator user, expires in 1h
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "1h" });
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
+            maxAge: 1 * 60 * 60 * 1000 // 1 hour in milliseconds
+        };
+
+        if (isProd) {
+            cookieOptions.domain = DOMAIN;
+        } else {
+            delete cookieOptions.domain;
+        }
+
+        res.cookie('token', token, cookieOptions);
         res.status(200).json({ message: 'Login successful' });
 
     } catch (error) {

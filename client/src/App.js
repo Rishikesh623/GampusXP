@@ -29,6 +29,9 @@ import NotFound from './pages/NotFound';
 import Coordinator from './pages/Coordinator';
 import Activity from './pages/Activity';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Help from './pages/Help';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 
 
 const App = () => {
@@ -45,16 +48,14 @@ const App = () => {
         });
         const data = res.data;
 
-        if (data && data.reg_no) {
-          dispatch(setUserProfile({
-            name: data.name,
-            reg_no: data.reg_no,
-            email: data.email,
-            about: data.about,
-            aura_points: data.aura_points,
-            showRecentActivity: data.showRecentActivity
-          }));
-        }
+        dispatch(setUserProfile({
+          name: data.name,
+          reg_no: data.reg_no,
+          email: data.email,
+          about: data.about,
+          aura_points: data.aura_points,
+          showRecentActivity: data.showRecentActivity
+        }));
 
       } catch (error) {
         dispatch(logout());
@@ -78,6 +79,9 @@ const App = () => {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/help" element={<PrivateRoute><Help /></PrivateRoute>} />
+          <Route path="/terms" element={<PrivateRoute><Terms /></PrivateRoute>} />
+          <Route path="/privacy" element={<PrivateRoute><Privacy /></PrivateRoute>} />
           <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/activity" element={<PrivateRoute><Activity /></PrivateRoute>} />

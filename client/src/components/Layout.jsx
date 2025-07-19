@@ -1,5 +1,6 @@
 import React from "react";
 import LeftDrawer from "./LeftDrawer";
+import Footer from "./Footer";
 
 const Layout = ({ children, title, screenHeight = false, additionalHeaderElement }) => {
     const cleanTitle = (title) => title.replace(/[^a-zA-Z0-9\s]/g, "").trim();
@@ -28,7 +29,7 @@ const Layout = ({ children, title, screenHeight = false, additionalHeaderElement
                 </div>
 
                 <div>{children}</div>
-
+                <Footer/>
             </div>
 
             {/* Left Drawer */}

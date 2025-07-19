@@ -13,6 +13,7 @@ import LeftDrawer from '../components/LeftDrawer';
 import NavBar from '../components/NavBar';
 import { setTimeTable } from '../redux/timetable/timetableSlice';
 import { useToast } from '../components/ToastProvider';
+import Footer from '../components/Footer';
 
 const Main = () => {
     const dispatch = useDispatch();
@@ -103,9 +104,9 @@ const Main = () => {
 
         const getUserProfile = async () => {
             try {
-                // if (currentUser.name !== null) {
-                //     return;
-                // }
+                if (currentUser.name !== null || currentUser.name !== '') {
+                    return;
+                }
                 const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/profile`, {
                     withCredentials: true,
                 });
@@ -115,6 +116,7 @@ const Main = () => {
                         name: data.name,
                         reg_no: data.reg_no,
                         email: data.email,
+                        about: data.about,
                         password: data.password,
                         aura_points: data.aura_points,
                         showRecentActivity: data.showRecentActivity
@@ -325,7 +327,7 @@ const Main = () => {
 
 
                     {/* Quick Stats */}
-                    <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-3 z-1000">
                         {/* Upcoming Assignments */}
                         <div className="card bg-base-100 shadow-md border">
                             <div className="card-body p-4">
@@ -493,7 +495,7 @@ const Main = () => {
 
                 </main>
             </div>
-
+            <Footer />
             <LeftDrawer title="Dashboard" />
 
             {/* Notifications Modal */}
