@@ -7,7 +7,7 @@ import axios from "axios"
 
 const Profile = () => {
     const dispatch = useDispatch();
-    const currentTheme = useSelector((state) => state.theme);
+    const currentTheme = useSelector((state) => state.theme.value);
     const currentUser = useSelector((state) => state.user);
 
     const [formData, setFormData] = useState({

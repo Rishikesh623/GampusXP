@@ -5,7 +5,7 @@ const getTimetable = async (req, res) => {
     try {
         const timetable = await timetableModel.findOne({ creator_id: req.user._id });
         if (!timetable)
-            return res.status(404).json({ message: 'Timetable not found.' });
+            return res.status(404).json({ message: 'Timetable not created yet.' });
 
         res.status(200).json(timetable.days);
     } catch (error) {

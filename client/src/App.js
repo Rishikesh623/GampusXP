@@ -36,7 +36,7 @@ import Privacy from './pages/Privacy';
 
 const App = () => {
   const queryClient = new QueryClient();
-  const theme = useSelector((state) => state.theme);
+  const theme = useSelector((state) => state.theme.value);
 
   const dispatch = useDispatch();
 

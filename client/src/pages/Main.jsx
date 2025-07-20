@@ -20,7 +20,7 @@ const Main = () => {
     const navigate = useNavigate();
     const { showToast } = useToast();
 
-    const currentTheme = useSelector((state) => state.theme);
+    const currentTheme = useSelector((state) => state.theme.value);
     const currentUser = useSelector((state) => state.user);
 
     const [isNotification, setIsNotification] = useState(false);

@@ -14,6 +14,12 @@ const userPersistConfig = {
     storage,
 };
 
+// Persist configuration for theme slice
+const themePersistConfig = {
+    key: 'theme',
+    storage,
+};
+
 // Persist configuration for ctimetable slice (optional)
 const ctimetablePersistConfig = {
     key: 'ctimetable',
@@ -37,6 +43,7 @@ const achievementPersistConfig = {
 
 // Wrapping reducers with persistence
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
+const persistedThemeReducer = persistReducer(themePersistConfig, themeReducer);
 const persistedCtimetableReducer = persistReducer(ctimetablePersistConfig, timetableReducer);
 const persistedassignmentReducer = persistReducer(cassignmentPersistConfig, assignmentReducer);
 const persistedchallengeReducer = persistReducer(challengeSPersistConfig, challengeReducer);
@@ -45,7 +52,7 @@ const persistedachievementReducer = persistReducer(achievementPersistConfig, ach
 const store = configureStore({
     reducer: {
         user: persistedUserReducer,
-        theme: themeReducer,
+        theme: persistedThemeReducer,
         ctimetable: persistedCtimetableReducer, // Updated key to ctimetable
         cassignment: persistedassignmentReducer,
         challenges: persistedchallengeReducer,

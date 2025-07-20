@@ -3,7 +3,7 @@ import { setTheme } from '../redux/theme/themeSlice';
 
 const HomeNavBar = () => {
     const dispatch = useDispatch();
-    const currentTheme = useSelector((state) => state.theme);
+    const currentTheme = useSelector((state) => state.theme.value);
 
     const handleThemeChange = (event) => {
         dispatch(setTheme(event.target.value));

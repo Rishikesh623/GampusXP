@@ -23,7 +23,7 @@ const AssignmentTracking = () => {
         try {
             setLoading(true)
             const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/assignment`, { withCredentials: true });
-            setAssignments(res.data.assignments.reverse() || []);
+            setAssignments(res.data.assignments?.reverse() || []);
             setLoading(false)
         } catch (error) {
             setLoading(false)

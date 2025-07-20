@@ -59,6 +59,24 @@ const register = async (req, res) => {
 
         await user.save();
 
+        // generate a JWT token
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1h' });
+
+        const cookieOptions = {
+            httpOnly: true, // send the token as an HttpOnly cookie
+            secure: isProd, // set to true in production with HTTPS
+            sameSite: isProd ? 'none' : 'lax', // 'none' for cross-origin in prod, 'lax' works in dev
+            maxAge: 1 * 60 * 60 * 1000 //  1 hour in milliseconds
+
+        }
+        if (isProd) {
+            cookieOptions.domain = DOMAIN;
+        } else {
+            delete cookieOptions.domain;
+        }
+
+        res.cookie('token', token, cookieOptions);
+
         res.status(201).json({ name, reg_no, email });
 
     } catch (error) {

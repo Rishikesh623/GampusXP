@@ -68,10 +68,6 @@ const Timetable = () => {
 
     }, []);
 
-    useEffect(() => {
-        console.log("Store time table : ", currentTimeTable); // Logs updated state when it changes
-    }, [currentTimeTable]);
-
     const [day, setDay] = useState('');
     const [time, setTime] = useState('');
     const [course, setCourse] = useState('');

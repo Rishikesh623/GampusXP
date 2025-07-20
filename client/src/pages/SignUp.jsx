@@ -57,7 +57,10 @@ const SignUp = () => {
         }
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/register`, formData);
+            const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/register`, formData, {
+                withCredentials: true,
+                credentials: 'include',
+            });
             if (res) {
                 showToast({ message: "Registration successful", type: "success" });
                 dispatch(setUserProfile({
@@ -79,7 +82,7 @@ const SignUp = () => {
                     XP: {xp} | Level {level}
                 </div>
 
-                 <h2 className="text-2xl font-bold text-black flex items-center justify-center gap-2">
+                <h2 className="text-2xl font-bold text-black flex items-center justify-center gap-2">
                     Sign Up to
                     <a href="/" className="inline-block">
                         <img
