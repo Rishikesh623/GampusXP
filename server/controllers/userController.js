@@ -69,11 +69,7 @@ const register = async (req, res) => {
             maxAge: 1 * 60 * 60 * 1000 //  1 hour in milliseconds
 
         }
-        if (isProd) {
-            cookieOptions.domain = DOMAIN;
-        } else {
-            delete cookieOptions.domain;
-        }
+
 
         res.cookie('token', token, cookieOptions);
 
@@ -121,11 +117,6 @@ const login = async (req, res) => {
             sameSite: isProd ? 'none' : 'lax', // 'none' for cross-origin in prod, 'lax' works in dev
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000 // 7 days or 1 hour in milliseconds
 
-        }
-        if (isProd) {
-            cookieOptions.domain = DOMAIN;
-        } else {
-            delete cookieOptions.domain;
         }
 
         res.cookie('token', token, cookieOptions);

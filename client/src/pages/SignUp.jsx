@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
+import OverlayLoader from "../components/OverlayLoader";
 import { useNavigate } from "react-router-dom";
 import { setUserProfile } from "../redux/user/userSlice";
 import { useToast } from "../components/ToastProvider";
@@ -22,6 +23,8 @@ const SignUp = () => {
     const [level, setLevel] = useState(1);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         setXp(Object.values(formData).filter(val => val !== "").length * 20);
@@ -57,6 +60,7 @@ const SignUp = () => {
         }
 
         try {
+            setLoading(true);
             const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/register`, formData, {
                 withCredentials: true,
                 credentials: 'include',
@@ -68,9 +72,11 @@ const SignUp = () => {
                     reg_no: formData.reg_no,
                     email: formData.email,
                 }));
+                setLoading(false);
                 navigate('/welcome', { state: { fromRegister: true } });
             }
         } catch (err) {
+            setLoading(false);
             showToast({ message: err.response?.data?.message || "An error occurred", type: "error" });
         }
     };
@@ -78,126 +84,128 @@ const SignUp = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-white logo_bg">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg relative">
-                <div className="absolute top-4 left-4 bg-white p-2 rounded-lg shadow text-sm font-semibold">
-                    XP: {xp} | Level {level}
-                </div>
+                    <div className="absolute top-4 left-4 bg-white p-2 rounded-lg shadow text-sm font-semibold">
+                        XP: {xp} | Level {level}
+                    </div>
+                <OverlayLoader loading={loading}>
 
-                <h2 className="text-2xl font-bold text-black flex items-center justify-center gap-2">
-                    Sign Up to
-                    <a href="/" className="inline-block">
-                        <img
-                            src="/logo.png"
-                            alt="CampusXP"
-                            className="h-16 w-auto relative top-[1px]"
-                        />
-                    </a>
-                </h2>
-
-
-                <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                    <div className="bg-primary h-full transition-all duration-300" style={{ width: `${xp}%` }} />
-                </div>
-
-                <form onSubmit={onSubmitForm} className="space-y-4 pt-2">
-                    <div className="form-control">
-                        <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
-                            <span className="material-icons text-sm">person</span>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={onChangeForm}
-                                placeholder="Name"
-                                className="w-full"
+                    <h2 className="text-2xl font-bold text-black flex items-center justify-center gap-2">
+                        Sign Up to
+                        <a href="/" className="inline-block">
+                            <img
+                                src="/logo.png"
+                                alt="CampusXP"
+                                className="h-16 w-auto relative top-[1px]"
                             />
-                        </label>
+                        </a>
+                    </h2>
+
+
+                    <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <div className="bg-primary h-full transition-all duration-300" style={{ width: `${xp}%` }} />
                     </div>
 
-                    <div className="form-control">
-                        <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
-                            <span className="material-icons text-sm">badge</span>
-                            <input
-                                type="text"
-                                name="reg_no"
-                                value={formData.reg_no}
-                                onChange={onChangeForm}
-                                placeholder="Registration No"
-                                className="w-full"
-                            />
-                        </label>
-                    </div>
+                    <form onSubmit={onSubmitForm} className="space-y-4 pt-2">
+                        <div className="form-control">
+                            <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
+                                <span className="material-icons text-sm">person</span>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={onChangeForm}
+                                    placeholder="Name"
+                                    className="w-full"
+                                />
+                            </label>
+                        </div>
 
-                    <div className="form-control">
-                        <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
-                            <span className="material-icons text-sm">email</span>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={onChangeForm}
-                                placeholder="Email"
-                                className="w-full"
-                            />
-                        </label>
-                    </div>
+                        <div className="form-control">
+                            <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
+                                <span className="material-icons text-sm">badge</span>
+                                <input
+                                    type="text"
+                                    name="reg_no"
+                                    value={formData.reg_no}
+                                    onChange={onChangeForm}
+                                    placeholder="Registration No"
+                                    className="w-full"
+                                />
+                            </label>
+                        </div>
 
-                    <div className="form-control relative">
-                        <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black relative">
-                            <span className="material-icons text-sm">lock</span>
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                value={formData.password}
-                                onChange={onChangeForm}
-                                placeholder="Password"
-                                className="w-full"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                                tabIndex={-1}
-                            >
-                                <span className="material-icons text-[18px]">
-                                    {showPassword ? "visibility_off" : "visibility"}
-                                </span>
+                        <div className="form-control">
+                            <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black">
+                                <span className="material-icons text-sm">email</span>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={onChangeForm}
+                                    placeholder="Email"
+                                    className="w-full"
+                                />
+                            </label>
+                        </div>
 
-                            </button>
-                        </label>
-                    </div>
+                        <div className="form-control relative">
+                            <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black relative">
+                                <span className="material-icons text-sm">lock</span>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={onChangeForm}
+                                    placeholder="Password"
+                                    className="w-full"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                                    tabIndex={-1}
+                                >
+                                    <span className="material-icons text-[18px]">
+                                        {showPassword ? "visibility_off" : "visibility"}
+                                    </span>
 
-                    <div className="form-control relative">
-                        <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black relative">
-                            <span className="material-icons text-sm">lock</span>
-                            <input
-                                type={showConfirmPassword ? "text" : "password"}
-                                name="confirm_password"
-                                value={formData.confirm_password}
-                                onChange={onChangeForm}
-                                placeholder="Confirm Password"
-                                className="w-full"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                                tabIndex={-1}
-                            >
-                                <span className="material-icons text-[18px]">
-                                    {showConfirmPassword ? "visibility_off" : "visibility"}
-                                </span>
-                            </button>
-                        </label>
-                    </div>
+                                </button>
+                            </label>
+                        </div>
 
-                    <button type="submit" className="btn btn-primary w-full mt-2">
-                        Sign Up
-                    </button>
+                        <div className="form-control relative">
+                            <label className="flex items-center gap-2 input input-bordered bg-white w-full text-black relative">
+                                <span className="material-icons text-sm">lock</span>
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    name="confirm_password"
+                                    value={formData.confirm_password}
+                                    onChange={onChangeForm}
+                                    placeholder="Confirm Password"
+                                    className="w-full"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                                    tabIndex={-1}
+                                >
+                                    <span className="material-icons text-[18px]">
+                                        {showConfirmPassword ? "visibility_off" : "visibility"}
+                                    </span>
+                                </button>
+                            </label>
+                        </div>
 
-                    <p className="text-center text-sm pt-2">
-                        Already have an account? <a href="/signin" className="text-primary">Sign In</a>
-                    </p>
-                </form>
+                        <button type="submit" className="btn btn-primary w-full mt-2">
+                            Sign Up
+                        </button>
+
+                        <p className="text-center text-sm pt-2">
+                            Already have an account? <a href="/signin" className="text-primary">Sign In</a>
+                        </p>
+                    </form>
+                </OverlayLoader>
             </div>
         </div>
     );
