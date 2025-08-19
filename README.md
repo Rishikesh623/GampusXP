@@ -41,6 +41,19 @@ CampusXP is an app designed to gamify the academic journey, offering tools for s
    cd ../client
    npm start
    ```
+### .env
+1. Client
+   REACT_APP_BASE_URL=http://localhost:5000
+   
+3. server
+   PORT = 5000
+   JWT_SECRET_KEY = your_secret_key
+   NODE_ENV = dev/prod
+   MOGO_URI = mongo uri
+   ORIGIN_URL = prod client address 
+   DOMAIN = prod server address
+   COORDINATOR_ID = 
+   COORDINATOR_PASSWORD = 
 ### to do 
 challenge anybody (give & take aura points)
 assignment completr after due point decreeas aua point
